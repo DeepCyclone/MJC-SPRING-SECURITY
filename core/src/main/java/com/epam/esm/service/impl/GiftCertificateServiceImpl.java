@@ -9,9 +9,9 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -82,6 +82,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
+        if(tags == null || tags.isEmpty()){
+            return Collections.emptyList();
+        }
         return tags.stream().map(tagRepository::create).collect(Collectors.toList());
     }
 

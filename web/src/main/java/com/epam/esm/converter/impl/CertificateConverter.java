@@ -5,7 +5,6 @@ import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.impl.TagServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

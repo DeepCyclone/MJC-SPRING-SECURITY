@@ -1,6 +1,13 @@
-
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '2.6.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+} 
+
+ext{
+    junitVersion = '5.8.2'
+    lombokVersion = '1.18.22'
+    springBootVersion = '2.6.4'
 }
 
 
@@ -15,43 +22,37 @@ repositories {
 
 allprojects {
     apply plugin: 'war'
+    dependencies {
+}
 }
 subprojects {
-
-    apply plugin :'java'
-
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-        implementation 'org.springframework:spring-web:5.3.15'
-        implementation 'org.springframework:spring-beans:5.3.15'
-        implementation 'org.springframework:spring-context:5.3.15'
-        implementation 'org.springframework:spring-core:5.3.15'
-        implementation 'org.springframework:spring-webmvc:5.3.15'
-        implementation 'org.springframework:spring-test:5.3.15'
-        implementation 'org.springframework:spring-jdbc:5.3.15'
-        testImplementation 'org.hamcrest:hamcrest:2.2'
+        implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+        implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+        implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+        testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
         compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
         implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
-        compileOnly 'org.projectlombok:lombok:1.18.22'
-        annotationProcessor 'org.projectlombok:lombok:1.18.22'
-        testCompileOnly 'org.projectlombok:lombok:1.18.22'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
-        annotationProcessor('org.hibernate.validator:hibernate-validator-annotation-processor:7.0.2.Final')
-
-
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        implementation 'mysql:mysql-connector-java:8.0.28'
     }
 
-    test {
-        useJUnitPlatform()
-
-    }
 }
 
 dependencies {
     implementation project(':web')
 }
 
+bootJar {
+    manifest {
+	attributes 'Start-Class': 'com.epam.esm.AppRunner'
+    }
+}
 
+    test {
+        useJUnitPlatform()
 
-
+    }
