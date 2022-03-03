@@ -1,4 +1,4 @@
-package com.epam.esm.repository.query;
+package com.epam.esm.repository.query.holder;
 
 public class CertificateQueryHolder {
     public static final String READ_ALL = "SELECT * FROM gift_certificate";

@@ -6,8 +6,8 @@ import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.repository.query.ComplexParamMapProcessor;
-import com.epam.esm.repository.query.UpdateQueryBuilder;
+import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
+import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -17,20 +17,20 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DELETE_ENTRY;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.FETCH_ASSOCIATED_TAGS;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.INSERT_INTO_M2M;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_ID;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_NAME;
+
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.epam.esm.repository.query.CertificateQueryHolder.DELETE_ENTRY;
-import static com.epam.esm.repository.query.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
-import static com.epam.esm.repository.query.CertificateQueryHolder.FETCH_ASSOCIATED_TAGS;
-import static com.epam.esm.repository.query.CertificateQueryHolder.INSERT_INTO_M2M;
-import static com.epam.esm.repository.query.CertificateQueryHolder.READ_ALL;
-import static com.epam.esm.repository.query.CertificateQueryHolder.READ_BY_ID;
-import static com.epam.esm.repository.query.CertificateQueryHolder.READ_BY_NAME;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {

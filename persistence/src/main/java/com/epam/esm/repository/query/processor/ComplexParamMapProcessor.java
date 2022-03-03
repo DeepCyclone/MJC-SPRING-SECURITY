@@ -1,16 +1,16 @@
-package com.epam.esm.repository.query;
+package com.epam.esm.repository.query.processor;
+
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.AND;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_NAME_SEARCH;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.JOIN_PARAMS;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.ORDER_BY;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.TAG_NAME_FILTER;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.WHERE;
 
 import java.util.Map;
 import java.util.Optional;
-
-import static com.epam.esm.repository.query.CertificateQueryHolder.AND;
-import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
-import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_NAME_SEARCH;
-import static com.epam.esm.repository.query.CertificateQueryHolder.JOIN_PARAMS;
-import static com.epam.esm.repository.query.CertificateQueryHolder.ORDER_BY;
-import static com.epam.esm.repository.query.CertificateQueryHolder.READ_ALL;
-import static com.epam.esm.repository.query.CertificateQueryHolder.TAG_NAME_FILTER;
-import static com.epam.esm.repository.query.CertificateQueryHolder.WHERE;
 
 public class ComplexParamMapProcessor {
     public static final String tagName = "tagName";

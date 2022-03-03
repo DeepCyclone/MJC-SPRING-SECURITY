@@ -12,18 +12,18 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import static com.epam.esm.repository.query.holder.TagQueryHolder.DELETE_BY_ID;
+import static com.epam.esm.repository.query.holder.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
+import static com.epam.esm.repository.query.holder.TagQueryHolder.GET_BY_NAME;
+import static com.epam.esm.repository.query.holder.TagQueryHolder.INSERT_INTO_BY_NAME;
+import static com.epam.esm.repository.query.holder.TagQueryHolder.INSERT_INTO_WITH_ID;
+import static com.epam.esm.repository.query.holder.TagQueryHolder.READ_ALL;
+import static com.epam.esm.repository.query.holder.TagQueryHolder.READ_BY_ID;
+
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
-
-import static com.epam.esm.repository.query.TagQueryHolder.DELETE_BY_ID;
-import static com.epam.esm.repository.query.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
-import static com.epam.esm.repository.query.TagQueryHolder.GET_BY_NAME;
-import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO_BY_NAME;
-import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO_WITH_ID;
-import static com.epam.esm.repository.query.TagQueryHolder.READ_ALL;
-import static com.epam.esm.repository.query.TagQueryHolder.READ_BY_ID;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
