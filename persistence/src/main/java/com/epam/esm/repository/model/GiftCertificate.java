@@ -19,7 +19,7 @@ public class GiftCertificate implements Serializable {
     private String name;
     private String description;
     private BigDecimal price;
-    private int duration;
+    private Integer duration;
     private Timestamp createDate;
     private Timestamp lastUpdateDate;
     List<Tag> associatedTags;

@@ -64,19 +64,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public GiftCertificate update(GiftCertificate certificatePatch) {
-        GiftCertificate originalCertificate = getByID(certificatePatch.getId());
-        Optional.ofNullable(certificatePatch.getName()).ifPresent(originalCertificate::setName);
-        Optional.ofNullable(certificatePatch.getDescription()).ifPresent(originalCertificate::setDescription);
-        Optional.ofNullable(certificatePatch.getPrice()).ifPresent(originalCertificate::setPrice);
-        originalCertificate.setDuration(certificatePatch.getDuration());
+    public GiftCertificate update(GiftCertificate certificatePatch,long id) {
+        System.out.println(id);
+        getByID(id);//TODO get atomic field or make boolean query in db
+        certificateRepository.update(certificatePatch,id);
         detachAssociatedTags(certificatePatch.getId());
         Optional.ofNullable(certificatePatch.getAssociatedTags()).ifPresent(tags -> {
             List<Tag> savedTags = saveAssociatedTags(tags);
             certificateRepository.linkAssociatedTags(certificatePatch.getId(),savedTags);
         });
-        certificateRepository.update(originalCertificate,certificatePatch.getId());
-        return getByID(certificatePatch.getId());
+        return getByID(id);
     }
 
     @Override

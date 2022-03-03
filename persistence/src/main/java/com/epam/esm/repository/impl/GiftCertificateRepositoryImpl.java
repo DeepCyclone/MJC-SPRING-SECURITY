@@ -1,12 +1,14 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.repository.GiftCertificateRepository;
-import com.epam.esm.repository.field.GiftCertificateField;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
+import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.query.ComplexParamMapProcessor;
+import com.epam.esm.repository.query.UpdateQueryBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,7 +31,6 @@ import static com.epam.esm.repository.query.CertificateQueryHolder.INSERT_INTO_M
 import static com.epam.esm.repository.query.CertificateQueryHolder.READ_ALL;
 import static com.epam.esm.repository.query.CertificateQueryHolder.READ_BY_ID;
 import static com.epam.esm.repository.query.CertificateQueryHolder.READ_BY_NAME;
-import static com.epam.esm.repository.query.CertificateQueryHolder.UPDATE_QUERY;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -54,10 +55,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcOperations);
         simpleJdbcInsert.withTableName("gift_certificate").usingGeneratedKeyColumns("gc_id").usingColumns("gc_name","gc_description","gc_price","gc_duration");
         Map<String,Object> params = new HashMap<>();
-        params.put(GiftCertificateField.NAME,object.getName());
-        params.put(GiftCertificateField.DESCRIPTION,object.getDescription());
-        params.put(GiftCertificateField.PRICE,object.getPrice());
-        params.put(GiftCertificateField.DURATION,object.getDuration());
+        params.put(GiftCertificateMetadata.NAME,object.getName());
+        params.put(GiftCertificateMetadata.DESCRIPTION,object.getDescription());
+        params.put(GiftCertificateMetadata.PRICE,object.getPrice());
+        params.put(GiftCertificateMetadata.DURATION,object.getDuration());
         Number key = simpleJdbcInsert.executeAndReturnKey(params);
         return getByID(key.longValue()).get();
     }
@@ -68,13 +69,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public boolean update(GiftCertificate object,long ID) {
-       return jdbcOperations.update(UPDATE_QUERY,
-                object.getName(),
-                object.getDescription(),
-                object.getPrice(),
-                object.getDuration(),
-                ID) >= MIN_AFFECTED_ROWS;
+    public boolean update(GiftCertificate object,long id) {
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
+        return template.update(UpdateQueryBuilder.buildUpdateQuery(object, id), UpdateQueryBuilder.getUpdateParams(object)) >= MIN_AFFECTED_ROWS;
     }
 
     @Override

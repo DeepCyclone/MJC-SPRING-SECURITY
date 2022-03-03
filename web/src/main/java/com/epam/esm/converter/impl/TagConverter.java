@@ -6,7 +6,7 @@ import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +23,9 @@ public class TagConverter implements ConverterTemplate<Tag, TagDto, TagResponseD
 
     @Override
     public List<Tag> convertFromRequestDtos(List<TagDto> dtos) {
+        if(dtos == null){
+            return Collections.emptyList();
+        }
         return dtos.stream().map(this::convertFromRequestDto).collect(Collectors.toList());
     }
 
@@ -36,10 +39,9 @@ public class TagConverter implements ConverterTemplate<Tag, TagDto, TagResponseD
 
     @Override
     public List<TagResponseDto> convertToResponseDtos(List<Tag> objects) {
-        List<TagResponseDto> tags = new ArrayList<>();
-        for(Tag object:objects){
-            tags.add(convertToResponseDto(object));
+        if(objects == null){
+            return Collections.emptyList();
         }
-        return tags;
+        return objects.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 }

@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CertificateConverter implements ConverterTemplate<GiftCertificate, GiftCertificateDto, GiftCertificateResponseDto> {
@@ -41,11 +42,10 @@ public class CertificateConverter implements ConverterTemplate<GiftCertificate, 
 
     @Override
     public List<GiftCertificate> convertFromRequestDtos(List<GiftCertificateDto> dtos) {
-        List<GiftCertificate> objects = new ArrayList<>();
-        for(GiftCertificateDto gc:dtos){
-            objects.add(convertFromRequestDto(gc));
+        if(dtos == null){
+            return Collections.emptyList();
         }
-        return objects;
+        return dtos.stream().map(this::convertFromRequestDto).collect(Collectors.toList());
     }
 
     @Override
@@ -64,10 +64,9 @@ public class CertificateConverter implements ConverterTemplate<GiftCertificate, 
 
     @Override
     public List<GiftCertificateResponseDto> convertToResponseDtos(List<GiftCertificate> objects) {
-        List<GiftCertificateResponseDto> dtos = new ArrayList<>();
-        for(GiftCertificate gc:objects){
-            dtos.add(convertToResponseDto(gc));
+        if(objects == null){
+            return Collections.emptyList();
         }
-        return dtos;
+        return objects.stream().map(this::convertToResponseDto).collect(Collectors.toList());
     }
 }

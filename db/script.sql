@@ -30,6 +30,8 @@ create table tag_m2m_gift_certificate
             on update cascade on delete cascade
 );
 
+create table 
+
 INSERT INTO gift_certificate (gc_id, gc_name, gc_description, gc_price, gc_duration, gc_create_date, gc_last_update_date)
 VALUES ((1,'Cert1','Cert1A',100.5,30,'2022-01-10 10:10:10.1','2022-01-10 10:10:12.1'),
         (2,'Cert2','Cert2A',100.5,30,'2022-01-10 10:10:12.1','2022-01-10 10:10:14.1'),

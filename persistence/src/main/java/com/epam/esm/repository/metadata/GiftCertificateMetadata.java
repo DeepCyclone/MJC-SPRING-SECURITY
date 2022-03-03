@@ -1,9 +1,10 @@
-package com.epam.esm.repository.field;
+package com.epam.esm.repository.metadata;
 
 /*
 * Class holder of giftcertificate datasource internal fields names
 * */
-public class GiftCertificateField {
+public class GiftCertificateMetadata {
+    public static final String TABLE_NAME = "gift_certificate";
     public static final String DB_PREFIX = "gc_";
     public static final String ID = DB_PREFIX + "id";
     public static final String NAME = DB_PREFIX + "name";

@@ -10,7 +10,7 @@ public interface GiftCertificateService {
     GiftCertificate getByID(long ID);
     GiftCertificate addEntity(GiftCertificate certificateDto);
     void deleteByID(long ID);
-    GiftCertificate update(GiftCertificate certificatePatch);
+    GiftCertificate update(GiftCertificate certificatePatch,long id);
     List<Tag> saveAssociatedTags(List<Tag> tags);
     List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params);
 }
