@@ -1,6 +1,8 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.repository.template.GiftCertificateRepository;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -10,6 +12,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -49,7 +53,7 @@ class GiftCertificateRepositoryTest {
    @Test
    @Order(1)
    void getAll(){
-       List<GiftCertificate> certificatesDB = repository.handleParametrizedRequest(new HashMap<>());
+       List<GiftCertificate> certificatesDB = repository.handleParametrizedRequest(new LinkedMultiValueMap<>());
        Assertions.assertEquals(certificates,certificatesDB);
    }
 
@@ -107,8 +111,8 @@ class GiftCertificateRepositoryTest {
    @Test
    @Order(7)
    void getInfoWithDateOrder(){
-       Map<String,String> params = new HashMap<>();
-       params.put("dateSortOrder","ASC");
+       MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+       params.set("dateSortOrder","ASC");
        List<GiftCertificate> certs = repository.handleParametrizedRequest(params);
        Assertions.assertEquals(certs.get(0),certificates.get(0));
    }

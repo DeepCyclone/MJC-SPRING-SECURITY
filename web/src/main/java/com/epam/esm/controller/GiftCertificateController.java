@@ -6,11 +6,13 @@ import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.template.GiftCertificateService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -40,7 +41,7 @@ public class GiftCertificateController {
     }
 
     @GetMapping
-    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params) {
+    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam MultiValueMap<String,String> params) {
         return certificateConverter.convertToResponseDtos(certificateService.handleParametrizedGetRequest(params));
     }
 

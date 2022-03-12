@@ -2,14 +2,16 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.exception.ErrorCode;
 import com.epam.esm.exception.ServiceException;
-import com.epam.esm.repository.GiftCertificateRepository;
-import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.repository.template.GiftCertificateRepository;
+import com.epam.esm.repository.template.TagRepository;
+import com.epam.esm.service.template.GiftCertificateService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +28,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private static final String DATE_SORT_ORDER = "dateSortOrder";
     private static final String ASCENDING_SORT = "ASC";
     private static final String DESCENDING_SORT = "DESC";
+    
 
     private final GiftCertificateRepository certificateRepository;
     private final TagRepository tagRepository;
@@ -65,7 +68,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificate update(GiftCertificate certificatePatch,long id) {
-        System.out.println(id);
         getByID(id);//TODO get atomic field or make boolean query in db
         certificateRepository.update(certificatePatch,id);
         detachAssociatedTags(certificatePatch.getId());
@@ -86,16 +88,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
+    public List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params){
         checkInvalidValuedParams(params);
+        checkDuplicatedQueryParams(params);
         List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params);
         certificates.forEach(certificate -> certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
         return certificates;
     }
 
-    private void checkInvalidValuedParams(Map<String,String> params){
-        if((params.containsKey(NAME_SORT_ORDER) && !isAllowedOrderDirection(params.get(NAME_SORT_ORDER))) ||
-                (params.containsKey(DATE_SORT_ORDER) && !isAllowedOrderDirection(params.get(DATE_SORT_ORDER)))){
+    private void checkInvalidValuedParams(MultiValueMap<String,String> params){
+        if((params.containsKey(NAME_SORT_ORDER) && !isAllowedOrderDirection(params.getFirst(NAME_SORT_ORDER))) ||
+                (params.containsKey(DATE_SORT_ORDER) && !isAllowedOrderDirection(params.getFirst(DATE_SORT_ORDER)))){
             throw new ServiceException(CERTIFICATE_BAD_REQUEST_PARAMS,"allowed values for sorting params are ASC and DESC");
         }
     }
@@ -108,4 +111,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         certificateRepository.detachAssociatedTags(certificateID);
     }
 
+    private void checkDuplicatedQueryParams(MultiValueMap<String,String> params){
+        List<Map.Entry<String,List<String>>> unallowedDuplicates = params.entrySet().stream().filter(entry -> entry.getValue().size() > 1 && !entry.getKey().equals("tagName")).collect(Collectors.toList());
+        if(!unallowedDuplicates.isEmpty()){
+            StringBuilder duplicatesInfo = new StringBuilder();
+            unallowedDuplicates.stream().forEach(entry-> duplicatesInfo.append(entry.getKey() + " can't have several values|"));
+            throw new ServiceException(CERTIFICATE_BAD_REQUEST_PARAMS,duplicatesInfo.toString());
+        }
+    }
 }

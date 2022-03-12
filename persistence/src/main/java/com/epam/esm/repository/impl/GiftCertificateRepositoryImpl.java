@@ -1,6 +1,5 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.metadata.GiftCertificateMetadata;
@@ -8,6 +7,7 @@ import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
+import com.epam.esm.repository.template.GiftCertificateRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.MultiValueMap;
 
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DELETE_ENTRY;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
@@ -24,6 +25,9 @@ import static com.epam.esm.repository.query.holder.CertificateQueryHolder.INSERT
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_ID;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_NAME;
+import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.PERCENT;
+import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.DESCRIPTION_PART;
+import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.NAME_PART;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -114,7 +118,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> handleParametrizedRequest(Map<String,String> params){
+    public List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> params){
         String query = ComplexParamMapProcessor.buildQuery(params);
         prepareParamsToSearchStatement(params);
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
@@ -131,13 +135,22 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
     }
 
-    private void prepareParamsToSearchStatement(Map<String,String> params){
-        if(params.containsKey(ComplexParamMapProcessor.namePart)){
-            params.replace(ComplexParamMapProcessor.namePart,ComplexParamMapProcessor.PERCENT+params.get(ComplexParamMapProcessor.namePart)+ComplexParamMapProcessor.PERCENT);
+    private void prepareParamsToSearchStatement(MultiValueMap<String,String> params){
+        if(params.containsKey(NAME_PART)){
+            params.set(NAME_PART,PERCENT+params.getFirst(NAME_PART)+PERCENT);
         }
-        if(params.containsKey(ComplexParamMapProcessor.descriptionPart)){
-            params.replace(ComplexParamMapProcessor.descriptionPart,ComplexParamMapProcessor.PERCENT+params.get(ComplexParamMapProcessor.descriptionPart)+ComplexParamMapProcessor.PERCENT);
+        if(params.containsKey(DESCRIPTION_PART)){
+            params.set(DESCRIPTION_PART,PERCENT+params.getFirst(DESCRIPTION_PART)+PERCENT);
         }
+        if(params.containsKey(ComplexParamMapProcessor.TAG_NAME)){
+        List<String> tags = params.get(ComplexParamMapProcessor.TAG_NAME);
+        int iter = 1;
+        for(String tagName:tags){
+            params.set(ComplexParamMapProcessor.TAG_NAME+iter, tagName);
+            iter++;
+        }
+        params.remove(ComplexParamMapProcessor.TAG_NAME);
+    }
     }
 
 }

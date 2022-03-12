@@ -5,7 +5,8 @@ import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.service.TagService;
+import com.epam.esm.service.template.TagService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

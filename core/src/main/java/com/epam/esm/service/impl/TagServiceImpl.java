@@ -3,9 +3,10 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.exception.ErrorCode;
 import com.epam.esm.exception.ServiceException;
-import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.service.TagService;
+import com.epam.esm.repository.template.TagRepository;
+import com.epam.esm.service.template.TagService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

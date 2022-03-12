@@ -1,10 +1,11 @@
-package com.epam.esm.service;
+package com.epam.esm.service.template;
 
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 
+import org.springframework.util.MultiValueMap;
+
 import java.util.List;
-import java.util.Map;
 
 public interface GiftCertificateService {
     GiftCertificate getByID(long ID);
@@ -12,5 +13,5 @@ public interface GiftCertificateService {
     void deleteByID(long ID);
     GiftCertificate update(GiftCertificate certificatePatch,long id);
     List<Tag> saveAssociatedTags(List<Tag> tags);
-    List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params);
+    List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params);
 }

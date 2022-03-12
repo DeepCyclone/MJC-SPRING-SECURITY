@@ -1,10 +1,11 @@
-package com.epam.esm.repository;
+package com.epam.esm.repository.template;
 
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 
+import org.springframework.util.MultiValueMap;
+
 import java.util.List;
-import java.util.Map;
 
 /*
  * A specification how to interact with datasource which contains gift certificates
@@ -14,5 +15,5 @@ public interface GiftCertificateRepository extends GenericRepository<GiftCertifi
     void linkAssociatedTags(long certificateID, List<Tag> tags);
     boolean detachAssociatedTags(long certificateID);
     List<Tag> fetchAssociatedTags(long certificateID);
-    List<GiftCertificate> handleParametrizedRequest(Map<String,String> map);
+    List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> map);
 }

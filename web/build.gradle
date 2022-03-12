@@ -21,10 +21,15 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
     implementation 'org.hibernate.validator:hibernate-validator:6.0.22.Final'
     compileOnly 'org.hibernate.validator:hibernate-validator:6.0.22.Final'
+    implementation ('org.mapstruct:mapstruct:1.4.2.Final')
+    implementation ('org.mapstruct:mapstruct-jdk8:1.4.2.Final')
+    annotationProcessor ('org.mapstruct:mapstruct-processor:1.4.2.Final')
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
 }
 
 test {
     useJUnitPlatform()
 }
+
 

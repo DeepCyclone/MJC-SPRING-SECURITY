@@ -18,4 +18,8 @@ public class CertificateQueryHolder {
     public static final String ORDER_BY = " ORDER BY ";
     public static final String WHERE = " WHERE ";
     public static final String AND = " AND ";
+    public static final String OR = " OR ";
+    public static final String LIMIT = " LIMIT ";
+    public static final String OFFSET = " OFFSET ";
+    public static final String GROUP_BY_CERT_WITH_CERTAIN_AMOUNT_OF_TAGS = " GROUP BY tmgc_gc_id HAVING COUNT(t_id) = ";
 }

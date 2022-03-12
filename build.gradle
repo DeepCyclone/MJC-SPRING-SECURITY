@@ -38,6 +38,7 @@ subprojects {
         testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         implementation 'mysql:mysql-connector-java:8.0.28'
+
     }
 
 }

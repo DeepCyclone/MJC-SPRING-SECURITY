@@ -1,4 +1,4 @@
-package com.epam.esm.service;
+package com.epam.esm.service.template;
 
 import com.epam.esm.repository.model.Tag;
 
