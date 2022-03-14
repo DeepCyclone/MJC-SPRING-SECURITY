@@ -2,11 +2,12 @@ package com.epam.esm.controller;
 
 import java.util.List;
 
-import com.epam.esm.converter.impl.OrderConverter;
-import com.epam.esm.converter.impl.UserConverter;
+import com.epam.esm.converter.OrderConverter;
+import com.epam.esm.converter.UserConverter;
 import com.epam.esm.dto.response.OrderResponseDto;
 import com.epam.esm.dto.response.UserResponseDto;
 import com.epam.esm.repository.model.Tag;
+import com.epam.esm.service.template.OrderService;
 import com.epam.esm.service.template.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,14 @@ public class UserController {
 
 
     private final UserService userService;
+    private final OrderService OrderService;
     private final UserConverter userConverter;
     private final OrderConverter orderConverter;
 
     @Autowired
-    public UserController(UserService userService, UserConverter userConverter,OrderConverter orderConverter) {
+    public UserController(UserService userService,OrderService OrderService, UserConverter userConverter,OrderConverter orderConverter) {
         this.userService = userService;
+        this.OrderService = OrderService;
         this.userConverter = userConverter;
         this.orderConverter = orderConverter;
     }
@@ -47,11 +50,11 @@ public class UserController {
         return orderConverter.convertToResponseDtos(userService.getById(userId).getOrders());
     }
 
-    // @GetMapping(value="/{userId:\\d+}order/{orderId:\\d+}")
-    // public void getOrder(@PathVariable long userId,@PathVariable long orderId){
-    //     return orderConverter.convertToResponseDto(userService.getById(userId).getOrders())
-    // }
-    
+    @GetMapping(value="/{userId:\\d+}/orders/{orderId:\\d+}")
+    public OrderResponseDto getOrder(@PathVariable long userId,@PathVariable long orderId){
+        return orderConverter.convertToResponseDto(OrderService.getById(orderId));
+    }
+
     @GetMapping(value="/most-used-tag-with-richest-orders")
     public Tag getMostWidelyUsedTagWithRichestOrder(){
         return userService.fetchMostUsedTagWithRichestOrders();

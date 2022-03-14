@@ -6,26 +6,22 @@ import static com.epam.esm.repository.query.holder.UserQueryHolder.READ_BY_NAME;
 import static com.epam.esm.repository.query.holder.UserQueryHolder.FETCH_ASSOCIATED_ORDERS;
 import static com.epam.esm.repository.query.holder.UserQueryHolder.FETCH_MOST_USED_TAG_WITH_RICHEST_ORDERS;
 
-import java.math.BigDecimal;
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
 import com.epam.esm.repository.mapping.OrderMapping;
 import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.mapping.UserMapping;
-import com.epam.esm.repository.model.GiftCertificate;
+
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
-import com.epam.esm.repository.query.holder.OrderQueryHolder;
+import com.epam.esm.repository.query.holder.UserQueryHolder;
 import com.epam.esm.repository.template.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -97,6 +93,11 @@ public class UserRepositoryImpl implements UserRepository {
         catch(DataAccessException e){
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean linkAssociatedOrder(long orderId, long userId) {
+       return jdbcTemplate.update(UserQueryHolder.INSERT_INTO_M2M_USER_ORDERS, userId,orderId) >= 1;
     }
 
 

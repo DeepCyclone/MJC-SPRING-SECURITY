@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import com.epam.esm.converter.impl.OrderConverter;
+import com.epam.esm.converter.OrderConverter;
 import com.epam.esm.dto.response.OrderResponseDto;
-import com.epam.esm.repository.model.Order;
 import com.epam.esm.service.template.OrderService;
 
 import org.springframework.http.HttpStatus;
@@ -47,7 +46,7 @@ public class OrderController {
     }
 
     @PostMapping(value="/{userId:\\d+}")
-    public ResponseEntity<OrderResponseDto> makeOrderOnCertificates(@RequestParam(name="certificateId") List<Long> certificates,long userId){
-        return new ResponseEntity<>(orderService.makeOrder(certificates),HttpStatus.OK);
+    public ResponseEntity<OrderResponseDto> makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
+        return new ResponseEntity<>(orderConverter.convertToResponseDto(orderService.makeOrder(certificates,userId)),HttpStatus.OK);
     }
 }

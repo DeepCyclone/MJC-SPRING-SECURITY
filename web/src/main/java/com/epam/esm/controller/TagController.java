@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.converter.impl.TagConverter;
+import com.epam.esm.converter.TagConverter;
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.TagResponseDto;

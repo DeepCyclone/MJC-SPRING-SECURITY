@@ -1,10 +1,10 @@
 package com.epam.esm.service.impl;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import com.epam.esm.exception.ErrorCode;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
 import com.epam.esm.repository.template.UserRepository;
@@ -55,7 +55,5 @@ public class UserServiceImpl implements UserService{
         return userRepository.fetchMostUsedTagWithRichestOrders().orElseThrow(
             ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"NO DATA IN DB"));
     }
-
-
     
 }

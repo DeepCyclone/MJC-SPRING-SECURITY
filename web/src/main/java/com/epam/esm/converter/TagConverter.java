@@ -1,4 +1,4 @@
-package com.epam.esm.converter.impl;
+package com.epam.esm.converter;
 
 import java.util.List;
 

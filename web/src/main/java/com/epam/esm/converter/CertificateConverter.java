@@ -1,4 +1,4 @@
-package com.epam.esm.converter.impl;
+package com.epam.esm.converter;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -21,6 +21,6 @@ public interface CertificateConverter {
     List<GiftCertificateResponseDto> convertToResponseDtos(List<GiftCertificate> objects);
 
     default Date map(Timestamp timestamp){
-        return timestamp==null?null:new Date(timestamp.getNanos());
+        return timestamp==null?null:new Date(timestamp.getTime());
     }
 }
