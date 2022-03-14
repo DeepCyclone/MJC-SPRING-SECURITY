@@ -75,8 +75,8 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<Tag> readAll() {
-        return jdbcTemplate.query(READ_ALL,tagMapper);
+    public List<Tag> readAll(Optional<Long> limit,Optional<Long> offset) {
+        return jdbcTemplate.query(READ_ALL,tagMapper,limit,offset);
     }
 
     @Override

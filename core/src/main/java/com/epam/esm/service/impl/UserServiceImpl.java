@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.epam.esm.exception.ErrorCode;
 import com.epam.esm.exception.ServiceException;
-import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
 import com.epam.esm.repository.template.UserRepository;
@@ -27,7 +26,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> getAll() {
-        List<User> users = userRepository.readAll();
+        List<User> users = userRepository.readAll(null,null);
         for(User user:users){
             user.setOrders(userRepository.fetchAssociatedOrders(user.getId()));
         }

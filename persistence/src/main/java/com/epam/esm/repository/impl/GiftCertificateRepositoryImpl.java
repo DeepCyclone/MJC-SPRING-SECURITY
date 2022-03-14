@@ -68,8 +68,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> readAll() {
-        return jdbcOperations.query(READ_ALL, certificateMapper);
+    public List<GiftCertificate> readAll(Optional<Long> limit,Optional<Long> offset) {
+        return jdbcOperations.query(READ_ALL, certificateMapper,limit,offset);
     }
 
     @Override

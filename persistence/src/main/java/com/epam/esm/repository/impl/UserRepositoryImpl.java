@@ -46,7 +46,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> readAll() {
+    public List<User> readAll(Optional<Long> limit,Optional<Long> offset) {
         return jdbcTemplate.query(READ_ALL,userMapper);
     }
 

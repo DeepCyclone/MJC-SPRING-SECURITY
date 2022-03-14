@@ -11,6 +11,7 @@ import com.epam.esm.repository.mapping.OrderMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.query.holder.OrderQueryHolder;
+import com.epam.esm.repository.query.processor.PaginationProcessor;
 import com.epam.esm.repository.template.OrderRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,9 @@ public class OrderRepositoryImpl implements OrderRepository{
     }
 
     @Override
-    public List<Order> readAll() {
-        return jdbcTemplate.query(OrderQueryHolder.READ_ALL, orderMapper);
+    public List<Order> readAll(Optional<Long> limit,Optional<Long> offset) {
+
+        return jdbcTemplate.query(OrderQueryHolder.READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset) , orderMapper);
     }
 
     @Override
@@ -76,7 +78,6 @@ public class OrderRepositoryImpl implements OrderRepository{
     public Optional<Order> makeOrder(List<GiftCertificate> certificates) {
         List<BigDecimal> prices = certificates.stream().map(cert->cert.getPrice()).collect(Collectors.toList());
         BigDecimal sum = prices.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-        System.out.println("TOTAL PRICE:"+sum);
         KeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(con->{
             PreparedStatement stmt = con.prepareStatement(OrderQueryHolder.CREATE_NEW_ENTRY,PreparedStatement.RETURN_GENERATED_KEYS);

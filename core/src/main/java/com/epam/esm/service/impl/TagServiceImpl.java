@@ -25,7 +25,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<Tag> getAll(){
-        return tagRepository.readAll();
+        return tagRepository.readAll(null,null);
     }
     @Override
     public Tag getByID(long id){

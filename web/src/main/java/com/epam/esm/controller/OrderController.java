@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.epam.esm.converter.OrderConverter;
 import com.epam.esm.dto.response.OrderResponseDto;
@@ -31,8 +32,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderResponseDto> getAll(){
-       return orderConverter.convertToResponseDtos(orderService.getAll());
+    public List<OrderResponseDto> getAll(@RequestParam Optional<Long> limit,@RequestParam Optional<Long> offset){
+       return orderConverter.convertToResponseDtos(orderService.getAll(limit,offset));
     }   
 
     @GetMapping(value = "/{id:\\d+}")

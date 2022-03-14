@@ -40,7 +40,6 @@ public class ComplexParamMapProcessor {
             query.append(appendQueryWithSearching(params));
             query.append(appendQueryWithSorting(params));
             query.append(appendQueryWithPagination(params));
-            System.out.println(query.toString());
             return query.toString();
         }
         return READ_ALL;
