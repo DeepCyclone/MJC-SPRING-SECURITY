@@ -2,6 +2,7 @@ package com.epam.esm.converter;
 
 import java.util.List;
 
+import com.epam.esm.dto.request.OrderDto;
 import com.epam.esm.dto.response.OrderResponseDto;
 import com.epam.esm.repository.model.Order;
 
@@ -11,5 +12,6 @@ import org.mapstruct.Mapper;
 public interface OrderConverter {
     OrderResponseDto convertToResponseDto(Order object);
     List<OrderResponseDto> convertToResponseDtos(List<Order> objects);
-
+    Order convertFromRequestDto(OrderDto dto);
+    List<Order> convertFromRequestDtos(List<OrderDto> dtos);
 }

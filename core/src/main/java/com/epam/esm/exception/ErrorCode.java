@@ -6,6 +6,8 @@ public class ErrorCode {
     public static final String ORDER_CREATION_ERROR = "40904";
     public static final String CERTIFICATE_BAD_REQUEST_PARAMS = "40001";
     public static final String TAG_BAD_REQUEST_PARAMS = "40002";
+    public static final String USER_BAD_REQUEST_PARAMS = "40003";
+    public static final String ORDER_BAD_REQUEST_PARAMS = "40004";
     public static final String CERTIFICATE_NOT_FOUND = "40401";
     public static final String TAG_NOT_FOUND = "40402";
     public static final String USER_NOT_FOUND = "40403";

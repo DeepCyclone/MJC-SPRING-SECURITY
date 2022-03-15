@@ -12,6 +12,7 @@ import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.repository.template.OrderRepository;
 import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.template.OrderService;
+import com.epam.esm.service.validation.SignValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getAll(Optional<Long> limit,Optional<Long> offset) {
+        checkPaginationOptions(limit, offset);
         List<Order> orders =  orderRepository.readAll(limit,offset);
         orders.forEach(order -> order.setCertificates(fetchAssociatedCertificates(order.getId())));
         return orders;
@@ -47,15 +49,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean update(Order orderPatch, long orderId) {
-        // TODO Auto-generated method stub
-        return false;
+    public Order update(Order orderPatch, long orderId) {
+        if(!orderRepository.update(orderPatch, orderId)){
+
+        }
+        return getById(orderId);
     }
 
     @Override
-    public boolean delete(long orderId) {
-        // TODO Auto-generated method stub
-        return false;
+    public void delete(long orderId) {
+        orderRepository.deleteByID(orderId);
     }
 
     @Override
@@ -65,20 +68,15 @@ public class OrderServiceImpl implements OrderService {
 
         certificatesIds.forEach(certId->certificatesEntities.add(giftCertificateRepository.getByID(certId).orElseThrow(
                 ()->new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"cert not found with ID = "+certId))));
+
         Order order = orderRepository.makeOrder(certificatesEntities).orElseThrow(
             ()->new ServiceException(ErrorCode.ORDER_CREATION_ERROR,"Cannot create order"));
-        linkOrderToUser(order, userId);
-        linkCertificatesToOrder(order.getId(), certificatesEntities);
+
+        userRepository.linkAssociatedOrder(order.getId(),userId);
+        orderRepository.linkAssociatedCertificates(certificatesEntities,order.getId());
+
         order.setCertificates(fetchAssociatedCertificates(order.getId()));
         return order;
-    }
-
-    private void linkOrderToUser(Order order,long userId){
-        userRepository.linkAssociatedOrder(order.getId(),userId);
-    }
-
-    private void linkCertificatesToOrder(long orderId,List<GiftCertificate> certificates){
-        orderRepository.linkAssociatedCertificates(certificates,orderId);
     }
 
     private List<GiftCertificate> fetchAssociatedCertificates(long orderId){
@@ -87,6 +85,13 @@ public class OrderServiceImpl implements OrderService {
             cert.setAssociatedTags(giftCertificateRepository.fetchAssociatedTags(cert.getId()));
         }
         return certificates;
+    }
+
+    private void checkPaginationOptions(Optional<Long> limit,Optional<Long> offset){
+        if(!(limit.isPresent() && SignValidator.isPositiveLong(limit.get())) ||
+        !(offset.isPresent() && SignValidator.isPositiveLong(offset.get()))){
+            throw new ServiceException(ErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
+        }
     }
 
 }
