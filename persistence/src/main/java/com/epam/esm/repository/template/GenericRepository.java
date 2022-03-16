@@ -1,7 +1,6 @@
 package com.epam.esm.repository.template;
 
 import java.util.List;
-import java.util.Optional;
 
 
 /*
@@ -11,6 +10,6 @@ import java.util.Optional;
 * */
 public interface GenericRepository <X>{
     X create(X object);
-    List<X> readAll(Optional<Long> limit,Optional<Long> offset);
+    List<X> readAll(long limit,long offset);
     boolean update(X object,long ID);
 }

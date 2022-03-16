@@ -4,6 +4,7 @@ import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
+import com.epam.esm.repository.query.processor.PaginationProcessor;
 import com.epam.esm.repository.template.TagRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +76,9 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<Tag> readAll(Optional<Long> limit,Optional<Long> offset) {
-        return jdbcTemplate.query(READ_ALL,tagMapper,limit,offset);
+    public List<Tag> readAll(long limit,long offset) {
+        String query = READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset);
+        return jdbcTemplate.query(query,tagMapper,limit,offset);
     }
 
     @Override

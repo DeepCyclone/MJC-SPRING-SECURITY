@@ -6,6 +6,7 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.service.template.TagService;
+import com.epam.esm.service.validation.SignValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getAll(){
-        return tagRepository.readAll(null,null);
+    public List<Tag> getAll(long limit,long offset){
+        checkPaginationOptions(limit, offset);
+        return tagRepository.readAll(limit,offset);
     }
     @Override
     public Tag getByID(long id){
@@ -50,5 +52,10 @@ public class TagServiceImpl implements TagService {
     @Override
     public void updateByID(long id) throws UnsupportedOperationException {}
 
+    private void checkPaginationOptions(long limit,long offset){
+        if(!(SignValidator.isPositiveLong(limit) && SignValidator.isNonNegative(offset))){
+            throw new ServiceException(ErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
+        }
+    }
 
 }

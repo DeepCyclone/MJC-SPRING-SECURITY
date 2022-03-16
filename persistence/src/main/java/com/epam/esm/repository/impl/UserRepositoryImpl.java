@@ -17,6 +17,7 @@ import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
 import com.epam.esm.repository.query.holder.UserQueryHolder;
+import com.epam.esm.repository.query.processor.PaginationProcessor;
 import com.epam.esm.repository.template.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> readAll(Optional<Long> limit,Optional<Long> offset) {
-        return jdbcTemplate.query(READ_ALL,userMapper);
+    public List<User> readAll(long limit,long offset) {
+        String query = READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset);
+        return jdbcTemplate.query(query,userMapper);
     }
 
     @Override

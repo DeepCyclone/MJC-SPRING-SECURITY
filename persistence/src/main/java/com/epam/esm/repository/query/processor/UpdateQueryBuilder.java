@@ -1,5 +1,7 @@
 package com.epam.esm.repository.query.processor;
 
+import static com.epam.esm.repository.query.processor.SQLParts.*;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,9 +13,7 @@ import com.epam.esm.repository.model.GiftCertificate;
 public class UpdateQueryBuilder{
     private static final String UPDATE_QUERY_BASE = "UPDATE " +  GiftCertificateMetadata.TABLE_NAME + " SET ";
     private static final String UPDATE_QUERY_WHERE_CONDITION = " WHERE " + GiftCertificateMetadata.ID + " = ";
-    private static final String EQUALS_MARK = "=";
-    private static final String COLON = ":";
-    private static final String COMMA = ",";
+
 
     public static String buildUpdateQuery(GiftCertificate cert,long id){
         StringBuilder resultQuery = new StringBuilder(UPDATE_QUERY_BASE);

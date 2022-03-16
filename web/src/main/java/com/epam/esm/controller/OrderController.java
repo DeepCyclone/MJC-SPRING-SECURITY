@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.constraints.Min;
+
 import com.epam.esm.converter.OrderConverter;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.OrderDto;
@@ -37,7 +39,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderResponseDto> getAll(@RequestParam Optional<Long> limit,@RequestParam Optional<Long> offset){
+    public List<OrderResponseDto> getAll(@RequestParam(defaultValue = "1") @Min(1) long limit,
+                                         @RequestParam(defaultValue = "0") @Min(0) long offset){
        return orderConverter.convertToResponseDtos(orderService.getAll(limit,offset));
     }   
 

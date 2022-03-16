@@ -6,8 +6,10 @@ import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
+import com.epam.esm.repository.query.processor.PaginationProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 import com.epam.esm.repository.template.GiftCertificateRepository;
+import static com.epam.esm.repository.query.processor.SQLParts.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -25,7 +27,6 @@ import static com.epam.esm.repository.query.holder.CertificateQueryHolder.INSERT
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_ID;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_NAME;
-import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.PERCENT;
 import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.DESCRIPTION_PART;
 import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.NAME_PART;
 
@@ -68,8 +69,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> readAll(Optional<Long> limit,Optional<Long> offset) {
-        return jdbcOperations.query(READ_ALL, certificateMapper,limit,offset);
+    public List<GiftCertificate> readAll(long limit,long offset) {
+        String query = READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset);
+        return jdbcOperations.query(query, certificateMapper);
     }
 
     @Override
@@ -118,8 +120,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> params){
+    public List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> params,long limit,long offset){
         String query = ComplexParamMapProcessor.buildQuery(params);
+        query += PaginationProcessor.appendQueryWithPagination(limit, offset);//TODO refactor
         prepareParamsToSearchStatement(params);
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
         return template.query(query, params,certificateMapper);

@@ -1,5 +1,7 @@
 package com.epam.esm.repository.query.processor;
 
+import static com.epam.esm.repository.query.processor.SQLParts.*;
+
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.AND;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.OR;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
@@ -16,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.epam.esm.repository.metadata.GiftCertificateMetadata;
-import com.epam.esm.repository.query.holder.CertificateQueryHolder;
 
 import org.springframework.util.MultiValueMap;
 
@@ -28,10 +29,6 @@ public class ComplexParamMapProcessor {
     public static final String DATE_SORT_ORDER = "dateSortOrder";
     public static final String LIMIT = "limit";
     public static final String OFFSET = "offset";
-    public static final String COLON = ":";
-    public static final String PERCENT = "%";
-    public static final String COMMA = ",";
-    public static final String EMPTY_PART = "";
 
 
     public static String buildQuery(MultiValueMap<String,String> params){
@@ -39,7 +36,6 @@ public class ComplexParamMapProcessor {
             StringBuilder query = new StringBuilder(JOIN_PARAMS);
             query.append(appendQueryWithSearching(params));
             query.append(appendQueryWithSorting(params));
-            query.append(appendQueryWithPagination(params));
             return query.toString();
         }
         return READ_ALL;
@@ -87,30 +83,14 @@ public class ComplexParamMapProcessor {
             Optional<String> nameSortOrderValue = Optional.ofNullable(params.getFirst(NAME_SORT_ORDER));
             Optional<String> dateSortOrderValue = Optional.ofNullable(params.getFirst(DATE_SORT_ORDER));
             boolean complexSort = nameSortOrderValue.isPresent() && dateSortOrderValue.isPresent();
-            nameSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.NAME).append(order));
+            nameSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.NAME).append(" ").append(order));
             //TODO arrange ORDER BY query according to params order in URL
             if(complexSort){
                 orderQuery.append(COMMA);
             }
-            dateSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.LAST_UPDATE_DATE).append(order));
+            dateSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.LAST_UPDATE_DATE).append(" ").append(order));
             return orderQuery.toString();
         }
         return EMPTY_PART;
-    }
-
-    private static String appendQueryWithPagination(MultiValueMap<String,String> params){
-        if(params.containsKey(LIMIT) || params.containsKey(OFFSET)){
-        StringBuilder paginationPart = new StringBuilder();
-        Optional<String> limit = Optional.ofNullable(params.getFirst(LIMIT));
-        Optional<String> offset = Optional.ofNullable(params.getFirst(OFFSET));
-        limit.ifPresent(limitVal->paginationPart.append(CertificateQueryHolder.LIMIT).append(limitVal));
-        offset.ifPresent(offsetVal->{
-            if(limit.isPresent()){
-                paginationPart.append(CertificateQueryHolder.OFFSET).append(offsetVal);
-            }
-        });
-        return paginationPart.toString();
-    }
-    return EMPTY_PART;
     }
 }

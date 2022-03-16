@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import javax.validation.constraints.Min;
+
 @RestController
 @RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
 public class GiftCertificateController {
@@ -41,8 +43,10 @@ public class GiftCertificateController {
     }
 
     @GetMapping
-    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam MultiValueMap<String,String> params) {
-        return certificateConverter.convertToResponseDtos(certificateService.handleParametrizedGetRequest(params));
+    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam MultiValueMap<String,String> params,
+                                                                  @RequestParam(defaultValue = "1") @Min(1) long limit,
+                                                                  @RequestParam(defaultValue = "0") @Min(0) long offset) {
+        return certificateConverter.convertToResponseDtos(certificateService.handleParametrizedGetRequest(params,limit,offset));
     }
 
     @GetMapping(value = "/{id:\\d+}")

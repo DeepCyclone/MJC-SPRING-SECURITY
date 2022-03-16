@@ -41,9 +41,9 @@ public class OrderRepositoryImpl implements OrderRepository{
     }
 
     @Override
-    public List<Order> readAll(Optional<Long> limit,Optional<Long> offset) {
-
-        return jdbcTemplate.query(OrderQueryHolder.READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset) , orderMapper);
+    public List<Order> readAll(long limit,long offset) {
+        String query = OrderQueryHolder.READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset);//TODO pass params as placeholders values
+        return jdbcTemplate.query(query,orderMapper);
     }
 
     @Override

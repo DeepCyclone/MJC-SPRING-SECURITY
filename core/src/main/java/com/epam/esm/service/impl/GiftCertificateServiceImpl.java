@@ -7,9 +7,11 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.service.template.GiftCertificateService;
+import com.epam.esm.service.validation.SignValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
@@ -88,10 +90,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params){
+    public List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params,long limit,long offset){
+        checkPaginationOptions(limit, offset);
         checkInvalidValuedParams(params);
         checkDuplicatedQueryParams(params);
-        List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params);
+        List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params,limit,offset);
         certificates.forEach(certificate -> certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
         return certificates;
     }
@@ -112,11 +115,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private void checkDuplicatedQueryParams(MultiValueMap<String,String> params){
-        List<Map.Entry<String,List<String>>> unallowedDuplicates = params.entrySet().stream().filter(entry -> entry.getValue().size() > 1 && !entry.getKey().equals("tagName")).collect(Collectors.toList());
+        List<Map.Entry<String,List<String>>> unallowedDuplicates = params.entrySet().stream().filter(entry -> 
+        entry.getValue().size() > 1 && !entry.getKey().equals("tagName")).collect(Collectors.toList());
         if(!unallowedDuplicates.isEmpty()){
             StringBuilder duplicatesInfo = new StringBuilder();
             unallowedDuplicates.stream().forEach(entry-> duplicatesInfo.append(entry.getKey() + " can't have several values|"));
             throw new ServiceException(CERTIFICATE_BAD_REQUEST_PARAMS,duplicatesInfo.toString());
+        }
+    }
+
+    private void checkPaginationOptions(long limit,long offset){
+        if(!(SignValidator.isPositiveLong(limit) && SignValidator.isNonNegative(offset))){
+            throw new ServiceException(ErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
         }
     }
 }

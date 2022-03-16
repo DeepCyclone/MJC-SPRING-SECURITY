@@ -2,6 +2,8 @@ package com.epam.esm.controller;
 
 import java.util.List;
 
+import javax.validation.constraints.Min;
+
 import com.epam.esm.converter.OrderConverter;
 import com.epam.esm.converter.UserConverter;
 import com.epam.esm.dto.response.OrderResponseDto;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,8 +39,9 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponseDto> getUsersInfo(){
-        return userConverter.toResponseDtos(userService.getAll());
+    public List<UserResponseDto> getUsersInfo(@RequestParam(defaultValue = "1") @Min(1) long limit,
+                                              @RequestParam(defaultValue = "0") @Min(0) long offset){
+        return userConverter.toResponseDtos(userService.getAll(limit,offset));
     }
 
     @GetMapping(value="/{userId:\\d+}")
