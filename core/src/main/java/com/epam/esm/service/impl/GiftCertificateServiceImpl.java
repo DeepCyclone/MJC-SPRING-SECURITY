@@ -70,8 +70,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificate update(GiftCertificate certificatePatch,long id) {
-        getByID(id);//TODO get atomic field or make boolean query in db
-        certificateRepository.update(certificatePatch,id);
+        checkExistence(id);
+        certificateRepository.update(certificatePatch,id);//TODO handle boolean value
         detachAssociatedTags(certificatePatch.getId());
         Optional.ofNullable(certificatePatch.getAssociatedTags()).ifPresent(tags -> {
             List<Tag> savedTags = saveAssociatedTags(tags);
@@ -129,4 +129,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException(ErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
         }
     }
+
+    private void checkExistence(long id){
+        if(!certificateRepository.checkExistence(id)){
+            throw new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID " + id);
+        }
+    }
+
 }

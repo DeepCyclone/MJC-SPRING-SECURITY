@@ -102,6 +102,11 @@ public class UserRepositoryImpl implements UserRepository {
        return jdbcTemplate.update(UserQueryHolder.INSERT_INTO_M2M_USER_ORDERS, userId,orderId) >= 1;
     }
 
+    @Override
+    public boolean checkExistence(long id) {
+        return jdbcTemplate.queryForObject(UserQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
+    }
+
 
     
 }

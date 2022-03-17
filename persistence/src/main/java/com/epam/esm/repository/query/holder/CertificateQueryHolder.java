@@ -22,4 +22,5 @@ public class CertificateQueryHolder {
     public static final String LIMIT = " LIMIT ";
     public static final String OFFSET = " OFFSET ";
     public static final String GROUP_BY_CERT_WITH_CERTAIN_AMOUNT_OF_TAGS = " GROUP BY tmgc_gc_id HAVING COUNT(t_id) = ";
+    public static final String CHECK_EXISTENCE = "SELECT 1 FROM gift_certificate WHERE gc_id = ?";
 }

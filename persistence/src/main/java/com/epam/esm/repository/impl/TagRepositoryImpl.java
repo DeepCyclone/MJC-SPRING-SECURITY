@@ -4,6 +4,7 @@ import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
+import com.epam.esm.repository.query.holder.TagQueryHolder;
 import com.epam.esm.repository.query.processor.PaginationProcessor;
 import com.epam.esm.repository.template.TagRepository;
 
@@ -116,5 +117,10 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long tagID) {
         return jdbcTemplate.query(FETCH_ASSOCIATED_CERTIFICATES,certificateMapper,tagID);
+    }
+
+    @Override
+    public boolean checkExistence(long id) {
+        return jdbcTemplate.queryForObject(TagQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
     }
 }

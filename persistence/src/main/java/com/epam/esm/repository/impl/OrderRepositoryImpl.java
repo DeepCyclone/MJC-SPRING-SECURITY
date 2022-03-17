@@ -37,7 +37,7 @@ public class OrderRepositoryImpl implements OrderRepository{
     
     @Override
     public Order create(Order object) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -47,9 +47,8 @@ public class OrderRepositoryImpl implements OrderRepository{
     }
 
     @Override
-    public boolean update(Order object, long ID) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean update(Order object, long id) {
+        return jdbcTemplate.update(OrderQueryHolder.UPDATE_ENTRY, object.getPrice(),id) >= 1;
     }
 
     @Override
@@ -63,21 +62,13 @@ public class OrderRepositoryImpl implements OrderRepository{
     }
 
     @Override
-    public boolean deleteByID(long ID) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public Optional<Order> getByName(String name) {
-        // TODO Auto-generated method stub
-        return null;
+    public boolean deleteByID(long id) {
+        return jdbcTemplate.update(OrderQueryHolder.DELETE_ENTRY, id) >= 1;//TODO psfs 1
     }
 
     @Override
     public Optional<Order> makeOrder(List<GiftCertificate> certificates) {
-        List<BigDecimal> prices = certificates.stream().map(cert->cert.getPrice()).collect(Collectors.toList());
-        BigDecimal sum = prices.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal sum = certificates.stream().map(cert->cert.getPrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
         KeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(con->{
             PreparedStatement stmt = con.prepareStatement(OrderQueryHolder.CREATE_NEW_ENTRY,PreparedStatement.RETURN_GENERATED_KEYS);
@@ -101,6 +92,16 @@ public class OrderRepositoryImpl implements OrderRepository{
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long orderId) {
         return jdbcTemplate.query(OrderQueryHolder.FETCH_ASSOCIATED_CERTIFICATES,certificateMapper,orderId);
+    }
+
+    @Override
+    public boolean detachAssociatedCertificates(long orderId) {
+        return jdbcTemplate.update(OrderQueryHolder.DETACH_ASSOCIATED_CERTIFICATES,orderId) >= 1;
+    }
+
+    @Override
+    public boolean checkExistence(long id) {
+        return jdbcTemplate.queryForObject(OrderQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
     }
     
 }

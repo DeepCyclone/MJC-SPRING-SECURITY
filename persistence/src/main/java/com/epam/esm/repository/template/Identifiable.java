@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface Identifiable<T> {
     Optional<T> getByID(long ID);
     boolean deleteByID(long ID);
+    boolean checkExistence(long id);
 }

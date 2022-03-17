@@ -13,4 +13,5 @@ public class UserQueryHolder {
     "JOIN tag_m2m_gift_certificate on omc_gc_id = tmgc_gc_id GROUP BY tag_id ORDER BY tags DESC LIMIT 1 ) AS der1 " + 
     "JOIN tag on tag_id = t_id";
     public static final String INSERT_INTO_M2M_USER_ORDERS = "INSERT INTO user_m2m_order(umo_u_id,umo_o_id) VALUES(?,?)";
+    public static final String CHECK_EXISTENCE = "SELECT 1 FROM user WHERE u_id = ?";
 }

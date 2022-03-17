@@ -6,8 +6,9 @@ import java.util.Optional;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
 
-public interface OrderRepository extends GenericRepository<Order>,Identifiable<Order>,Nameable<Order> {
+public interface OrderRepository extends GenericRepository<Order>,Identifiable<Order> {
     Optional<Order> makeOrder(List<GiftCertificate> certificates);
     void linkAssociatedCertificates(List<GiftCertificate> certificates,long orderId);
     List<GiftCertificate> fetchAssociatedCertificates(long orderId);
+    boolean detachAssociatedCertificates(long orderId);
 }

@@ -5,6 +5,7 @@ import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
+import com.epam.esm.repository.query.holder.CertificateQueryHolder;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
 import com.epam.esm.repository.query.processor.PaginationProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
@@ -154,6 +155,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
         params.remove(ComplexParamMapProcessor.TAG_NAME);
     }
+    }
+
+    @Override
+    public boolean checkExistence(long id) {
+        return jdbcOperations.queryForObject(CertificateQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
     }
 
 }

@@ -1,7 +1,9 @@
 package com.epam.esm.service.impl;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.epam.esm.exception.ErrorCode;
 import com.epam.esm.exception.ServiceException;
@@ -42,16 +44,23 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getById(long orderId) {
         Order order = orderRepository.getByID(orderId).orElseThrow(
-            () -> new ServiceException(ErrorCode.ORDER_NOT_FOUND,"Cannot fetch order with id = "+orderId));
+            () -> new ServiceException(ErrorCode.ORDER_NOT_FOUND,"Cannot fetch order with id = " + orderId));
         order.setCertificates(fetchAssociatedCertificates(orderId));
         return order;
     }
 
     @Override
     public Order update(Order orderPatch, long orderId) {
-        if(!orderRepository.update(orderPatch, orderId)){
+        final Optional<BigDecimal> price = Optional.ofNullable(orderPatch.getPrice());
+        Optional.ofNullable(orderPatch.getCertificates()).ifPresent(certs -> {
+            certs.stream().map(cert->cert.getId()).forEach(this::checkExistence);
+            orderPatch.setPrice(certs.stream().map(cert->giftCertificateRepository.getByID(cert.getId()).get().getPrice()).reduce(BigDecimal.ZERO, BigDecimal::add));
+            orderRepository.detachAssociatedCertificates(orderId);
+            orderRepository.linkAssociatedCertificates(certs, orderId);
+        });
+        price.ifPresent(pr->orderPatch.setPrice(pr));
+        boolean result = orderRepository.update(orderPatch, orderId);//TODO exception
 
-        }
         return getById(orderId);
     }
 
@@ -91,5 +100,12 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceException(ErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
         }
     }
+
+    private void checkExistence(long id){
+        if(!giftCertificateRepository.checkExistence(id)){
+            throw new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID = " + id);
+        }
+    }
+
 
 }
