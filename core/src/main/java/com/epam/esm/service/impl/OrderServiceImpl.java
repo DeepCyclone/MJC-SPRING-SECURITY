@@ -53,8 +53,10 @@ public class OrderServiceImpl implements OrderService {
     public Order update(Order orderPatch, long orderId) {
         final Optional<BigDecimal> price = Optional.ofNullable(orderPatch.getPrice());
         Optional.ofNullable(orderPatch.getCertificates()).ifPresent(certs -> {
-            certs.stream().map(cert->cert.getId()).forEach(this::checkExistence);
-            orderPatch.setPrice(certs.stream().map(cert->giftCertificateRepository.getByID(cert.getId()).get().getPrice()).reduce(BigDecimal.ZERO, BigDecimal::add));
+            orderPatch.setPrice(certs.stream()
+            .peek(this::checkExistence)
+            .map(cert->giftCertificateRepository.getByID(cert.getId()).get().getPrice())
+            .reduce(BigDecimal.ZERO, BigDecimal::add));
             orderRepository.detachAssociatedCertificates(orderId);
             orderRepository.linkAssociatedCertificates(certs, orderId);
         });
@@ -89,9 +91,7 @@ public class OrderServiceImpl implements OrderService {
 
     private List<GiftCertificate> fetchAssociatedCertificates(long orderId){
         List<GiftCertificate> certificates = orderRepository.fetchAssociatedCertificates(orderId);
-        for(GiftCertificate cert:certificates){
-            cert.setAssociatedTags(giftCertificateRepository.fetchAssociatedTags(cert.getId()));
-        }
+        certificates.forEach(cert -> cert.setAssociatedTags(giftCertificateRepository.fetchAssociatedTags(cert.getId())));
         return certificates;
     }
 
@@ -101,9 +101,9 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private void checkExistence(long id){
-        if(!giftCertificateRepository.checkExistence(id)){
-            throw new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID = " + id);
+    private void checkExistence(GiftCertificate cert){
+        if(!giftCertificateRepository.checkExistence(cert.getId())){
+            throw new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID = " + cert.getId());
         }
     }
 

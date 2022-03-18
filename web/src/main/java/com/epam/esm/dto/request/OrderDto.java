@@ -1,5 +1,6 @@
 package com.epam.esm.dto.request;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Validated
-public class OrderDto {
+public class OrderDto implements Serializable{
     @Null(groups = {CreateDTO.class},message = "ID will be created automatically.Remove it")
     @Null(message = "Please specify id of object to be patched in URL",groups = {PatchDTO.class})
     private Long id;

@@ -1,9 +1,8 @@
-package com.epam.esm.dto.response;
+package com.epam.esm.hateoas.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.sql.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -18,10 +17,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderResponseDto extends RepresentationModel<OrderResponseDto> implements Serializable {
+public class CertificateModel extends RepresentationModel<CertificateModel> implements Serializable{
     private long id;
+    private String name;
+    private String description;
     private BigDecimal price;
+    private int duration;
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private Date purchaseDate;
-    private List<GiftCertificateResponseDto> certificates;
+    private Date createDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private Date lastUpdateDate;
 }

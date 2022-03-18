@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.epam.esm.exception.ErrorCode;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
+import com.epam.esm.repository.template.OrderRepository;
 import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.template.UserService;
 import com.epam.esm.service.validation.SignValidator;
@@ -18,11 +20,12 @@ public class UserServiceImpl implements UserService{
 
 
     private final UserRepository userRepository;
-    
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,OrderRepository orderRepository) {
         this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -30,7 +33,9 @@ public class UserServiceImpl implements UserService{
         checkPaginationOptions(limit, offset);
         List<User> users = userRepository.readAll(limit,offset);
         for(User user:users){
-            user.setOrders(userRepository.fetchAssociatedOrders(user.getId()));
+            List<Order> orders = userRepository.fetchAssociatedOrders(user.getId());
+            orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
+            user.setOrders(orders);
         }
         return users;
     }
@@ -39,7 +44,9 @@ public class UserServiceImpl implements UserService{
     public User getById(long id) {
         User user =  userRepository.getByID(id).
         orElseThrow(()->new ServiceException(ErrorCode.USER_NOT_FOUND, "Cannot fetch user with ID = "+id));
-        user.setOrders(userRepository.fetchAssociatedOrders(id));
+        List<Order> orders = userRepository.fetchAssociatedOrders(id);
+        orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
+        user.setOrders(orders);
         return user;
     }
 
@@ -47,7 +54,9 @@ public class UserServiceImpl implements UserService{
     public User getByName(String userName) {
         User user =  userRepository.getByName(userName).
         orElseThrow(()->new ServiceException(ErrorCode.USER_NOT_FOUND, "Cannot fetch user with name = "+userName));
-        user.setOrders(userRepository.fetchAssociatedOrders(user.getId()));
+        List<Order> orders = userRepository.fetchAssociatedOrders(user.getId());
+        orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
+        user.setOrders(orders);
         return user;
     }
 

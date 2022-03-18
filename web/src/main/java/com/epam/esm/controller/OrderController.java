@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.constraints.Min;
 
@@ -19,6 +18,8 @@ import com.epam.esm.converter.OrderConverter;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.OrderDto;
 import com.epam.esm.dto.response.OrderResponseDto;
+import com.epam.esm.hateoas.impl.OrderControllerLinkBuilder;
+import com.epam.esm.repository.model.Order;
 import com.epam.esm.service.template.OrderService;
 
 import org.springframework.http.HttpStatus;
@@ -32,36 +33,48 @@ public class OrderController {
 
     private final OrderConverter orderConverter;
     private final OrderService orderService;
+    private final OrderControllerLinkBuilder orderLinkBuilder;
 
-    public OrderController(OrderConverter orderConverter, OrderService orderService) {
+    public OrderController(OrderConverter orderConverter, OrderService orderService,OrderControllerLinkBuilder orderLinkBuilder) {
         this.orderConverter = orderConverter;
         this.orderService = orderService;
+        this.orderLinkBuilder = orderLinkBuilder;
     }
 
     @GetMapping
     public List<OrderResponseDto> getAll(@RequestParam(defaultValue = "1") @Min(1) long limit,
                                          @RequestParam(defaultValue = "0") @Min(0) long offset){
-       return orderConverter.convertToResponseDtos(orderService.getAll(limit,offset));
+       List<OrderResponseDto> orders = orderConverter.convertToResponseDtos(orderService.getAll(limit,offset));
+       orders.forEach(orderLinkBuilder::buildLinks);
+       return orders;
     }   
 
     @GetMapping(value = "/{id:\\d+}")
     public OrderResponseDto getById(@PathVariable long id){
-        return orderConverter.convertToResponseDto(orderService.getById(id));
+        OrderResponseDto response = orderConverter.convertToResponseDto(orderService.getById(id));
+        orderLinkBuilder.buildLinks(response);
+        return response;
     }
 
     @DeleteMapping(value="/{id:\\d+}")
-    public ResponseEntity<Void> deleteById(@PathVariable long id){
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable long id){
         orderService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping(value="/{id:\\d+}")
-    public void updateById(@PathVariable long id,@RequestBody @Validated(PatchDTO.class) OrderDto orderDto){
-        orderService.update(orderConverter.convertFromRequestDto(orderDto), id);
+    public ResponseEntity<OrderResponseDto> updateById(@PathVariable long id,@RequestBody @Validated(PatchDTO.class) OrderDto orderDto){
+        Order updatedOrder = orderService.update(orderConverter.convertFromRequestDto(orderDto), id);
+        OrderResponseDto response = orderConverter.convertToResponseDto(updatedOrder);
+        orderLinkBuilder.buildLinks(response);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @PostMapping(value="/{userId:\\d+}")
-    public ResponseEntity<OrderResponseDto> makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
-        return new ResponseEntity<>(orderConverter.convertToResponseDto(orderService.makeOrder(certificates,userId)),HttpStatus.OK);
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderResponseDto makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
+        OrderResponseDto response =  orderConverter.convertToResponseDto(orderService.makeOrder(certificates,userId));
+        orderLinkBuilder.buildLinks(response);
+        return response;
     }
 }

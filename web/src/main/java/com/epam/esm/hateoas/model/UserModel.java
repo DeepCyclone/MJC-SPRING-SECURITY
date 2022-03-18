@@ -1,7 +1,6 @@
-package com.epam.esm.dto.response;
+package com.epam.esm.hateoas.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.springframework.hateoas.RepresentationModel;
 
@@ -14,8 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponseDto extends RepresentationModel<UserResponseDto> implements Serializable {
+public class UserModel extends RepresentationModel<UserModel> implements Serializable {
     private long id;
     private String name;
-    private List<OrderResponseDto> orders;
 }

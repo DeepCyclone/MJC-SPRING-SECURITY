@@ -159,7 +159,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public boolean checkExistence(long id) {
-        return jdbcOperations.queryForObject(CertificateQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
+        try{
+            return jdbcOperations.queryForObject(CertificateQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
+        }
+        catch(DataAccessException exception){
+            return false;
+        }
     }
 
 }
