@@ -167,4 +167,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
     }
 
+    @Override
+    public long getRowsCount() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }

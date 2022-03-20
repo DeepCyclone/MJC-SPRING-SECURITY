@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -17,11 +16,12 @@ import javax.validation.constraints.Min;
 import com.epam.esm.converter.OrderConverter;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.OrderDto;
-import com.epam.esm.dto.response.OrderResponseDto;
-import com.epam.esm.hateoas.impl.OrderControllerLinkBuilder;
+import com.epam.esm.hateoas.assembler.OrderAssembler;
+import com.epam.esm.hateoas.model.OrderModel;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.service.template.OrderService;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,48 +33,44 @@ public class OrderController {
 
     private final OrderConverter orderConverter;
     private final OrderService orderService;
-    private final OrderControllerLinkBuilder orderLinkBuilder;
+    private final OrderAssembler orderAssembler;
 
-    public OrderController(OrderConverter orderConverter, OrderService orderService,OrderControllerLinkBuilder orderLinkBuilder) {
+    public OrderController(OrderConverter orderConverter, OrderService orderService,OrderAssembler orderAssembler) {
         this.orderConverter = orderConverter;
         this.orderService = orderService;
-        this.orderLinkBuilder = orderLinkBuilder;
+        this.orderAssembler = orderAssembler;
     }
 
     @GetMapping
-    public List<OrderResponseDto> getAll(@RequestParam(defaultValue = "1") @Min(1) long limit,
+    public CollectionModel<OrderModel> getAll(@RequestParam(defaultValue = "1") @Min(1) long limit,
                                          @RequestParam(defaultValue = "0") @Min(0) long offset){
-       List<OrderResponseDto> orders = orderConverter.convertToResponseDtos(orderService.getAll(limit,offset));
-       orders.forEach(orderLinkBuilder::buildLinks);
-       return orders;
+       List<Order> orders = orderService.getAll(limit,offset);
+       return orderAssembler.toCollectionModel(orders);
     }   
 
     @GetMapping(value = "/{id:\\d+}")
-    public OrderResponseDto getById(@PathVariable long id){
-        OrderResponseDto response = orderConverter.convertToResponseDto(orderService.getById(id));
-        orderLinkBuilder.buildLinks(response);
-        return response;
+    public OrderModel getById(@PathVariable long id){
+        Order order = orderService.getById(id);
+        return orderAssembler.toModel(order);
     }
 
     @DeleteMapping(value="/{id:\\d+}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable long id){
+    public ResponseEntity<Void> deleteById(@PathVariable long id){
         orderService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(value="/{id:\\d+}")
-    public ResponseEntity<OrderResponseDto> updateById(@PathVariable long id,@RequestBody @Validated(PatchDTO.class) OrderDto orderDto){
+    public ResponseEntity<OrderModel> updateById(@PathVariable long id,@RequestBody @Validated(PatchDTO.class) OrderDto orderDto){
         Order updatedOrder = orderService.update(orderConverter.convertFromRequestDto(orderDto), id);
-        OrderResponseDto response = orderConverter.convertToResponseDto(updatedOrder);
-        orderLinkBuilder.buildLinks(response);
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
+        OrderModel model = orderAssembler.toModel(updatedOrder);
+        return new ResponseEntity<>(model,HttpStatus.CREATED);
     }
 
     @PostMapping(value="/{userId:\\d+}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponseDto makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
-        OrderResponseDto response =  orderConverter.convertToResponseDto(orderService.makeOrder(certificates,userId));
-        orderLinkBuilder.buildLinks(response);
-        return response;
+    public ResponseEntity<OrderModel> makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
+        Order order = orderService.makeOrder(certificates,userId);
+        OrderModel model = orderAssembler.toModel(order);
+        return new ResponseEntity<>(model,HttpStatus.CREATED);
     }
 }

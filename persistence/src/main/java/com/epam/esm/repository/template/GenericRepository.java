@@ -12,4 +12,5 @@ public interface GenericRepository <X>{
     X create(X object);
     List<X> readAll(long limit,long offset);
     boolean update(X object,long ID);
+    long getRowsCount();
 }

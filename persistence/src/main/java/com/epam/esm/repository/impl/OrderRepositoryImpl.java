@@ -103,5 +103,11 @@ public class OrderRepositoryImpl implements OrderRepository{
     public boolean checkExistence(long id) {
         return jdbcTemplate.queryForObject(OrderQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
     }
+
+    @Override
+    public long getRowsCount() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
     
 }

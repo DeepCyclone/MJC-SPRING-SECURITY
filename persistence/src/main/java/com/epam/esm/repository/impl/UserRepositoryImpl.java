@@ -104,7 +104,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean checkExistence(long id) {
-        return jdbcTemplate.queryForObject(UserQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
+        return jdbcTemplate.queryForObject(UserQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;//TODO move it to Abstract repo
+    }
+
+    @Override
+    public long getRowsCount() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 

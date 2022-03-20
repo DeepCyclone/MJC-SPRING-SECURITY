@@ -79,7 +79,7 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public List<Tag> readAll(long limit,long offset) {
         String query = READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset);
-        return jdbcTemplate.query(query,tagMapper,limit,offset);
+        return jdbcTemplate.query(query,tagMapper);
     }
 
     @Override
@@ -122,5 +122,11 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public boolean checkExistence(long id) {
         return jdbcTemplate.queryForObject(TagQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
+    }
+
+    @Override
+    public long getRowsCount() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }
