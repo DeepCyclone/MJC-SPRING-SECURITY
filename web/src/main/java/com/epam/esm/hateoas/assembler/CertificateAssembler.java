@@ -3,6 +3,7 @@ package com.epam.esm.hateoas.assembler;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.epam.esm.controller.GiftCertificateController;
 import com.epam.esm.controller.TagController;
@@ -48,12 +49,13 @@ public class CertificateAssembler extends RepresentationModelAssemblerSupport<Gi
         destination.setDescription(source.getDescription());
         destination.setDuration(source.getDuration());
         destination.setPrice(source.getPrice());
-        destination.setCreateDate(new Date(source.getCreateDate().getTime()));
-        destination.setLastUpdateDate(new Date(source.getLastUpdateDate().getTime()));
+        destination.setCreateDate(source.getCreateDate());
+        destination.setLastUpdateDate(source.getLastUpdateDate());
     }
 
     private void generateLinks(GiftCertificate source,CertificateModel destination){
-        source.getAssociatedTags().forEach(tag->destination.add(linkTo(methodOn(TagController.class).getByID(tag.getId())).withRel("tags")));
+        Optional.ofNullable(source.getAssociatedTags()).ifPresent(tags->
+        tags.forEach(tag->destination.add(linkTo(methodOn(TagController.class).getByID(tag.getId())).withRel("tags"))));
         //TODO how to add notes with available operations;only text without refs due to same links; affordance? or another HAL features
     }
 

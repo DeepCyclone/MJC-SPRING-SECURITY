@@ -8,7 +8,7 @@ import java.util.Optional;
 * @author Flexus
 * */
 public interface Identifiable<T> {
-    Optional<T> getByID(long ID);
+    Optional<T> findByID(long ID);
     boolean deleteByID(long ID);
     boolean checkExistence(long id);
 }

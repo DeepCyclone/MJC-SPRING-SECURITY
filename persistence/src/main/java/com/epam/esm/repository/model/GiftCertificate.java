@@ -4,14 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,6 +26,8 @@ import javax.persistence.Table;
 
 import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 import com.epam.esm.repository.metadata.JoinedTablesMetadata;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Data
 @NoArgsConstructor
@@ -43,14 +49,17 @@ public class GiftCertificate implements Serializable {
     @Column(name = GiftCertificateMetadata.DURATION)
     private Integer duration;
     @Column(name = GiftCertificateMetadata.CREATE_DATE)
+    @CreationTimestamp
     private Timestamp createDate;
     @Column(name = GiftCertificateMetadata.LAST_UPDATE_DATE)
+    @CreationTimestamp
     private Timestamp lastUpdateDate;
-    @ManyToMany
+    @ToString.Exclude
+    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
     @JoinTable(
         name = JoinedTablesMetadata.TAG_M2M_CERTIFICATE,
         joinColumns = @JoinColumn(name = "tmgc_gc_id"),
         inverseJoinColumns = @JoinColumn(name = "tmgc_t_id")
     )
-    List<Tag> associatedTags;
+    private List<Tag> associatedTags = new ArrayList<>();
 }

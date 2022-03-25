@@ -10,7 +10,6 @@ import java.util.List;
 * */
 public interface GenericRepository <X>{
     X create(X object);
-    List<X> readAll(long limit,long offset);
+    List<X> readAll(int page,int limit);
     boolean update(X object,long ID);
-    long getRowsCount();
 }

@@ -1,42 +1,30 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.repository.mapping.GiftCertificateMapping;
-import com.epam.esm.repository.mapping.TagMapping;
-import com.epam.esm.repository.metadata.GiftCertificateMetadata;
+import com.epam.esm.repository.exception.RepositoryErrorCode;
+import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.repository.query.holder.CertificateQueryHolder;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
-import com.epam.esm.repository.query.processor.PaginationProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 import com.epam.esm.repository.template.GiftCertificateRepository;
 import static com.epam.esm.repository.query.processor.SQLParts.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DELETE_ENTRY;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.FETCH_ASSOCIATED_TAGS;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.INSERT_INTO_M2M;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_ID;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_BY_NAME;
 import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.DESCRIPTION_PART;
 import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.NAME_PART;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -44,97 +32,100 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     public static final int MIN_AFFECTED_ROWS = 1;
 
-
-    private final JdbcTemplate jdbcOperations;
-    private final GiftCertificateMapping certificateMapper;
-    private final TagMapping tagMapper;
-
-    @Autowired
-    public GiftCertificateRepositoryImpl(JdbcTemplate jdbcOperations, GiftCertificateMapping mapper, TagMapping tagMapper) {
-        this.jdbcOperations = jdbcOperations;
-        this.certificateMapper = mapper;
-        this.tagMapper = tagMapper;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public GiftCertificate create(GiftCertificate object){
-        SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcOperations);
-        simpleJdbcInsert.withTableName("gift_certificate").usingGeneratedKeyColumns("gc_id").usingColumns("gc_name","gc_description","gc_price","gc_duration");
-        Map<String,Object> params = new HashMap<>();
-        params.put(GiftCertificateMetadata.NAME,object.getName());
-        params.put(GiftCertificateMetadata.DESCRIPTION,object.getDescription());
-        params.put(GiftCertificateMetadata.PRICE,object.getPrice());
-        params.put(GiftCertificateMetadata.DURATION,object.getDuration());
-        Number key = simpleJdbcInsert.executeAndReturnKey(params);
-        return getByID(key.longValue()).get();
+        object.setId(0L);
+        GiftCertificate cert = this.entityManager.merge(object);
+        return cert;
     }
 
     @Override
-    public List<GiftCertificate> readAll(long limit,long offset) {
-        String query = READ_ALL + PaginationProcessor.appendQueryWithPagination(limit, offset);
-        return jdbcOperations.query(query, certificateMapper);
+    public List<GiftCertificate> readAll(int page,int limit) {
+        return entityManager.
+        createQuery("From GiftCertificate",GiftCertificate.class).
+        setFirstResult((page-1)*limit).
+        setMaxResults(limit).
+        getResultList();
     }
 
     @Override
+    @Transactional
     public boolean update(GiftCertificate object,long id) {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
-        return template.update(UpdateQueryBuilder.buildUpdateQuery(object, id), UpdateQueryBuilder.getUpdateParams(object)) >= MIN_AFFECTED_ROWS;
+        String query = UpdateQueryBuilder.buildUpdateQuery(object, id);
+        if(query.isEmpty()){
+            return false;
+        }
+        Query queryExecutor = entityManager.
+        createQuery(query);
+        UpdateQueryBuilder.getUpdateParams(object).forEach((key,value)->queryExecutor.setParameter(key, value));
+        return queryExecutor.executeUpdate() >= MIN_AFFECTED_ROWS;
     }
 
     @Override
-    public Optional<GiftCertificate> getByID(long ID){
-        try {
-            return Optional.ofNullable(jdbcOperations.queryForObject(READ_BY_ID, certificateMapper, ID));
-        }
-        catch (DataAccessException e){
-            return Optional.empty();
-        }
+    public Optional<GiftCertificate> findByID(long id){
+        return Optional.ofNullable(entityManager.
+        find(GiftCertificate.class, id));
     }
 
     @Override
-    public boolean deleteByID(long ID) {
-        return jdbcOperations.update(DELETE_ENTRY,ID) >= MIN_AFFECTED_ROWS;
+    public boolean deleteByID(long id) {
+        findByID(id).ifPresent(cert->{
+            if(cert.getAssociatedTags()!=null && cert.getAssociatedTags().size() > 0){
+                throw new RepositoryException(RepositoryErrorCode.CERTIFICATE_DELETION_ERROR, "Unable to delete certificate due to it's belonging to order(s)");
+            }
+        });
+        return entityManager.
+        createQuery("delete from GiftCertificate certificate where certificate.id = :id").
+        setParameter("id", id).
+        executeUpdate() >= MIN_AFFECTED_ROWS;
     }
 
     @Override
     public void linkAssociatedTags(long certificateID, List<Tag> tags) {
-        for(Tag tag:tags) {
-            if(tag!=null) {
-                jdbcOperations.update(con -> {
-                    PreparedStatement stmt = con.prepareStatement(INSERT_INTO_M2M, Statement.RETURN_GENERATED_KEYS);
-                    stmt.setLong(1, tag.getId());
-                    stmt.setLong(2, certificateID);
-                    return stmt;
-                });
+        findByID(certificateID).ifPresent(cert->{
+            if(tags != null && !tags.isEmpty()){
+                cert.getAssociatedTags().addAll(tags);
             }
-        }
+        });
     }
 
     @Override
     public boolean detachAssociatedTags(long certificateID) {
-        return jdbcOperations.update(DETACH_ASSOCIATED_TAGS,certificateID) >= MIN_AFFECTED_ROWS;
+        findByID(certificateID).ifPresent(cert->cert.getAssociatedTags().clear());
+        return true;
     }
-
+    
     @Override
     public List<Tag> fetchAssociatedTags(long certificateID) {
-        return jdbcOperations.query(FETCH_ASSOCIATED_TAGS,tagMapper,certificateID);
+        return this.findByID(certificateID).get().getAssociatedTags();
     }
-
+    
     @Override
-    public List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> params,long limit,long offset){
-        String query = ComplexParamMapProcessor.buildQuery(params);
-        query += PaginationProcessor.appendQueryWithPagination(limit, offset);//TODO refactor
+    public List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> params,int page,int limit){
+        String generatedQuery = ComplexParamMapProcessor.buildQuery(params);
+        Query query = entityManager.
+        createNativeQuery(generatedQuery,GiftCertificate.class).
+        setFirstResult((page-1)*limit).
+        setMaxResults(limit);
         prepareParamsToSearchStatement(params);
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
-        return template.query(query, params,certificateMapper);
+        System.out.println(generatedQuery);
+        System.out.println(params);
+        params.forEach((key,value) -> query.setParameter(key, value));
+        return query.getResultList();//TODO typed query
     }
 
     @Override
-    public Optional<GiftCertificate> getByName(String name){
-        try {
-            return Optional.ofNullable(jdbcOperations.queryForObject(READ_BY_NAME, certificateMapper, name));
+    public Optional<GiftCertificate> findByName(String name) {
+        try{
+            return Optional.ofNullable(entityManager.
+            createQuery("SELECT FROM GiftCertificate certificate WHERE certificate.name = :name",GiftCertificate.class).
+            setParameter("name", name).
+            getSingleResult());
         }
-        catch (DataAccessException e){
+        catch(NoResultException exc){
             return Optional.empty();
         }
     }
@@ -160,17 +151,15 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public boolean checkExistence(long id) {
         try{
-            return jdbcOperations.queryForObject(CertificateQueryHolder.CHECK_EXISTENCE,Integer.class,id) == 1;
+            return entityManager.
+            createQuery("SELECT 1 FROM GiftCertificate certificate WHERE certificate.id = ?1",Integer.class).
+            setParameter(1, id).
+            getSingleResult() == 1;
         }
-        catch(DataAccessException exception){
+        catch(NoResultException ex){
             return false;
         }
     }
 
-    @Override
-    public long getRowsCount() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
 
 }

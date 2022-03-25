@@ -2,8 +2,10 @@ package com.epam.esm.repository.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,10 +14,13 @@ import javax.persistence.Table;
 
 import com.epam.esm.repository.metadata.UserMetadata;
 
+import org.hibernate.FetchMode;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -30,6 +35,7 @@ public class User {
     private long id;
     @Column(name = UserMetadata.NAME)
     private String name;
-    @OneToMany
+    @ToString.Exclude
+    @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
     private List<Order> orders;
 }

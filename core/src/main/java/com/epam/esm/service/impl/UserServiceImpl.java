@@ -29,9 +29,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<User> getAll(long limit,long offset) {
-        checkPaginationOptions(limit, offset);
-        List<User> users = userRepository.readAll(limit,offset);
+    public List<User> getAll(int page,int limit) {
+        List<User> users = userRepository.readAll(page,limit);
         for(User user:users){
             List<Order> orders = userRepository.fetchAssociatedOrders(user.getId());
             orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
@@ -42,7 +41,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getById(long id) {
-        User user =  userRepository.getByID(id).
+        User user =  userRepository.findByID(id).
         orElseThrow(()->new ServiceException(ErrorCode.USER_NOT_FOUND, "Cannot fetch user with ID = "+id));
         List<Order> orders = userRepository.fetchAssociatedOrders(id);
         orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getByName(String userName) {
-        User user =  userRepository.getByName(userName).
+        User user =  userRepository.findByName(userName).
         orElseThrow(()->new ServiceException(ErrorCode.USER_NOT_FOUND, "Cannot fetch user with name = "+userName));
         List<Order> orders = userRepository.fetchAssociatedOrders(user.getId());
         orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));

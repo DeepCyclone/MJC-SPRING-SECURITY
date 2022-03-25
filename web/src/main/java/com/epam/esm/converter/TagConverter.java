@@ -7,9 +7,13 @@ import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.repository.model.Tag;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface TagConverter {
+
+    TagConverter INSTANCE = Mappers.getMapper(TagConverter.class);
+
     Tag convertFromRequestDto(TagDto dto);
     List<Tag> convertFromRequestDtos(List<TagDto> dtos);
     TagResponseDto convertToResponseDto(Tag object);

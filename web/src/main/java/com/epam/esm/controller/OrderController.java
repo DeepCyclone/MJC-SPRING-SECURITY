@@ -29,39 +29,41 @@ import org.springframework.validation.annotation.Validated;
 
 @RestController
 @RequestMapping(value = "/api/v1/orders",produces = {MediaType.APPLICATION_JSON_VALUE})
+@Validated
 public class OrderController {
 
     private final OrderConverter orderConverter;
     private final OrderService orderService;
     private final OrderAssembler orderAssembler;
 
-    public OrderController(OrderConverter orderConverter, OrderService orderService,OrderAssembler orderAssembler) {
+    public OrderController(OrderService orderService,OrderAssembler orderAssembler,OrderConverter orderConverter) {
         this.orderConverter = orderConverter;
         this.orderService = orderService;
         this.orderAssembler = orderAssembler;
     }
 
     @GetMapping
-    public CollectionModel<OrderModel> getAll(@RequestParam(defaultValue = "1") @Min(1) long limit,
-                                         @RequestParam(defaultValue = "0") @Min(0) long offset){
-       List<Order> orders = orderService.getAll(limit,offset);
+    public CollectionModel<OrderModel> getAll(@RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
+                                              @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){//
+       List<Order> orders = orderService.getAll(page,limit);
        return orderAssembler.toCollectionModel(orders);
     }   
 
     @GetMapping(value = "/{id:\\d+}")
-    public OrderModel getById(@PathVariable long id){
+    public OrderModel getById(@PathVariable long id){//
         Order order = orderService.getById(id);
         return orderAssembler.toModel(order);
     }
 
     @DeleteMapping(value="/{id:\\d+}")
-    public ResponseEntity<Void> deleteById(@PathVariable long id){
+    public ResponseEntity<Void> deleteById(@PathVariable long id){//
         orderService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(value="/{id:\\d+}")
-    public ResponseEntity<OrderModel> updateById(@PathVariable long id,@RequestBody @Validated(PatchDTO.class) OrderDto orderDto){
+    public ResponseEntity<OrderModel> updateById(@PathVariable long id,
+                                                 @RequestBody @Validated(PatchDTO.class) OrderDto orderDto){
         Order updatedOrder = orderService.update(orderConverter.convertFromRequestDto(orderDto), id);
         OrderModel model = orderAssembler.toModel(updatedOrder);
         return new ResponseEntity<>(model,HttpStatus.CREATED);

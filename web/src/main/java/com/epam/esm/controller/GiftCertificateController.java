@@ -33,6 +33,7 @@ import javax.validation.constraints.Min;
 
 @RestController
 @RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
+@Validated
 public class GiftCertificateController {
 
     private final GiftCertificateService certificateService;
@@ -40,7 +41,7 @@ public class GiftCertificateController {
     private final CertificateAssembler certificateAssembler;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService certificateService, CertificateConverter certificateConverter,CertificateAssembler certificateAssembler) {
+    public GiftCertificateController(GiftCertificateService certificateService, CertificateAssembler certificateAssembler,CertificateConverter certificateConverter) {
         this.certificateService = certificateService;
         this.certificateConverter = certificateConverter;
         this.certificateAssembler = certificateAssembler;
@@ -48,33 +49,34 @@ public class GiftCertificateController {
 
     @GetMapping
     public CollectionModel<CertificateModel> getAllByRequestParams(@RequestParam MultiValueMap<String,String> params,
-                                                                  @RequestParam(defaultValue = "1") @Min(1) long limit,
-                                                                  @RequestParam(defaultValue = "0") @Min(0) long offset) {
-        List<GiftCertificate> certs = certificateService.handleParametrizedGetRequest(params,limit,offset);
+                                                                   @RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
+                                                                   @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit) {
+        List<GiftCertificate> certs = certificateService.handleParametrizedGetRequest(params,page,limit);
         return certificateAssembler.toCollectionModel(certs);
     }
 
     @GetMapping(value = "/{id:\\d+}")
-    public CertificateModel getByID(@PathVariable long id) {
+    public CertificateModel getByID(@PathVariable long id) {//
         return certificateAssembler.toModel(certificateService.getByID(id));
     }
 
     @DeleteMapping(value = "/{id:\\d+}")
-    public ResponseEntity<Void> deleteCertificate(@PathVariable long id){
+    public ResponseEntity<Void> deleteCertificate(@PathVariable long id){ //
         certificateService.deleteByID(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping(value = "/{id:\\d+}")
-    public ResponseEntity<CertificateModel> updateCertificate(@RequestBody @Validated(PatchDTO.class) GiftCertificateDto certificateDtoPatch,@PathVariable long id){
-        GiftCertificate certificate = certificateConverter.convertFromRequestDto(certificateDtoPatch);
+    public ResponseEntity<CertificateModel> updateCertificate(@RequestBody @Validated(PatchDTO.class) GiftCertificateDto certificateDtoPatch,
+                                                              @PathVariable long id){//tags
+        GiftCertificate certificate = certificateService.update(certificateConverter.convertFromRequestDto(certificateDtoPatch),id);
         return new ResponseEntity<>(certificateAssembler.toModel(certificate),HttpStatus.CREATED);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CertificateModel> createCertificate(@RequestBody @Validated(CreateDTO.class) GiftCertificateDto certificateDto) {
-        GiftCertificate certificate = certificateConverter.convertFromRequestDto(certificateDto);
-        return new ResponseEntity<>(certificateAssembler.toModel(certificate),HttpStatus.CREATED);
+    public ResponseEntity<CertificateModel> createCertificate(@RequestBody @Validated(CreateDTO.class) GiftCertificateDto certificateDto) {//
+        GiftCertificate updatedEntity = certificateService.addEntity(certificateConverter.convertFromRequestDto(certificateDto));
+        return new ResponseEntity<>(certificateAssembler.toModel(updatedEntity),HttpStatus.CREATED);
     }
 
 }

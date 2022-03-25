@@ -25,13 +25,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> getAll(long limit,long offset){
-        checkPaginationOptions(limit, offset);
-        return tagRepository.readAll(limit,offset);
+    public List<Tag> getAll(int page,int limit){
+        return tagRepository.readAll(page,limit);
     }
     @Override
     public Tag getByID(long id){
-        return tagRepository.getByID(id).orElseThrow(
+        return tagRepository.findByID(id).orElseThrow(
                 ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"Couldn't fetch tag with id = "+id));
     }
     @Override

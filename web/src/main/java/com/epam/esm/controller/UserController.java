@@ -16,6 +16,7 @@ import com.epam.esm.service.template.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/api/v1/users",produces={MediaType.APPLICATION_JSON_VALUE})
+@Validated
 public class UserController {
 
 
@@ -41,9 +43,9 @@ public class UserController {
     }
 
     @GetMapping
-    public CollectionModel<UserModel> getUsersInfo(@RequestParam(defaultValue = "1") @Min(1) long limit,
-                                              @RequestParam(defaultValue = "0") @Min(0) long offset){
-        List<User> users = userService.getAll(limit,offset);
+    public CollectionModel<UserModel> getUsersInfo(@RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
+                                                   @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){
+        List<User> users = userService.getAll(page,limit);
         return userAssembler.toCollectionModel(users);
     }
 

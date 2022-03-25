@@ -1,5 +1,10 @@
 package com.epam.esm.exception;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
+import com.epam.esm.repository.exception.RepositoryException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,7 +21,14 @@ public class ExceptionProcessor  {
 
     @ExceptionHandler(ServiceException.class)
     @ResponseBody
-    public ResponseEntity<ErrorDescriptor> objectNotFound(ServiceException e){
+    public ResponseEntity<ErrorDescriptor> serviceProcessor(ServiceException e){
+        HttpStatus status = HttpStatus.resolve(Integer.parseInt(e.getErrorCode().substring(ERROR_CODE_START,ERROR_CODE_END)));
+        return new ResponseEntity<>(new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg()),status);
+    }
+
+    @ExceptionHandler(RepositoryException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDescriptor> repositoryProcessor(RepositoryException e){
         HttpStatus status = HttpStatus.resolve(Integer.parseInt(e.getErrorCode().substring(ERROR_CODE_START,ERROR_CODE_END)));
         return new ResponseEntity<>(new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg()),status);
     }
@@ -32,4 +44,14 @@ public class ExceptionProcessor  {
         return new ResponseEntity<>(builder.toString(),HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    public ResponseEntity<String> violationExceptionHandler(ConstraintViolationException e){
+        StringBuilder builder = new StringBuilder();
+        e.getConstraintViolations().forEach(violation->{
+            builder.append(violation.getMessage());
+            builder.append("\n");
+        });
+        return new ResponseEntity<>(builder.toString(),HttpStatus.BAD_REQUEST);
+    }
 }

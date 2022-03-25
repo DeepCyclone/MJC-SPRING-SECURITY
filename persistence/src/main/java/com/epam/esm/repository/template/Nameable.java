@@ -8,5 +8,5 @@ import java.util.Optional;
  * @author Flexus
  * */
 public interface Nameable<T> {
-    Optional<T> getByName(String name);
+    Optional<T> findByName(String name);
 }

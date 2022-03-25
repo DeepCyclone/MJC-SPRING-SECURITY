@@ -48,7 +48,7 @@ public class OrderAssembler extends RepresentationModelAssemblerSupport<Order,Or
     }
 
     private void generateLinks(Order source,OrderModel destination){
-        source.getCertificates().forEach(cert->destination.add(linkTo(methodOn(GiftCertificateController.class).getByID(cert.getId())).withRel("orders")));
+        source.getCertificates().forEach(cert->destination.add(linkTo(methodOn(GiftCertificateController.class).getByID(cert.getId())).withRel("certificates")));
         //TODO how to add notes with available operations;only text without refs due to same links; affordance? or another HAL features
     }
     

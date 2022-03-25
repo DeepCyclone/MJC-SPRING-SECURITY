@@ -27,6 +27,7 @@ import javax.validation.constraints.Min;
 
 @RestController
 @RequestMapping(value = "/api/v1/tags",produces = {MediaType.APPLICATION_JSON_VALUE})
+@Validated
 public class TagController {
 
 
@@ -34,7 +35,7 @@ public class TagController {
     private final TagConverter tagConverter;
 
     @Autowired
-    public TagController(TagService tagService, TagConverter tagConverter) {
+    public TagController(TagService tagService,TagConverter tagConverter) {
         this.tagService = tagService;
         this.tagConverter = tagConverter;
     }
@@ -45,9 +46,9 @@ public class TagController {
     }
 
     @GetMapping
-    public List<TagResponseDto> getTags(@RequestParam(defaultValue = "1") @Min(1) long limit,
-                                        @RequestParam(defaultValue = "0") @Min(0) long offset){
-        return tagConverter.convertToResponseDtos(tagService.getAll(limit,offset));
+    public List<TagResponseDto> getTags(@RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
+                                        @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){
+        return tagConverter.convertToResponseDtos(tagService.getAll(page,limit));
     }
 
     @DeleteMapping(value = "/{id:\\d+}")

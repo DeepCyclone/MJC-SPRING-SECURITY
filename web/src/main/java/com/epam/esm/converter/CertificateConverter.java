@@ -10,9 +10,13 @@ import com.epam.esm.repository.model.GiftCertificate;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring",uses = TagConverter.class)
 public interface CertificateConverter {
+
+    CertificateConverter INSTANCE = Mappers.getMapper(CertificateConverter.class);
+
     @Mapping(target = "createDate",ignore = true)
     @Mapping(target = "lastUpdateDate",ignore = true)
     GiftCertificate convertFromRequestDto(GiftCertificateDto dto);

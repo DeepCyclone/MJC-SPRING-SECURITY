@@ -15,5 +15,5 @@ public interface GiftCertificateRepository extends GenericRepository<GiftCertifi
     void linkAssociatedTags(long certificateID, List<Tag> tags);
     boolean detachAssociatedTags(long certificateID);
     List<Tag> fetchAssociatedTags(long certificateID);
-    List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> map,long limit,long offset);
+    List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> map,int page,int limit);
 }
