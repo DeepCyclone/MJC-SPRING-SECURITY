@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.makeOrder(sum).orElseThrow(
             ()->new ServiceException(ServiceErrorCode.ORDER_CREATION_ERROR,"Cannot create order"));
 
-        order.getCertificates().addAll(certificatesEntities);
+        order.setCertificates(new ArrayList<>(certificatesEntities));
         user.getOrders().add(order);
         return order;
     }
