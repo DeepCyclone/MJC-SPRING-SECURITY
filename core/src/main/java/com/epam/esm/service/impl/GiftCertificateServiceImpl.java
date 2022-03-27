@@ -48,6 +48,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         certificateDto.setAssociatedTags(Collections.emptyList());
         GiftCertificate baseCert = certificateRepository.create(certificateDto);
         List<Tag> savedTags = saveAssociatedTags(gainedTags);
+        baseCert.setAssociatedTags(Collections.emptyList());
         baseCert.getAssociatedTags().addAll(savedTags);
         return getByID(baseCert.getId());
     }

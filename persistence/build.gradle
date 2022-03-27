@@ -12,6 +12,7 @@ repositories {
 dependencies {
     testImplementation 'com.h2database:h2:1.4.200'
     implementation 'org.hibernate:hibernate-core:5.6.5.Final'
+
 }
 
 test {

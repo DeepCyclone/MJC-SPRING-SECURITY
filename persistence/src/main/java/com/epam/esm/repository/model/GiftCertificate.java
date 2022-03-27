@@ -15,6 +15,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,6 +25,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.epam.esm.repository.audit.AuditListener;
 import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 import com.epam.esm.repository.metadata.JoinedTablesMetadata;
 
@@ -34,6 +36,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @AllArgsConstructor
 @Builder
 @Entity
+@EntityListeners(AuditListener.class)
 @Table(name = GiftCertificateMetadata.TABLE_NAME)
 public class GiftCertificate implements Serializable {
     @Id

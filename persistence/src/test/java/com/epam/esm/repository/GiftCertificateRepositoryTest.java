@@ -19,28 +19,26 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 @SpringBootTest
+@Transactional
 @ActiveProfiles("dev")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Transactional
 class GiftCertificateRepositoryTest {
    private final GiftCertificateRepository repository;
 
    private final GiftCertificate certificateToAdd = GiftCertificate.builder().name("Cert4").description("Cert4A").price(new BigDecimal("100.50000")).duration(30).build();
 
    private static List<GiftCertificate> certificates;
+   
    @Autowired
    public GiftCertificateRepositoryTest(GiftCertificateRepository repository) {
        this.repository = repository;
    }
-
 
    @BeforeAll
    static void populateTestCertificates(){
@@ -50,12 +48,12 @@ class GiftCertificateRepositoryTest {
 
    }
 
-//    @Test
-//    @Order(1)
-//    void getAll(){
-//        List<GiftCertificate> certificatesDB = repository.handleParametrizedRequest(new LinkedMultiValueMap<>());
-//        Assertions.assertEquals(certificates,certificatesDB);
-//    }
+   @Test
+   @Order(1)
+   void getAll(){
+       List<GiftCertificate> certificatesDB = repository.handleParametrizedRequest(new LinkedMultiValueMap<>(),1,10);
+       Assertions.assertEquals(certificates,certificatesDB);
+   }
 
    @Test
    @Order(2)
@@ -108,14 +106,14 @@ class GiftCertificateRepositoryTest {
        Assertions.assertFalse(certificateToUpdate.isPresent());
    }
 
-//    @Test
-//    @Order(7)
-//    void getInfoWithDateOrder(){
-//        MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
-//        params.set("dateSortOrder","ASC");
-//        List<GiftCertificate> certs = repository.handleParametrizedRequest(params);
-//        Assertions.assertEquals(certs.get(0),certificates.get(0));
-//    }
+   @Test
+   @Order(7)
+   void getInfoWithDateOrder(){
+       MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+       params.set("dateSortOrder","ASC");
+       List<GiftCertificate> certs = repository.handleParametrizedRequest(params,1,10);
+       Assertions.assertEquals(certs.get(0),certificates.get(0));
+   }
 
    @Test
    @Order(8)
