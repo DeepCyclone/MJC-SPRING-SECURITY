@@ -9,9 +9,6 @@ import com.epam.esm.repository.template.TagRepository;
 import org.springframework.stereotype.Repository;
 
 
-import static com.epam.esm.repository.query.holder.TagQueryHolder.READ_BY_ID;
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -30,10 +27,10 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag create(Tag object) {
-        findByName(object.getName()).ifPresent(tag -> 
-        {
-            throw new RepositoryException(RepositoryErrorCode.TAG_CREATION_ERROR, "Tag with name + "+tag.getName() + " already exists");
-        });
+        // findByName(object.getName()).ifPresent(tag -> 
+        // {
+        //     throw new RepositoryException(RepositoryErrorCode.TAG_CREATION_ERROR, "Tag with name + "+tag.getName() + " already exists");
+        // });
        return entityManager.merge(object);
     }
 

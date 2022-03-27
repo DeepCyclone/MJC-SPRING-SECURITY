@@ -1,7 +1,5 @@
 package com.epam.esm.repository.query.processor;
 
-import static com.epam.esm.repository.query.processor.SQLParts.*;
-
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.AND;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.OR;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
@@ -11,7 +9,9 @@ import static com.epam.esm.repository.query.holder.CertificateQueryHolder.ORDER_
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.TAG_NAME_FILTER;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.WHERE;
+import static com.epam.esm.repository.query.holder.SQLParts.*;
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.GROUP_BY_CERT_WITH_CERTAIN_AMOUNT_OF_TAGS;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,18 +22,14 @@ import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 import org.springframework.util.MultiValueMap;
 
 public class ComplexParamMapProcessor {
-    public static final String TAG_NAME = "tagName";
-    public static final String NAME_PART = "namePart";
-    public static final String DESCRIPTION_PART = "descriptionPart";
-    public static final String NAME_SORT_ORDER = "nameSortOrder";
-    public static final String DATE_SORT_ORDER = "dateSortOrder";
+ 
 
 
     public static String buildQuery(MultiValueMap<String,String> params){
         if(!params.isEmpty()) {
             StringBuilder query = new StringBuilder(JOIN_PARAMS);
             query.append(appendQueryWithSearching(params));
-            // query.append(appendQueryWithSorting(params));
+            query.append(appendQueryWithSorting(params));
             return query.toString();
         }
         return READ_ALL;
@@ -75,19 +71,23 @@ public class ComplexParamMapProcessor {
     }
 
     private static String appendQueryWithSorting(MultiValueMap<String,String> params){
-        if((params.containsKey(NAME_SORT_ORDER)) || params.containsKey(DATE_SORT_ORDER)) {
+        Optional<String> nameSortOrderValue = Optional.ofNullable(params.getFirst(NAME_SORT_ORDER));
+        Optional<String> dateSortOrderValue = Optional.ofNullable(params.getFirst(DATE_SORT_ORDER));
+        if(nameSortOrderValue.isPresent() || dateSortOrderValue.isPresent()) {
             StringBuilder orderQuery = new StringBuilder(ORDER_BY);
-            Optional<String> nameSortOrderValue = Optional.ofNullable(params.getFirst(NAME_SORT_ORDER));
-            Optional<String> dateSortOrderValue = Optional.ofNullable(params.getFirst(DATE_SORT_ORDER));
             boolean complexSort = nameSortOrderValue.isPresent() && dateSortOrderValue.isPresent();
-            nameSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.NAME).append(" :").append(NAME_SORT_ORDER));
-            //TODO arrange ORDER BY query according to params order in URL
+            nameSortOrderValue.ifPresent(order -> {
+                orderQuery.append(GiftCertificateMetadata.NAME).append(" ").append(order);
+            });
             if(complexSort){
                 orderQuery.append(COMMA);
             }
-            dateSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.LAST_UPDATE_DATE).append(" :").append(DATE_SORT_ORDER));
+            dateSortOrderValue.ifPresent(order -> {
+                orderQuery.append(GiftCertificateMetadata.LAST_UPDATE_DATE).append(" ").append(order);
+            });
             return orderQuery.toString();
         }
         return EMPTY_PART;
     }
+    
 }

@@ -1,12 +1,13 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.service.template.GiftCertificateService;
+import com.epam.esm.service.template.TagService;
 import com.epam.esm.service.validation.RequestParamsValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +24,19 @@ import java.util.stream.Collectors;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
-
-
-    
-
     private final GiftCertificateRepository certificateRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagRepository tagRepository) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagService tagService) {
         this.certificateRepository = certificateRepository;
-        this.tagRepository = tagRepository;
+        this.tagService = tagService;
     }
 
     @Override
     public GiftCertificate getByID(long id) {
         GiftCertificate certificate = certificateRepository.findByID(id).orElseThrow(
-                ()->new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));
+                ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));
         certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(id));
         return certificate;
     }
@@ -60,20 +57,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void deleteByID(long id){
         boolean result = certificateRepository.deleteByID(id);
         if(!result){
-            throw new ServiceException(ErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = "+id);
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = "+id);
         }
     }
 
     @Override
-    public GiftCertificate update(GiftCertificate certificatePatch,long id) {
-        // checkExistence(id);
-        getByID(id);
-        certificateRepository.update(certificatePatch,id);//TODO handle boolean value
-        detachAssociatedTags(certificatePatch.getId());
-        Optional.ofNullable(certificatePatch.getAssociatedTags()).ifPresent(tags -> {
+    @Transactional
+    public GiftCertificate update(GiftCertificate patch,long id) {
+        checkExistence(id);
+        certificateRepository.update(patch,id);//TODO handle boolean value
+        Optional.ofNullable(patch.getAssociatedTags()).ifPresent(tags -> {
+            GiftCertificate cert = getByID(id);
             List<Tag> savedTags = saveAssociatedTags(tags);
-            getByID(id).getAssociatedTags().addAll(savedTags);
-            // certificateRepository.linkAssociatedTags(certificatePatch.getId(),savedTags);
+            cert.getAssociatedTags().clear();
+            cert.getAssociatedTags().addAll(savedTags);
         });
         return getByID(id);
     }
@@ -84,7 +81,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if(tags == null || tags.isEmpty()){
             return Collections.emptyList();
         }
-        return tags.stream().map(tagRepository::create).collect(Collectors.toList());
+        return tags.stream().map(tag->
+        tagService.addEntity(tag)).collect(Collectors.toList());
     }
 
     @Override
@@ -101,7 +99,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private void checkExistence(long id){
         if(!certificateRepository.checkExistence(id)){
-            throw new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID " + id);
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID " + id);
         }
     }
 

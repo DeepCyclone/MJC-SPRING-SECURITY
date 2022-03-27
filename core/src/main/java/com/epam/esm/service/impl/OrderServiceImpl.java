@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getById(long orderId) {
         Order order = orderRepository.findByID(orderId).orElseThrow(
-            () -> new ServiceException(ErrorCode.ORDER_NOT_FOUND,"Cannot fetch order with id = " + orderId));
+            () -> new ServiceException(ServiceErrorCode.ORDER_NOT_FOUND,"Cannot fetch order with id = " + orderId));
         order.setCertificates(fetchAssociatedCertificates(orderId));
         return order;
     }
@@ -69,23 +69,23 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void delete(long orderId) {
         if(!orderRepository.deleteByID(orderId)){
-            throw new ServiceException(ErrorCode.ORDER_DELETION_ERROR," cannot delete order with id = "+orderId);
+            throw new ServiceException(ServiceErrorCode.ORDER_DELETION_ERROR," cannot delete order with id = "+orderId);
         }
     }
 
     @Override
     @Transactional
     public Order makeOrder(List<Long> certificatesIds,long userId) {
-        User user = userRepository.findByID(userId).orElseThrow(() -> new ServiceException(ErrorCode.USER_NOT_FOUND,"User not found with ID = "+userId));
+        User user = userRepository.findByID(userId).orElseThrow(() -> new ServiceException(ServiceErrorCode.USER_NOT_FOUND,"User not found with ID = "+userId));
         List<GiftCertificate> certificatesEntities = new LinkedList<>();
 
         certificatesIds.forEach(certId->certificatesEntities.add(giftCertificateRepository.findByID(certId).orElseThrow(
-                ()->new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"cert not found with ID = "+certId))));
+                ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"cert not found with ID = "+certId))));
 
         BigDecimal sum = countOrderSum(certificatesEntities);
 
         Order order = orderRepository.makeOrder(sum).orElseThrow(
-            ()->new ServiceException(ErrorCode.ORDER_CREATION_ERROR,"Cannot create order"));
+            ()->new ServiceException(ServiceErrorCode.ORDER_CREATION_ERROR,"Cannot create order"));
 
         order.getCertificates().addAll(certificatesEntities);
         user.getOrders().add(order);
@@ -101,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
 
     private void checkExistence(GiftCertificate cert){
         if(!giftCertificateRepository.checkExistence(cert.getId())){
-            throw new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID = " + cert.getId());
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID = " + cert.getId());
         }
     }
 

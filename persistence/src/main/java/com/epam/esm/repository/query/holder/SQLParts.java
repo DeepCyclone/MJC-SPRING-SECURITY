@@ -1,4 +1,4 @@
-package com.epam.esm.repository.query.processor;
+package com.epam.esm.repository.query.holder;
 
 public final class SQLParts {
     public static final String EQUALS_MARK = "=";

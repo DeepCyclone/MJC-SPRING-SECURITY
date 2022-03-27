@@ -2,7 +2,7 @@ package com.epam.esm.service.impl;
 
 import java.util.List;
 
-import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User getById(long id) {
         User user =  userRepository.findByID(id).
-        orElseThrow(()->new ServiceException(ErrorCode.USER_NOT_FOUND, "Cannot fetch user with ID = "+id));
+        orElseThrow(()->new ServiceException(ServiceErrorCode.USER_NOT_FOUND, "Cannot fetch user with ID = "+id));
         List<Order> orders = userRepository.fetchAssociatedOrders(id);
         orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
         user.setOrders(orders);
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User getByName(String userName) {
         User user =  userRepository.findByName(userName).
-        orElseThrow(()->new ServiceException(ErrorCode.USER_NOT_FOUND, "Cannot fetch user with name = "+userName));
+        orElseThrow(()->new ServiceException(ServiceErrorCode.USER_NOT_FOUND, "Cannot fetch user with name = "+userName));
         List<Order> orders = userRepository.fetchAssociatedOrders(user.getId());
         orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
         user.setOrders(orders);
@@ -62,12 +62,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public Tag fetchMostUsedTagWithRichestOrders() {
         return userRepository.fetchMostUsedTagWithRichestOrders().orElseThrow(
-            ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"NO DATA IN DB"));
+            ()->new ServiceException(ServiceErrorCode.TAG_NOT_FOUND,"NO DATA IN DB"));
     }
 
     private void checkPaginationOptions(long limit,long offset){
         if(!(SignValidator.isPositiveLong(limit) && SignValidator.isNonNegative(offset))){
-            throw new ServiceException(ErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
+            throw new ServiceException(ServiceErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
         }
     }
     

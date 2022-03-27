@@ -4,10 +4,13 @@ import com.epam.esm.converter.TagConverter;
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.TagResponseDto;
+import com.epam.esm.hateoas.assembler.TagAssembler;
+import com.epam.esm.hateoas.model.TagModel;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.template.TagService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -33,36 +36,38 @@ public class TagController {
 
     private final TagService tagService;
     private final TagConverter tagConverter;
+    private final TagAssembler tagAssembler;
 
     @Autowired
-    public TagController(TagService tagService,TagConverter tagConverter) {
+    public TagController(TagService tagService,TagConverter tagConverter,TagAssembler tagAssembler) {
         this.tagService = tagService;
         this.tagConverter = tagConverter;
+        this.tagAssembler = tagAssembler;
     }
 
     @GetMapping(value = "/{id:\\d+}")
-    public TagResponseDto getByID(@PathVariable("id") Long id){
-        return tagConverter.convertToResponseDto(tagService.getByID(id));
+    public TagModel getByID(@PathVariable("id") Long id){
+        return tagAssembler.toModel(tagService.getByID(id));
     }
 
     @GetMapping
-    public List<TagResponseDto> getTags(@RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
-                                        @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){
-        return tagConverter.convertToResponseDtos(tagService.getAll(page,limit));
+    public CollectionModel<TagModel> getTags(@RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
+                                        @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){//
+        return tagAssembler.toCollectionModel(tagService.getAll(page,limit));
     }
 
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTag(@PathVariable("id") Long id){
+    public void deleteTag(@PathVariable("id") Long id){//
         tagService.deleteByID(id);
     }
 
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public TagResponseDto createTag(@RequestBody @Validated(CreateDTO.class) TagDto tagDto){
+    public TagModel createTag(@RequestBody @Validated(CreateDTO.class) TagDto tagDto){//
         Tag tag = tagConverter.convertFromRequestDto(tagDto);
-        return tagConverter.convertToResponseDto(tagService.addEntity(tag));
+        return tagAssembler.toModel(tagService.addEntity(tag));
     }
 
 }

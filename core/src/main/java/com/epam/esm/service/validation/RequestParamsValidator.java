@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
 
 import org.springframework.util.MultiValueMap;
@@ -44,21 +44,17 @@ public class RequestParamsValidator {
     private static void checkInvalidValuedParams(MultiValueMap<String,String> params){
         if((params.containsKey(NAME_SORT_ORDER) && !RequestParamsValidator.isAllowedOrderDirection(params.getFirst(NAME_SORT_ORDER))) ||
                 (params.containsKey(DATE_SORT_ORDER) && !RequestParamsValidator.isAllowedOrderDirection(params.getFirst(DATE_SORT_ORDER)))){
-            throw new ServiceException(ErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS,"allowed values for sorting params are ASC and DESC");
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS,"allowed values for sorting params are ASC and DESC");
         }
     }
     
-
-
-
-
     private static void checkDuplicatedQueryParams(MultiValueMap<String,String> params){
         List<Map.Entry<String,List<String>>> unallowedDuplicates = params.entrySet().stream().filter(entry -> 
         entry.getValue().size() > 1 && !entry.getKey().equals("tagName")).collect(Collectors.toList());
         if(!unallowedDuplicates.isEmpty()){
             StringBuilder duplicatesInfo = new StringBuilder();
             unallowedDuplicates.stream().forEach(entry -> duplicatesInfo.append(entry.getKey() + " can't have several values|"));
-            throw new ServiceException(ErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS,duplicatesInfo.toString());
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS,duplicatesInfo.toString());
         }
     }
 

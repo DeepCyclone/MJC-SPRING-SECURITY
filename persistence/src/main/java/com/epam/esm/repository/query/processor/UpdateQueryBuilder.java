@@ -1,6 +1,6 @@
 package com.epam.esm.repository.query.processor;
 
-import static com.epam.esm.repository.query.processor.SQLParts.*;
+import static com.epam.esm.repository.query.holder.SQLParts.*;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -1,7 +1,7 @@
 package com.epam.esm.service.impl;
 
 
-import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.TagRepository;
@@ -31,12 +31,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag getByID(long id){
         return tagRepository.findByID(id).orElseThrow(
-                ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"Couldn't fetch tag with id = "+id));
+                ()->new ServiceException(ServiceErrorCode.TAG_NOT_FOUND,"Couldn't fetch tag with id = "+id));
     }
     @Override
     @Transactional
     public Tag addEntity(Tag tag) {
-        return tagRepository.create(tag);
+        return tagRepository.findByName(tag.getName()).
+        orElseGet(()->tagRepository.create(tag));
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TagServiceImpl implements TagService {
     public void deleteByID(long id){
         boolean flushingResult = tagRepository.deleteByID(id);
         if(!flushingResult){
-            throw new ServiceException(ErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with id = "+id);
+            throw new ServiceException(ServiceErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with id = "+id);
         }
     }
 
@@ -53,8 +54,14 @@ public class TagServiceImpl implements TagService {
 
     private void checkPaginationOptions(long limit,long offset){
         if(!(SignValidator.isPositiveLong(limit) && SignValidator.isNonNegative(offset))){
-            throw new ServiceException(ErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
+            throw new ServiceException(ServiceErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
         }
+    }
+
+    @Override
+    public Tag getByName(String name) {
+        return tagRepository.findByName(name).
+        orElseThrow(() -> new ServiceException(ServiceErrorCode.TAG_NOT_FOUND,"Tag with name " + name + " not found"));
     }
 
 }

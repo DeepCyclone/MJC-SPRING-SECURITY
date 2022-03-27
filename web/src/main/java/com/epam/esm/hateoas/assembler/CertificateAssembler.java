@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import com.epam.esm.controller.GiftCertificateController;
+import com.epam.esm.controller.CertificateController;
 import com.epam.esm.controller.TagController;
 import com.epam.esm.hateoas.model.CertificateModel;
 import com.epam.esm.repository.model.GiftCertificate;
@@ -21,7 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class CertificateAssembler extends RepresentationModelAssemblerSupport<GiftCertificate,CertificateModel>{
     
     public CertificateAssembler() {
-        super(GiftCertificateController.class,CertificateModel.class);
+        super(CertificateController.class,CertificateModel.class);
     }
 
     @Override

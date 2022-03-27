@@ -1,5 +1,6 @@
 package com.epam.esm.repository.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -36,6 +37,6 @@ public class User {
     @Column(name = UserMetadata.NAME)
     private String name;
     @ToString.Exclude
-    @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
-    private List<Order> orders;
+    @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY,mappedBy = "user")
+    private List<Order> orders = new ArrayList<>();
 }

@@ -63,32 +63,11 @@ public class OrderRepositoryImpl implements OrderRepository{
         id(0L).
         price(totalPrice).
         build()));
-        // return Optional.ofNullable(
-        // entityManager.
-        // createQuery(OrderQueryHolder.CREATE_NEW_ENTRY,Order.class).
-        // setParameter(1, totalPrice).
-        // getSingleResult());
-
-
-        // KeyHolder holder = new GeneratedKeyHolder();
-        // jdbcTemplate.update(con->{
-        //     PreparedStatement stmt = con.prepareStatement(OrderQueryHolder.CREATE_NEW_ENTRY,PreparedStatement.RETURN_GENERATED_KEYS);
-        //     stmt.setBigDecimal(1, sum);
-        //     return stmt;
-        // },holder);
-        // Optional<Order> order = Optional.empty();
-        // if(holder.getKey()!=null){
-        //     order = findByID(holder.getKey().longValue());
-        // }
-        // return order;
     }
 
     @Transactional
     @Override
     public void linkAssociatedCertificates(List<GiftCertificate> certificates, long orderId) {
-        // certificates.forEach(cert->{
-        //     // jdbcTemplate.update(OrderQueryHolder.INSERT_INTO_ORDER_M2M_CERT, orderId,cert.getId());//TODO can this method throw any exceptions
-        // });
         findByID(orderId).ifPresent(order->order.getCertificates().addAll(certificates));
     }
 

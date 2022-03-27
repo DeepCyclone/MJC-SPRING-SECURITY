@@ -2,6 +2,7 @@ package com.epam.esm.repository.model;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.epam.esm.repository.metadata.JoinedTablesMetadata;
@@ -51,4 +53,12 @@ public class Order {
         inverseJoinColumns = @JoinColumn(name = "omc_gc_id")
     )
     private List<GiftCertificate> certificates;
+    @ToString.Exclude
+    @ManyToOne
+    @JoinTable(
+        name = JoinedTablesMetadata.USER_M2M_ORDER,
+        joinColumns = @JoinColumn(name = "umo_o_id"),
+        inverseJoinColumns = @JoinColumn(name = "umo_u_id")
+    )
+    private User user;
 }

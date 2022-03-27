@@ -34,14 +34,14 @@ import javax.validation.constraints.Min;
 @RestController
 @RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
 @Validated
-public class GiftCertificateController {
+public class CertificateController {
 
     private final GiftCertificateService certificateService;
     private final CertificateConverter certificateConverter;
     private final CertificateAssembler certificateAssembler;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService certificateService, CertificateAssembler certificateAssembler,CertificateConverter certificateConverter) {
+    public CertificateController(GiftCertificateService certificateService, CertificateAssembler certificateAssembler,CertificateConverter certificateConverter) {
         this.certificateService = certificateService;
         this.certificateConverter = certificateConverter;
         this.certificateAssembler = certificateAssembler;
@@ -68,8 +68,9 @@ public class GiftCertificateController {
 
     @PatchMapping(value = "/{id:\\d+}")
     public ResponseEntity<CertificateModel> updateCertificate(@RequestBody @Validated(PatchDTO.class) GiftCertificateDto certificateDtoPatch,
-                                                              @PathVariable long id){//tags
-        GiftCertificate certificate = certificateService.update(certificateConverter.convertFromRequestDto(certificateDtoPatch),id);
+                                                              @PathVariable long id){//
+        GiftCertificate certificate = certificateService.update(
+        certificateConverter.convertFromRequestDto(certificateDtoPatch),id);
         return new ResponseEntity<>(certificateAssembler.toModel(certificate),HttpStatus.CREATED);
     }
 

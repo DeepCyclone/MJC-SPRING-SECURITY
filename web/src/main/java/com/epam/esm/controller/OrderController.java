@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,16 +62,9 @@ public class OrderController {
 
     @PatchMapping(value="/{id:\\d+}")
     public ResponseEntity<OrderModel> updateById(@PathVariable long id,
-                                                 @RequestBody @Validated(PatchDTO.class) OrderDto orderDto){
+                                                 @RequestBody @Validated(PatchDTO.class) OrderDto orderDto){//
         Order updatedOrder = orderService.update(orderConverter.convertFromRequestDto(orderDto), id);
         OrderModel model = orderAssembler.toModel(updatedOrder);
-        return new ResponseEntity<>(model,HttpStatus.CREATED);
-    }
-
-    @PostMapping(value="/{userId:\\d+}")
-    public ResponseEntity<OrderModel> makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
-        Order order = orderService.makeOrder(certificates,userId);
-        OrderModel model = orderAssembler.toModel(order);
         return new ResponseEntity<>(model,HttpStatus.CREATED);
     }
 }

@@ -7,15 +7,14 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 import com.epam.esm.repository.template.GiftCertificateRepository;
-import static com.epam.esm.repository.query.processor.SQLParts.*;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
 import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
-import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.DESCRIPTION_PART;
-import static com.epam.esm.repository.query.processor.ComplexParamMapProcessor.NAME_PART;
+import static com.epam.esm.repository.query.holder.SQLParts.*;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.*;
 
 
 import java.util.List;
@@ -52,7 +51,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    @Transactional
     public boolean update(GiftCertificate object,long id) {
         String query = UpdateQueryBuilder.buildUpdateQuery(object, id);
         if(query.isEmpty()){
@@ -111,9 +109,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         setFirstResult((page-1)*limit).
         setMaxResults(limit);
         prepareParamsToSearchStatement(params);
-        System.out.println(generatedQuery);
-        System.out.println(params);
-        params.forEach((key,value) -> query.setParameter(key, value));
+        prepareParamsToOrdering(params);
+        params.forEach((key,value) -> {
+            query.setParameter(key, value);
+        });
         return query.getResultList();//TODO typed query
     }
 
@@ -137,15 +136,24 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         if(params.containsKey(DESCRIPTION_PART)){
             params.set(DESCRIPTION_PART,PERCENT+params.getFirst(DESCRIPTION_PART)+PERCENT);
         }
-        if(params.containsKey(ComplexParamMapProcessor.TAG_NAME)){
-        List<String> tags = params.get(ComplexParamMapProcessor.TAG_NAME);
+        if(params.containsKey(TAG_NAME)){
+        List<String> tags = params.get(TAG_NAME);
         int iter = 1;
         for(String tagName:tags){
-            params.set(ComplexParamMapProcessor.TAG_NAME+iter, tagName);
+            params.set(TAG_NAME+iter, tagName);
             iter++;
         }
-        params.remove(ComplexParamMapProcessor.TAG_NAME);
+        params.remove(TAG_NAME);
     }
+    }
+
+    private void prepareParamsToOrdering(MultiValueMap<String,String> params){
+        if(params.containsKey(NAME_SORT_ORDER)){
+            params.remove(NAME_SORT_ORDER);
+        }
+        if(params.containsKey(DATE_SORT_ORDER)){
+            params.remove(DATE_SORT_ORDER);
+        }
     }
 
     @Override

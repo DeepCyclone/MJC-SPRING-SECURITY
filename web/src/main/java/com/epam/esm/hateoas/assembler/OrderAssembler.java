@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.epam.esm.controller.GiftCertificateController;
+import com.epam.esm.controller.CertificateController;
 import com.epam.esm.controller.OrderController;
 import com.epam.esm.hateoas.model.OrderModel;
 import com.epam.esm.repository.model.Order;
@@ -48,7 +48,7 @@ public class OrderAssembler extends RepresentationModelAssemblerSupport<Order,Or
     }
 
     private void generateLinks(Order source,OrderModel destination){
-        source.getCertificates().forEach(cert->destination.add(linkTo(methodOn(GiftCertificateController.class).getByID(cert.getId())).withRel("certificates")));
+        source.getCertificates().forEach(cert->destination.add(linkTo(methodOn(CertificateController.class).getByID(cert.getId())).withRel("certificates")));
         //TODO how to add notes with available operations;only text without refs due to same links; affordance? or another HAL features
     }
     

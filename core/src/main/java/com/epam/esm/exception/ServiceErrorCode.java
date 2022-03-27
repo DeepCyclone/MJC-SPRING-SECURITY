@@ -1,6 +1,6 @@
 package com.epam.esm.exception;
 
-public class ErrorCode {
+public class ServiceErrorCode {
     public static final String CERTIFICATE_DELETION_ERROR = "40901";
     public static final String TAG_DELETION_ERROR = "40902";
     public static final String ORDER_DELETION_ERROR = "40904";
