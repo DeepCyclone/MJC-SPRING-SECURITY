@@ -27,7 +27,7 @@ public class AuditListener {
 
     @PreDestroy
     private void destroyAudit(Object o){
-        System.out.println("Destroy audit triggered:" + o+ "||timestamp:"+ new Date().getTime());
+        System.out.println("Destroy audit triggered:" + o+ "|timestamp:"+ new Date().getTime());
     }
 
 }
