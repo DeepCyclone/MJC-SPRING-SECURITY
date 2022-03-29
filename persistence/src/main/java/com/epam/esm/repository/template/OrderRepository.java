@@ -11,5 +11,5 @@ public interface OrderRepository extends GenericRepository<Order>,Identifiable<O
     Optional<Order> makeOrder(BigDecimal totalPrice);
     void linkAssociatedCertificates(List<GiftCertificate> certificates,long orderId);
     List<GiftCertificate> fetchAssociatedCertificates(long orderId);
-    boolean detachAssociatedCertificates(long orderId);
+    void detachAssociatedCertificates(long orderId);
 }

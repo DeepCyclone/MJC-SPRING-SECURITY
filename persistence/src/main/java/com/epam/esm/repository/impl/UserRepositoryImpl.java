@@ -3,10 +3,12 @@ package com.epam.esm.repository.impl;
 
 import static com.epam.esm.repository.query.holder.UserQueryHolder.FETCH_MOST_USED_TAG_WITH_RICHEST_ORDERS;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 
@@ -16,7 +18,6 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
 import com.epam.esm.repository.template.UserRepository;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -63,14 +64,14 @@ public class UserRepositoryImpl implements UserRepository {
             setParameter("name",name).
             getSingleResult());
         }
-        catch (DataAccessException e){
+        catch (NoResultException e){
             return Optional.empty();
         }
     }
 
     @Override
     public List<Order> fetchAssociatedOrders(long userId) {
-        return findByID(userId).get().getOrders();
+        return findByID(userId).map(user->user.getOrders()).orElse(Collections.emptyList());
     }
 
     @Override
@@ -81,14 +82,22 @@ public class UserRepositoryImpl implements UserRepository {
             createNativeQuery(FETCH_MOST_USED_TAG_WITH_RICHEST_ORDERS,Tag.class).
             getSingleResult());
         }
-        catch(DataAccessException e){
+        catch(NoResultException e){
             return Optional.empty();
         }
     }
 
     @Override
     public boolean checkExistence(long id) {
-        return true;
+        try{
+            return entityManager.
+            createQuery("SELECT 1 FROM User user WHERE user.id = ?1",Integer.class).
+            setParameter(1, id).
+            getSingleResult() == 1;
+        }
+        catch(NoResultException ex){
+            return false;
+        }
     }
     
 }

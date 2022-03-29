@@ -1,10 +1,12 @@
 package com.epam.esm.repository.impl;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
@@ -73,18 +75,25 @@ public class OrderRepositoryImpl implements OrderRepository{
 
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long orderId) {
-        return findByID(orderId).get().getCertificates();
+        return findByID(orderId).map(order->order.getCertificates()).orElse(Collections.emptyList());
     }
 
     @Override
-    public boolean detachAssociatedCertificates(long orderId) {
-        findByID(orderId).get().getCertificates().clear();
-        return true;
+    public void detachAssociatedCertificates(long orderId) {
+        findByID(orderId).ifPresent(order->order.getCertificates().clear());
     }
 
     @Override
     public boolean checkExistence(long id) {
-        return true;
+        try{
+            return entityManager.
+            createQuery("SELECT 1 FROM Order order WHERE order.id = ?1",Integer.class).
+            setParameter(1, id).
+            getSingleResult() == 1;
+        }
+        catch(NoResultException ex){
+            return false;
+        }
     }
 
 

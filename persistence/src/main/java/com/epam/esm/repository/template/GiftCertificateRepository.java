@@ -13,7 +13,7 @@ import java.util.List;
  * */
 public interface GiftCertificateRepository extends GenericRepository<GiftCertificate>,Identifiable<GiftCertificate>,Nameable<GiftCertificate> {
     void linkAssociatedTags(long certificateID, List<Tag> tags);
-    boolean detachAssociatedTags(long certificateID);
+    void detachAssociatedTags(long certificateID);
     List<Tag> fetchAssociatedTags(long certificateID);
     List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> map,int page,int limit);
 }

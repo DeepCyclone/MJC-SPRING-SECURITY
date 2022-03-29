@@ -5,7 +5,6 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.GiftCertificateRepository;
-import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.service.template.GiftCertificateService;
 import com.epam.esm.service.template.TagService;
 import com.epam.esm.service.validation.RequestParamsValidator;
@@ -66,7 +65,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public GiftCertificate update(GiftCertificate patch,long id) {
         checkExistence(id);
-        certificateRepository.update(patch,id);//TODO handle boolean value
+        certificateRepository.update(patch,id);
         Optional.ofNullable(patch.getAssociatedTags()).ifPresent(tags -> {
             GiftCertificate cert = getByID(id);
             List<Tag> savedTags = saveAssociatedTags(tags);
@@ -92,10 +91,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params,page,limit);
         certificates.forEach(certificate -> certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
         return certificates;
-    }
-    
-    private void detachAssociatedTags(long certificateID){
-        certificateRepository.detachAssociatedTags(certificateID);
     }
 
     private void checkExistence(long id){

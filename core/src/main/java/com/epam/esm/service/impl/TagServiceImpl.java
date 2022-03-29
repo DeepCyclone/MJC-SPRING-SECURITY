@@ -52,12 +52,6 @@ public class TagServiceImpl implements TagService {
     @Override
     public void updateByID(long id) throws UnsupportedOperationException {}
 
-    private void checkPaginationOptions(long limit,long offset){
-        if(!(SignValidator.isPositiveLong(limit) && SignValidator.isNonNegative(offset))){
-            throw new ServiceException(ServiceErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
-        }
-    }
-
     @Override
     public Tag getByName(String name) {
         return tagRepository.findByName(name).

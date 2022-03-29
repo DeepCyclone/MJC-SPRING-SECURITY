@@ -8,7 +8,7 @@ import com.epam.esm.repository.template.TagRepository;
 
 import org.springframework.stereotype.Repository;
 
-
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +27,6 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag create(Tag object) {
-        // findByName(object.getName()).ifPresent(tag -> 
-        // {
-        //     throw new RepositoryException(RepositoryErrorCode.TAG_CREATION_ERROR, "Tag with name + "+tag.getName() + " already exists");
-        // });
        return entityManager.merge(object);
     }
 
@@ -82,7 +78,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long tagID) {
-        return findByID(tagID).map(tag->tag.getCerts()).get();
+        return findByID(tagID).map(tag->tag.getCerts()).orElse(Collections.emptyList());
     }
 
     @Override

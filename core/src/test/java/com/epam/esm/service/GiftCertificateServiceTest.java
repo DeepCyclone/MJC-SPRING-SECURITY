@@ -15,12 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,19 +64,19 @@ public class GiftCertificateServiceTest {
 
    }
 
-//    @Test
-//    void getAllWithoutParams(){
-//        Mockito.when(giftCertificateRepository.handleParametrizedRequest(new HashMap<>(),0,0)).thenReturn(certificates);
-//        Assertions.assertEquals(certificates,service.handleParametrizedGetRequest(new HashMap<>(),0,0));
-//    }
+   @Test
+   void getAllWithoutParams(){
+       Mockito.when(giftCertificateRepository.handleParametrizedRequest(new LinkedMultiValueMap<>(),0,0)).thenReturn(certificates);
+       Assertions.assertEquals(certificates,service.handleParametrizedGetRequest(new LinkedMultiValueMap<>(),0,0));
+   }
 
-//    @Test
-//    void getWithNamePart(){
-//        Map<String,String> params = new HashMap<>();
-//        params.put("namePart","A");
-//        Mockito.when(giftCertificateRepository.handleParametrizedRequest(params)).thenReturn(parametrizedCertificates);
-//        Assertions.assertEquals(parametrizedCertificates,service.handleParametrizedGetRequest(params));
-//    }
+   @Test
+   void getWithNamePart(){
+       MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+       params.add("namePart","A");
+       Mockito.when(giftCertificateRepository.handleParametrizedRequest(params,0,0)).thenReturn(parametrizedCertificates);
+       Assertions.assertEquals(parametrizedCertificates,service.handleParametrizedGetRequest(params,0,0));
+   }
 
    @Test
    void deleteNonExistingEntry(){

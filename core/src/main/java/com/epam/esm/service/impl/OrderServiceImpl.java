@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
             orderRepository.findByID(orderId).ifPresent(order->order.setCertificates(certs));
         });
         price.ifPresent(pr->orderPatch.setPrice(pr));
-        boolean result = orderRepository.update(orderPatch, orderId);//TODO exception
+        boolean result = orderRepository.update(orderPatch, orderId);
 
         return getById(orderId);
     }

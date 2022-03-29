@@ -9,14 +9,12 @@ import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 import com.epam.esm.repository.template.GiftCertificateRepository;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
 import static com.epam.esm.repository.query.holder.SQLParts.*;
 import static com.epam.esm.repository.query.holder.ComplexParamsHolder.*;
 
-
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,14 +89,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public boolean detachAssociatedTags(long certificateID) {
+    public void detachAssociatedTags(long certificateID) {
         findByID(certificateID).ifPresent(cert->cert.getAssociatedTags().clear());
-        return true;
     }
     
     @Override
     public List<Tag> fetchAssociatedTags(long certificateID) {
-        return this.findByID(certificateID).get().getAssociatedTags();
+        return this.findByID(certificateID).map(cert->cert.getAssociatedTags()).orElse(Collections.emptyList());
     }
     
     @Override
@@ -113,7 +110,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         params.forEach((key,value) -> {
             query.setParameter(key, value);
         });
-        return query.getResultList();//TODO typed query
+        return query.getResultList();
     }
 
     @Override

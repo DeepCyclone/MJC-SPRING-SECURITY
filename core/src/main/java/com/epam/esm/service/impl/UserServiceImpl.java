@@ -10,7 +10,6 @@ import com.epam.esm.repository.model.User;
 import com.epam.esm.repository.template.OrderRepository;
 import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.template.UserService;
-import com.epam.esm.service.validation.SignValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,12 +62,6 @@ public class UserServiceImpl implements UserService{
     public Tag fetchMostUsedTagWithRichestOrders() {
         return userRepository.fetchMostUsedTagWithRichestOrders().orElseThrow(
             ()->new ServiceException(ServiceErrorCode.TAG_NOT_FOUND,"NO DATA IN DB"));
-    }
-
-    private void checkPaginationOptions(long limit,long offset){
-        if(!(SignValidator.isPositiveLong(limit) && SignValidator.isNonNegative(offset))){
-            throw new ServiceException(ServiceErrorCode.ORDER_BAD_REQUEST_PARAMS,"bad pagination params");
-        }
     }
     
 }
