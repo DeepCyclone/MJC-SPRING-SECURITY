@@ -1,49 +1,21 @@
 package com.epam.esm.converter;
 
+import java.util.List;
+
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.repository.model.Tag;
-import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-@Component
-public class TagConverter implements ConverterTemplate<Tag, TagDto, TagResponseDto>{
+@Mapper(componentModel = "spring")
+public interface TagConverter {
 
-    @Override
-    public Tag convertFromRequestDto(TagDto dto) {
-        return Tag.builder().
-                id(dto.getId()).
-                name(dto.getName()).
-                build();
-    }
+    TagConverter INSTANCE = Mappers.getMapper(TagConverter.class);
 
-    @Override
-    public List<Tag> convertFromRequestDtos(List<TagDto> dtos) {
-        List<Tag> tags = new ArrayList<>();
-        if(dtos!=null) {
-            for (TagDto dto : dtos) {
-                tags.add(convertFromRequestDto(dto));
-            }
-        }
-        return tags;
-    }
-
-    @Override
-    public TagResponseDto convertToResponseDto(Tag object) {
-        return TagResponseDto.builder().
-                id(object.getId()).
-                name(object.getName()).
-                build();
-    }
-
-    @Override
-    public List<TagResponseDto> convertToResponseDtos(List<Tag> objects) {
-        List<TagResponseDto> tags = new ArrayList<>();
-        for(Tag object:objects){
-            tags.add(convertToResponseDto(object));
-        }
-        return tags;
-    }
+    Tag convertFromRequestDto(TagDto dto);
+    List<Tag> convertFromRequestDtos(List<TagDto> dtos);
+    TagResponseDto convertToResponseDto(Tag object);
+    List<TagResponseDto> convertToResponseDtos(List<Tag> objects);
 }

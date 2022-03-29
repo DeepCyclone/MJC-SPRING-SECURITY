@@ -1,112 +1,102 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.repository.TagRepository;
-import com.epam.esm.repository.mapping.GiftCertificateMapping;
-import com.epam.esm.repository.mapping.TagMapping;
+import com.epam.esm.repository.exception.RepositoryErrorCode;
+import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import com.epam.esm.repository.template.TagRepository;
+
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
 
-import static com.epam.esm.repository.query.TagQueryHolder.DELETE_BY_ID;
-import static com.epam.esm.repository.query.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
-import static com.epam.esm.repository.query.TagQueryHolder.GET_BY_NAME;
-import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO_BY_NAME;
-import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO_WITH_ID;
-import static com.epam.esm.repository.query.TagQueryHolder.READ_ALL;
-import static com.epam.esm.repository.query.TagQueryHolder.READ_BY_ID;
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public static final int MIN_AFFECTED_ROWS = 1;
 
-    private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public TagRepositoryImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public Tag create(Tag object) {
-        KeyHolder holder = new GeneratedKeyHolder();
-        if(object.getId() > 0) {
-            jdbcTemplate.update(con -> {
-                PreparedStatement stmt = con.prepareStatement(INSERT_INTO_WITH_ID, Statement.RETURN_GENERATED_KEYS);
-                stmt.setLong(1, object.getId());
-                stmt.setString(2, object.getName());
-                return stmt;
-            }, holder);
-        }
-        else if(object.getId() == 0){
-            jdbcTemplate.update(con -> {
-                PreparedStatement stmt = con.prepareStatement(INSERT_INTO_BY_NAME, Statement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, object.getName());
-                return stmt;
-            }, holder);
-        }
-        if(holder.getKey()!=null) {
-            return getByID(holder.getKey().longValue());
-        }
-        else {
-            if(object.getName()!=null){
-                return getByName(object.getName());
-            }
-            else {
-                return getByID(object.getId());
-            }
-        }
+        // findByName(object.getName()).ifPresent(tag -> 
+        // {
+        //     throw new RepositoryException(RepositoryErrorCode.TAG_CREATION_ERROR, "Tag with name + "+tag.getName() + " already exists");
+        // });
+       return entityManager.merge(object);
     }
 
     @Override
-    public List<Tag> readAll() {
-        return jdbcTemplate.query(READ_ALL,new TagMapping());
+    public List<Tag> readAll(int page,int limit) {
+        return entityManager.
+        createQuery("From Tag",Tag.class).
+        setFirstResult((page-1)*limit).
+        setMaxResults(limit).
+        getResultList();
     }
 
     @Override
-    public boolean update(Tag object,long ID) {
+    public boolean update(Tag object,long id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Tag getByID(long ID) {
-        try {
-            return jdbcTemplate.queryForObject(READ_BY_ID, new TagMapping(), ID);
-        }
-        catch (DataAccessException e){
-            return null;
-        }
+    public Optional<Tag> findByID(long id) {
+        return Optional.ofNullable(entityManager.find(Tag.class,id));
     }
 
     @Override
     public boolean deleteByID(long ID) {
-        return fetchAssociatedCertificates(ID).isEmpty() &&
-                jdbcTemplate.update(DELETE_BY_ID,ID) >= MIN_AFFECTED_ROWS;
+        findByID(ID).ifPresent(tag->{
+            if(!tag.getCerts().isEmpty()){
+                throw new RepositoryException(RepositoryErrorCode.TAG_DELETION_ERROR,"cannot delete tag due to associated certificates");
+            }
+        });
+        return entityManager.
+        createQuery("DELETE FROM Tag tag WHERE tag.id = ?1").
+        setParameter(1,ID).
+        executeUpdate() >= MIN_AFFECTED_ROWS;
     }
 
 
     @Override
-    public Tag getByName(String name) {
-        try {
-            return jdbcTemplate.queryForObject(GET_BY_NAME, new TagMapping(), name);
+    public Optional<Tag> findByName(String name) {
+        try{
+            return Optional.ofNullable(entityManager.
+            createQuery("Select tag From Tag tag where tag.name = :name",Tag.class).
+            setParameter("name", name).
+            getSingleResult());
         }
-        catch (DataAccessException e){
-            return null;
+        catch(NoResultException exception){
+            return Optional.empty();
         }
     }
 
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long tagID) {
-        return jdbcTemplate.query(FETCH_ASSOCIATED_CERTIFICATES,new GiftCertificateMapping(),tagID);
+        return findByID(tagID).map(tag->tag.getCerts()).get();
     }
+
+    @Override
+    public boolean checkExistence(long id) {
+        try{
+            return entityManager.
+            createQuery("SELECT 1 FROM Tag tag WHERE tag.id = ?1",Integer.class).
+            setParameter(1, id).
+            getSingleResult() == 1;
+        }
+        catch(NoResultException ex){
+            return false;
+        }
+    }
+
+
 }

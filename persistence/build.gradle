@@ -10,12 +10,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    implementation 'org.springframework:spring-jdbc:5.3.15'
-    implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.1'
     testImplementation 'com.h2database:h2:1.4.200'
+    implementation 'org.hibernate:hibernate-core:5.6.5.Final'
 
 }
 

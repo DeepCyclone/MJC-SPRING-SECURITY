@@ -1,118 +1,107 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
-import com.epam.esm.repository.GiftCertificateRepository;
-import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.repository.template.GiftCertificateRepository;
+import com.epam.esm.repository.template.TagRepository;
+import com.epam.esm.service.template.GiftCertificateService;
+import com.epam.esm.service.template.TagService;
+import com.epam.esm.service.validation.RequestParamsValidator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MultiValueMap;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.epam.esm.exception.ErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
-    private static final String nameSortOrder = "nameSortOrder";
-    private static final String dateSortOrder = "dateSortOrder";
-    private static final String ASCENDING_SORT = "ASC";
-    private static final String DESCENDING_SORT = "DESC";
-
     private final GiftCertificateRepository certificateRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagRepository tagRepository) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagService tagService) {
         this.certificateRepository = certificateRepository;
-        this.tagRepository = tagRepository;
+        this.tagService = tagService;
     }
 
     @Override
-    public GiftCertificate getByID(long ID) {
-        GiftCertificate certificate = Optional.ofNullable(certificateRepository.getByID(ID)).orElseThrow(
-                ()->new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with ID = "+ID));
-        certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(ID));
+    public GiftCertificate getByID(long id) {
+        GiftCertificate certificate = certificateRepository.findByID(id).orElseThrow(
+                ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));
+        certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(id));
         return certificate;
     }
 
     @Override
+    @Transactional
     public GiftCertificate addEntity(GiftCertificate certificateDto) {
+        List<Tag> gainedTags = certificateDto.getAssociatedTags();
+        certificateDto.setAssociatedTags(Collections.emptyList());
         GiftCertificate baseCert = certificateRepository.create(certificateDto);
-        List<Tag> savedTags = saveAssociatedTags(certificateDto.getAssociatedTags());
-        certificateRepository.linkAssociatedTags(baseCert.getId(),savedTags);
+        List<Tag> savedTags = saveAssociatedTags(gainedTags);
+        baseCert.setAssociatedTags(Collections.emptyList());
+        baseCert.getAssociatedTags().addAll(savedTags);
         return getByID(baseCert.getId());
     }
 
     @Override
     @Transactional
-    public void deleteByID(long ID){
-        boolean result = certificateRepository.deleteByID(ID);
+    public void deleteByID(long id){
+        boolean result = certificateRepository.deleteByID(id);
         if(!result){
-            throw new ServiceException(ErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with ID = "+ID);
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = "+id);
         }
     }
 
     @Override
     @Transactional
-    public GiftCertificate update(GiftCertificate certificatePatch) {
-        GiftCertificate originalCertificate = getByID(certificatePatch.getId());
-        Optional.ofNullable(certificatePatch.getName()).ifPresent(originalCertificate::setName);
-        Optional.ofNullable(certificatePatch.getDescription()).ifPresent(originalCertificate::setDescription);
-        Optional.ofNullable(certificatePatch.getPrice()).ifPresent(originalCertificate::setPrice);
-        originalCertificate.setDuration(certificatePatch.getDuration());
-        detachAssociatedTags(certificatePatch.getId());
-        if (certificatePatch.getAssociatedTags() != null) {
-            List<Tag> tags = saveAssociatedTags(certificatePatch.getAssociatedTags());
-            if(!tags.isEmpty()) {
-                certificateRepository.linkAssociatedTags(certificatePatch.getId(), tags);
-            }
-        }
-        certificateRepository.update(originalCertificate,certificatePatch.getId());
-        return getByID(certificatePatch.getId());
+    public GiftCertificate update(GiftCertificate patch,long id) {
+        checkExistence(id);
+        certificateRepository.update(patch,id);//TODO handle boolean value
+        Optional.ofNullable(patch.getAssociatedTags()).ifPresent(tags -> {
+            GiftCertificate cert = getByID(id);
+            List<Tag> savedTags = saveAssociatedTags(tags);
+            cert.getAssociatedTags().clear();
+            cert.getAssociatedTags().addAll(savedTags);
+        });
+        return getByID(id);
     }
 
     @Override
+    @Transactional
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
-        List<Tag> tagsIdentifiable = new ArrayList<>();
-        if(tags!=null) {
-            for (Tag tag : tags) {
-                tagsIdentifiable.add(tagRepository.create(tag));
-            }
+        if(tags == null || tags.isEmpty()){
+            return Collections.emptyList();
         }
-        return tagsIdentifiable;
+        return tags.stream().map(tag->
+        tagService.addEntity(tag)).collect(Collectors.toList());
     }
 
     @Override
-    public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
-        checkInvalidValuedParams(params);
-        List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params);
-        for(GiftCertificate certificate:certificates){
-            certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId()));
-        }
+    public List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params,int page,int limit){
+        RequestParamsValidator.validateParams(params);
+        List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params,page,limit);
+        certificates.forEach(certificate -> certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
         return certificates;
     }
-
-    private void checkInvalidValuedParams(Map<String,String> params){
-        if((params.containsKey(nameSortOrder) && !isAllowedOrderDirection(params.get(nameSortOrder))) ||
-                (params.containsKey(dateSortOrder) && !isAllowedOrderDirection(params.get(dateSortOrder)))){
-            throw new ServiceException(CERTIFICATE_BAD_REQUEST_PARAMS,"allowed values for sorting params are ASC and DESC");
-        }
-    }
-
-    private static boolean isAllowedOrderDirection(String order){
-        return order.equalsIgnoreCase(ASCENDING_SORT) || order.equalsIgnoreCase(DESCENDING_SORT);
-    }
-
+    
     private void detachAssociatedTags(long certificateID){
         certificateRepository.detachAssociatedTags(certificateID);
+    }
+
+    private void checkExistence(long id){
+        if(!certificateRepository.checkExistence(id)){
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID " + id);
+        }
     }
 
 }

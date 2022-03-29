@@ -1,6 +1,9 @@
 package com.epam.esm.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import org.springframework.hateoas.RepresentationModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GiftCertificateResponseDto implements Serializable {
+public class GiftCertificateResponseDto extends RepresentationModel<GiftCertificateResponseDto> implements Serializable {
     private long id;
     private String name;
     private String description;
