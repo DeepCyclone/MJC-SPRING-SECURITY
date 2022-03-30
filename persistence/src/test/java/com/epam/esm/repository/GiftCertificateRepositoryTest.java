@@ -108,7 +108,7 @@ class GiftCertificateRepositoryTest {
    @Order(7)
    void getInfoWithDateOrder(){
        MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
-    //    params.set("dateSortOrder","ASC");
+       params.set("dateSortOrder","ASC");
        List<GiftCertificate> certs = repository.handleParametrizedRequest(params,1,10);
        Assertions.assertEquals(certs.get(0),certificates.get(0));
    }
