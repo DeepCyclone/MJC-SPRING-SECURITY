@@ -2,9 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.template.GiftCertificateRepository;
-import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.service.template.TagService;
 
@@ -19,7 +17,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,10 +36,6 @@ public class GiftCertificateServiceTest {
 
    private static final List<GiftCertificate> certificates = Arrays.asList(new GiftCertificate());
    private static final List<GiftCertificate> parametrizedCertificates = Arrays.asList(GiftCertificate.builder().name("Aaaa").build());
-
-   private static final List<Tag> tags = Collections.emptyList();
-   private static final Tag emptyTag = Tag.builder().build();
-   private static final Tag IDTag = Tag.builder().id(1L).build();
 
 
    @BeforeEach

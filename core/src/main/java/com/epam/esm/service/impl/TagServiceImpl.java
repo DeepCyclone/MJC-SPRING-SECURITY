@@ -6,7 +6,6 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.service.template.TagService;
-import com.epam.esm.service.validation.SignValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
