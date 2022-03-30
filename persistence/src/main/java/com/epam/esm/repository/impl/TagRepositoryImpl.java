@@ -76,7 +76,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long tagID) {
-        return findByID(tagID).map(tag->tag.getCerts()).orElse(Collections.emptyList());
+        return findByID(tagID).map(Tag::getCerts).orElse(Collections.emptyList());
     }
 
     @Override

@@ -1,6 +1,11 @@
 package com.epam.esm.repository.metadata;
 
-public class OrderMetadata {
+public final class OrderMetadata {
+
+    private OrderMetadata(){
+
+    }
+
     public static final String TABLE_NAME = "`order`";
     public static final String DB_PREFIX = "o_";
     public static final String ID = DB_PREFIX + "id";

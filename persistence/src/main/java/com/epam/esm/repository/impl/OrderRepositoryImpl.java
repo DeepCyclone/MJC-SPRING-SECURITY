@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -65,21 +64,12 @@ public class OrderRepositoryImpl implements OrderRepository{
         build()));
     }
 
-    @Transactional
-    @Override
-    public void linkAssociatedCertificates(List<GiftCertificate> certificates, long orderId) {
-        findByID(orderId).ifPresent(order->order.getCertificates().addAll(certificates));
-    }
-
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long orderId) {
-        return findByID(orderId).map(order->order.getCertificates()).orElse(Collections.emptyList());
+        return findByID(orderId).map(Order::getCertificates).orElse(Collections.emptyList());
     }
 
-    @Override
-    public void detachAssociatedCertificates(long orderId) {
-        findByID(orderId).ifPresent(order->order.getCertificates().clear());
-    }
+
 
     @Override
     public boolean checkExistence(long id) {

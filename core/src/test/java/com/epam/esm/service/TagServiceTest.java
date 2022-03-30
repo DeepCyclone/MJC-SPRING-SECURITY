@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +24,7 @@ public class TagServiceTest {
 
    private static TagServiceImpl service;
 
-   private static final List<Tag> tags = Arrays.asList();
+   private static final List<Tag> tags = Collections.emptyList();
    private static final Optional<Tag> tag = Optional.of(Tag.builder().build());
    private static final Optional<Tag> tagID = Optional.of(Tag.builder().id(1L).build());
 

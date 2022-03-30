@@ -11,8 +11,6 @@ import java.util.List;
  * @author Flexus
  * */
 public interface GiftCertificateRepository extends GenericRepository<GiftCertificate>,Identifiable<GiftCertificate>,Nameable<GiftCertificate> {
-    void linkAssociatedTags(long certificateID, List<Tag> tags);
-    void detachAssociatedTags(long certificateID);
     List<Tag> fetchAssociatedTags(long certificateID);
     List<GiftCertificate> handleParametrizedRequest(MultiValueMap<String,String> map,int page,int limit);
 }

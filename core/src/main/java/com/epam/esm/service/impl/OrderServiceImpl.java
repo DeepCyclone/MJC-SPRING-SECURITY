@@ -59,9 +59,11 @@ public class OrderServiceImpl implements OrderService {
             .reduce(BigDecimal.ZERO, BigDecimal::add));
             orderRepository.findByID(orderId).ifPresent(order->order.setCertificates(certs));
         });
-        price.ifPresent(pr->orderPatch.setPrice(pr));
+        price.ifPresent(orderPatch::setPrice);
         boolean result = orderRepository.update(orderPatch, orderId);
-
+        if(!result){
+            throw new ServiceException(ServiceErrorCode.ORDER_UPDATE_ERROR,"An error occured while updating order");
+        }
         return getById(orderId);
     }
 
@@ -95,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
     private List<GiftCertificate> fetchAssociatedCertificates(long orderId){
         return orderRepository.
         findByID(orderId).
-        map(order->order.getCertificates()).
+        map(Order::getCertificates).
         orElse(Collections.emptyList());
     }
 
@@ -108,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     private BigDecimal countOrderSum(List<GiftCertificate> certificates){
         return certificates.
         stream().
-        map(cert->cert.getPrice()).
+        map(GiftCertificate::getPrice).
         reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

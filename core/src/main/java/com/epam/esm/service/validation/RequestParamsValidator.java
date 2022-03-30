@@ -64,7 +64,7 @@ public class RequestParamsValidator {
                 unallowedParams.add(key);
             }
         });
-        unallowedParams.forEach(param->params.remove(param));
+        unallowedParams.forEach(params::remove);
     }
 
 }

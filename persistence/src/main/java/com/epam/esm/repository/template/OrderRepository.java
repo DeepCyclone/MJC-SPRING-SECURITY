@@ -7,9 +7,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/*
+ * A specification how to interact with datasource which contains orders
+ * @author Flexus
+ * */
 public interface OrderRepository extends GenericRepository<Order>,Identifiable<Order> {
     Optional<Order> makeOrder(BigDecimal totalPrice);
-    void linkAssociatedCertificates(List<GiftCertificate> certificates,long orderId);
     List<GiftCertificate> fetchAssociatedCertificates(long orderId);
-    void detachAssociatedCertificates(long orderId);
 }

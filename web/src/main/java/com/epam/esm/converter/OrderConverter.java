@@ -18,5 +18,4 @@ public interface OrderConverter {
     List<OrderResponseDto> convertToResponseDtos(List<Order> objects);
     @Mapping(target = "purchaseDate",ignore = true)
     Order convertFromRequestDto(OrderDto dto);
-    List<Order> convertFromRequestDtos(List<OrderDto> dtos);
 }

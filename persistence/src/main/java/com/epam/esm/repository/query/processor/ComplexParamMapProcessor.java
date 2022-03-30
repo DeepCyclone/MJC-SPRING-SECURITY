@@ -27,8 +27,6 @@ import static com.epam.esm.repository.query.holder.SQLParts.COMMA;
 import static com.epam.esm.repository.query.holder.SQLParts.EMPTY_PART;
 
 public class ComplexParamMapProcessor {
- 
-
 
     public static String buildQuery(MultiValueMap<String,String> params){
         if(!params.isEmpty()) {
@@ -47,9 +45,7 @@ public class ComplexParamMapProcessor {
             Optional<String> namePartValue = Optional.ofNullable(params.getFirst(NAME_PART));
             Optional<String> descriptionPartValue = Optional.ofNullable(params.getFirst(DESCRIPTION_PART));
             
-            namePartValue.ifPresent(v -> {
-                searchingQuery.append(CERTIFICATE_NAME_SEARCH).append(COLON).append(NAME_PART);
-            });
+            namePartValue.ifPresent(v -> searchingQuery.append(CERTIFICATE_NAME_SEARCH).append(COLON).append(NAME_PART));
             descriptionPartValue.ifPresent(v -> {
                 if(namePartValue.isPresent()){searchingQuery.append(AND);}
                 searchingQuery.append(CERTIFICATE_DESCRIPTION_SEARCH).append(COLON).append(DESCRIPTION_PART);
@@ -81,15 +77,11 @@ public class ComplexParamMapProcessor {
         if(nameSortOrderValue.isPresent() || dateSortOrderValue.isPresent()) {
             StringBuilder orderQuery = new StringBuilder(ORDER_BY);
             boolean complexSort = nameSortOrderValue.isPresent() && dateSortOrderValue.isPresent();
-            nameSortOrderValue.ifPresent(order -> {
-                orderQuery.append(GiftCertificateMetadata.NAME).append(" ").append(order);
-            });
+            nameSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.NAME).append(" ").append(order));
             if(complexSort){
                 orderQuery.append(COMMA);
             }
-            dateSortOrderValue.ifPresent(order -> {
-                orderQuery.append(GiftCertificateMetadata.LAST_UPDATE_DATE).append(" ").append(order);
-            });
+            dateSortOrderValue.ifPresent(order -> orderQuery.append(GiftCertificateMetadata.LAST_UPDATE_DATE).append(" ").append(order));
             return orderQuery.toString();
         }
         return EMPTY_PART;

@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +33,8 @@ public class GiftCertificateServiceTest {
    private static final Optional<GiftCertificate> NEW_CERT = Optional.of(GiftCertificate.builder().build());
    private static final Optional<GiftCertificate> NON_EXISTING_CERTIFICATE = Optional.empty();
 
-   private static final List<GiftCertificate> certificates = Arrays.asList(new GiftCertificate());
-   private static final List<GiftCertificate> parametrizedCertificates = Arrays.asList(GiftCertificate.builder().name("Aaaa").build());
+   private static final List<GiftCertificate> certificates = Collections.singletonList(new GiftCertificate());
+   private static final List<GiftCertificate> parametrizedCertificates = Collections.singletonList(GiftCertificate.builder().name("Aaaa").build());
 
 
    @BeforeEach

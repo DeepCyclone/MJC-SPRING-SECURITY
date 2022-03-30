@@ -1,6 +1,11 @@
 package com.epam.esm.repository.metadata;
 
-public class UserMetadata {
+public final class UserMetadata {
+
+    private UserMetadata(){
+
+    }
+
     public static final String TABLE_NAME = "user";
     public static final String DB_PREFIX = "u_";
     public static final String ID = DB_PREFIX + "id";

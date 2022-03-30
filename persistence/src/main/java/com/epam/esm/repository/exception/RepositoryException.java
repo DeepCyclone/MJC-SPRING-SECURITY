@@ -8,5 +8,4 @@ import lombok.RequiredArgsConstructor;
 public class RepositoryException extends RuntimeException {
     private final String errorCode;
     private final String errorMsg;
-
 }

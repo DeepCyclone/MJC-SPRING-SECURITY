@@ -57,7 +57,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
         Query queryExecutor = entityManager.
         createQuery(query);
-        UpdateQueryBuilder.getUpdateParams(object).forEach((key,value)->queryExecutor.setParameter(key, value));
+        UpdateQueryBuilder.getUpdateParams(object).forEach(queryExecutor::setParameter);
         return queryExecutor.executeUpdate() >= MIN_AFFECTED_ROWS;
     }
 
@@ -69,30 +69,17 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public boolean deleteByID(long id) {
-        findByID(id).ifPresent(cert->{
-            if(cert.getAssociatedTags()!=null && cert.getAssociatedTags().size() > 0){
+        findByID(id).ifPresent(cert -> {
+            if (cert.getAssociatedTags() != null && !cert.getAssociatedTags().isEmpty()) {
                 throw new RepositoryException(RepositoryErrorCode.CERTIFICATE_DELETION_ERROR, "Unable to delete certificate due to it's belonging to order(s)");
             }
         });
         return entityManager.
-        createQuery("delete from GiftCertificate certificate where certificate.id = :id").
-        setParameter("id", id).
-        executeUpdate() >= MIN_AFFECTED_ROWS;
+                createQuery("delete from GiftCertificate certificate where certificate.id = :id").
+                setParameter("id", id).
+                executeUpdate() >= MIN_AFFECTED_ROWS;
     }
 
-    @Override
-    public void linkAssociatedTags(long certificateID, List<Tag> tags) {
-        findByID(certificateID).ifPresent(cert->{
-            if(tags != null && !tags.isEmpty()){
-                cert.getAssociatedTags().addAll(tags);
-            }
-        });
-    }
-
-    @Override
-    public void detachAssociatedTags(long certificateID) {
-        findByID(certificateID).ifPresent(cert->cert.getAssociatedTags().clear());
-    }
     
     @Override
     public List<Tag> fetchAssociatedTags(long certificateID) {

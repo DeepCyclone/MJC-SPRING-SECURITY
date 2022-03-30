@@ -67,7 +67,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<Order> fetchAssociatedOrders(long userId) {
-        return findByID(userId).map(user->user.getOrders()).orElse(Collections.emptyList());
+        return findByID(userId).map(User::getOrders).orElse(Collections.emptyList());
     }
 
     @Override

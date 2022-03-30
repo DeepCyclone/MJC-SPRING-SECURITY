@@ -80,8 +80,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if(tags == null || tags.isEmpty()){
             return Collections.emptyList();
         }
-        return tags.stream().map(tag->
-        tagService.addEntity(tag)).collect(Collectors.toList());
+        return tags.stream().map(tagService::addEntity).collect(Collectors.toList());
     }
 
     @Override

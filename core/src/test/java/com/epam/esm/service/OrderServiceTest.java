@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,12 +35,11 @@ public class OrderServiceTest {
    private static OrderServiceImpl service = new OrderServiceImpl(orderRepository,giftCertificateRepository,userRepository);
 
    private static final Optional<Order> ORDER = Optional.of(Order.builder().id(1).build());
-   private static final Optional<Order> NEW_ORDER = Optional.of(Order.builder().build());
    private static final Optional<Order> NON_EXISTING_ORDER = Optional.empty();
-   private static final Optional<User> user = Optional.of(User.builder().id(1L).orders(new ArrayList<Order>(Arrays.asList(ORDER.get()))).build());
+   private static final Optional<User> user = Optional.of(User.builder().id(1L).orders(new ArrayList<>(Collections.singletonList(ORDER.get()))).build());
    private static final Optional<GiftCertificate> cert = Optional.of(GiftCertificate.builder().id(1L).price(new BigDecimal("9999")).build());
 
-   private static final List<Order> ORDERS = Arrays.asList(new Order());
+   private static final List<Order> ORDERS = Collections.singletonList(new Order());
 
 
    @BeforeEach
@@ -85,7 +84,7 @@ public class OrderServiceTest {
        Mockito.when(userRepository.findByID(1L)).thenReturn(user);
        Mockito.when(giftCertificateRepository.findByID(1L)).thenReturn(cert);
        Mockito.when(orderRepository.makeOrder(new BigDecimal("9999"))).thenReturn(ORDER);
-       Order entity = service.makeOrder(Arrays.asList(1L),1L);
+       Order entity = service.makeOrder(Collections.singletonList(1L),1L);
        Assertions.assertEquals(ORDER.get(),entity);
    }
 

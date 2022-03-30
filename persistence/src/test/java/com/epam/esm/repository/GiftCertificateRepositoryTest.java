@@ -84,7 +84,7 @@ class GiftCertificateRepositoryTest {
                                      expected.getName().equals(actual.getName()) &&
                                      expected.getDescription().equals(actual.getDescription()) &&
                                      expected.getPrice().equals(actual.getPrice()) &&
-                                     expected.getDuration() ==  actual.getDuration());
+                                     expected.getDuration().equals(actual.getDuration()));
    }
 
    @Test
