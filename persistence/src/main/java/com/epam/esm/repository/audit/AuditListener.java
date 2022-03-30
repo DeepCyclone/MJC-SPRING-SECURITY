@@ -1,11 +1,10 @@
 package com.epam.esm.repository.audit;
 
-import java.util.Date;
-
 import javax.annotation.PreDestroy;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
+import java.util.Date;
 
 public class AuditListener {
     

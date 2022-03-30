@@ -1,5 +1,17 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.converter.OrderConverter;
+import com.epam.esm.dto.PatchDTO;
+import com.epam.esm.dto.request.OrderDto;
+import com.epam.esm.hateoas.assembler.OrderAssembler;
+import com.epam.esm.hateoas.model.OrderModel;
+import com.epam.esm.repository.model.Order;
+import com.epam.esm.service.template.OrderService;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -8,23 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
 import javax.validation.constraints.Min;
-
-import com.epam.esm.converter.OrderConverter;
-import com.epam.esm.dto.PatchDTO;
-import com.epam.esm.dto.request.OrderDto;
-import com.epam.esm.hateoas.assembler.OrderAssembler;
-import com.epam.esm.hateoas.model.OrderModel;
-import com.epam.esm.repository.model.Order;
-import com.epam.esm.service.template.OrderService;
-
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/orders",produces = {MediaType.APPLICATION_JSON_VALUE})

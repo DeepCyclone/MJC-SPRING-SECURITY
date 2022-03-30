@@ -2,7 +2,6 @@ package com.epam.esm.repository;
 
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.template.GiftCertificateRepository;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,14 +14,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import javax.transaction.Transactional;
 
 @SpringBootTest
 @Transactional
@@ -110,7 +108,7 @@ class GiftCertificateRepositoryTest {
    @Order(7)
    void getInfoWithDateOrder(){
        MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
-       params.set("dateSortOrder","ASC");
+    //    params.set("dateSortOrder","ASC");
        List<GiftCertificate> certs = repository.handleParametrizedRequest(params,1,10);
        Assertions.assertEquals(certs.get(0),certificates.get(0));
    }

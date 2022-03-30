@@ -1,14 +1,13 @@
 package com.epam.esm.repository.mapping;
 
+import com.epam.esm.repository.metadata.OrderMetadata;
+import com.epam.esm.repository.model.Order;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
-
-import com.epam.esm.repository.metadata.OrderMetadata;
-import com.epam.esm.repository.model.Order;
-
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
 
 @Component
 public class OrderMapping implements RowMapper<Order>{

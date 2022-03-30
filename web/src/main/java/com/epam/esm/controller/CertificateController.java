@@ -8,7 +8,6 @@ import com.epam.esm.hateoas.assembler.CertificateAssembler;
 import com.epam.esm.hateoas.model.CertificateModel;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.service.template.GiftCertificateService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -26,10 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import java.util.List;
-
 import javax.validation.constraints.Min;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -1,14 +1,13 @@
 package com.epam.esm.hateoas.processor;
 
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import com.epam.esm.controller.CertificateController;
 import com.epam.esm.hateoas.model.CertificateModel;
-
 import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class CertificateProcessor implements RepresentationModelProcessor<CertificateModel> {

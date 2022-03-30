@@ -1,16 +1,15 @@
 package com.epam.esm.repository.model;
 
+import com.epam.esm.repository.audit.AuditListener;
+import com.epam.esm.repository.metadata.GiftCertificateMetadata;
+import com.epam.esm.repository.metadata.JoinedTablesMetadata;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,12 +23,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import com.epam.esm.repository.audit.AuditListener;
-import com.epam.esm.repository.metadata.GiftCertificateMetadata;
-import com.epam.esm.repository.metadata.JoinedTablesMetadata;
-
-import org.hibernate.annotations.CreationTimestamp;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -58,6 +56,7 @@ public class GiftCertificate implements Serializable {
     @CreationTimestamp
     private Timestamp lastUpdateDate;
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
     @JoinTable(
         name = JoinedTablesMetadata.TAG_M2M_CERTIFICATE,

@@ -8,7 +8,6 @@ import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.service.template.GiftCertificateService;
 import com.epam.esm.service.template.TagService;
 import com.epam.esm.service.validation.RequestParamsValidator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

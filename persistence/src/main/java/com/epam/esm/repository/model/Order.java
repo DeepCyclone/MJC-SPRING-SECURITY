@@ -1,9 +1,15 @@
 package com.epam.esm.repository.model;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import com.epam.esm.repository.audit.AuditListener;
+import com.epam.esm.repository.metadata.JoinedTablesMetadata;
+import com.epam.esm.repository.metadata.OrderMetadata;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,18 +24,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.epam.esm.repository.audit.AuditListener;
-import com.epam.esm.repository.metadata.JoinedTablesMetadata;
-import com.epam.esm.repository.metadata.OrderMetadata;
-
-import org.hibernate.annotations.CreationTimestamp;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -57,6 +54,7 @@ public class Order {
     )
     private List<GiftCertificate> certificates;
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinTable(
         name = JoinedTablesMetadata.USER_M2M_ORDER,

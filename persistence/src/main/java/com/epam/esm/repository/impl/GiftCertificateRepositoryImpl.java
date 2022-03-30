@@ -7,21 +7,23 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 import com.epam.esm.repository.template.GiftCertificateRepository;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.util.MultiValueMap;
-
-import static com.epam.esm.repository.query.holder.SQLParts.*;
-import static com.epam.esm.repository.query.holder.ComplexParamsHolder.*;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.DATE_SORT_ORDER;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.DESCRIPTION_PART;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.NAME_PART;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.NAME_SORT_ORDER;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.TAG_NAME;
+import static com.epam.esm.repository.query.holder.SQLParts.PERCENT;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -35,8 +37,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public GiftCertificate create(GiftCertificate object){
         object.setId(0L);
-        GiftCertificate cert = this.entityManager.merge(object);
-        return cert;
+        return this.entityManager.merge(object);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     
     @Override
     public List<Tag> fetchAssociatedTags(long certificateID) {
-        return this.findByID(certificateID).map(cert->cert.getAssociatedTags()).orElse(Collections.emptyList());
+        return this.findByID(certificateID).map(GiftCertificate::getAssociatedTags).orElse(Collections.emptyList());
     }
     
     @Override
@@ -107,9 +108,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         setMaxResults(limit);
         prepareParamsToSearchStatement(params);
         prepareParamsToOrdering(params);
-        params.forEach((key,value) -> {
-            query.setParameter(key, value);
-        });
+        params.forEach(query::setParameter);
         return query.getResultList();
     }
 
@@ -145,12 +144,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     private void prepareParamsToOrdering(MultiValueMap<String,String> params){
-        if(params.containsKey(NAME_SORT_ORDER)){
-            params.remove(NAME_SORT_ORDER);
-        }
-        if(params.containsKey(DATE_SORT_ORDER)){
-            params.remove(DATE_SORT_ORDER);
-        }
+        params.remove(NAME_SORT_ORDER);
+        params.remove(DATE_SORT_ORDER);
     }
 
     @Override

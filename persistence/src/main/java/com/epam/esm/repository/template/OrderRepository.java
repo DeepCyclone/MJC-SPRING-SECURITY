@@ -1,11 +1,11 @@
 package com.epam.esm.repository.template;
 
+import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.repository.model.Order;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
-import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.model.Order;
 
 public interface OrderRepository extends GenericRepository<Order>,Identifiable<Order> {
     Optional<Order> makeOrder(BigDecimal totalPrice);

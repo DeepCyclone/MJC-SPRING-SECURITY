@@ -1,17 +1,16 @@
 package com.epam.esm.hateoas.assembler;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.epam.esm.controller.CertificateController;
 import com.epam.esm.controller.OrderController;
 import com.epam.esm.hateoas.model.OrderModel;
 import com.epam.esm.repository.model.Order;
-
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

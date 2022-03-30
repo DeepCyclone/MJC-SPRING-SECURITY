@@ -1,24 +1,20 @@
 package com.epam.esm.repository.impl;
 
 
-import static com.epam.esm.repository.query.holder.UserQueryHolder.FETCH_MOST_USED_TAG_WITH_RICHEST_ORDERS;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-
-
-
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
 import com.epam.esm.repository.template.UserRepository;
-
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static com.epam.esm.repository.query.holder.UserQueryHolder.FETCH_MOST_USED_TAG_WITH_RICHEST_ORDERS;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {

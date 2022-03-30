@@ -1,16 +1,15 @@
 package com.epam.esm.converter;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 @Mapper(componentModel = "spring",uses = TagConverter.class)
 public interface CertificateConverter {

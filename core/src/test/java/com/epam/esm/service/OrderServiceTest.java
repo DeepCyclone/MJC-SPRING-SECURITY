@@ -1,12 +1,5 @@
 package com.epam.esm.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
@@ -15,7 +8,6 @@ import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.repository.template.OrderRepository;
 import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.impl.OrderServiceImpl;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {

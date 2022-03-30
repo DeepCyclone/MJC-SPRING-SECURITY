@@ -3,12 +3,10 @@ package com.epam.esm.controller;
 import com.epam.esm.converter.TagConverter;
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.request.TagDto;
-import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.hateoas.assembler.TagAssembler;
 import com.epam.esm.hateoas.model.TagModel;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.template.TagService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -23,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import javax.validation.constraints.Min;
 

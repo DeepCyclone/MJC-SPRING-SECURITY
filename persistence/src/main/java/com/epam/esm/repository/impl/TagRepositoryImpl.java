@@ -5,16 +5,14 @@ import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.TagRepository;
-
 import org.springframework.stereotype.Repository;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 
 @Repository

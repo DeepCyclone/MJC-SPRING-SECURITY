@@ -1,8 +1,8 @@
 package com.epam.esm.service.template;
 
-import java.util.List;
-
 import com.epam.esm.repository.model.Order;
+
+import java.util.List;
 
 public interface OrderService {
     List<Order> getAll(int limit,int offset);

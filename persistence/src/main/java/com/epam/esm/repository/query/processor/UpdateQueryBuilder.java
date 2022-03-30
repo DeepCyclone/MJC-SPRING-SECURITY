@@ -1,13 +1,16 @@
 package com.epam.esm.repository.query.processor;
 
-import static com.epam.esm.repository.query.holder.SQLParts.*;
+import com.epam.esm.repository.model.GiftCertificate;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-import com.epam.esm.repository.model.GiftCertificate;
+import static com.epam.esm.repository.query.holder.SQLParts.COLON;
+import static com.epam.esm.repository.query.holder.SQLParts.COMMA;
+import static com.epam.esm.repository.query.holder.SQLParts.EMPTY_PART;
+import static com.epam.esm.repository.query.holder.SQLParts.EQUALS_MARK;
 
 public class UpdateQueryBuilder{
     private static final String UPDATE_QUERY_BASE = "UPDATE GiftCertificate certificate SET ";
@@ -19,7 +22,7 @@ public class UpdateQueryBuilder{
         if(!dynamicPart.isEmpty()){
         StringBuilder resultQuery = new StringBuilder(UPDATE_QUERY_BASE);
         resultQuery.append(dynamicPart);
-        resultQuery.append(UPDATE_QUERY_WHERE_CONDITION+id);
+        resultQuery.append(UPDATE_QUERY_WHERE_CONDITION).append(id);
         return resultQuery.toString();
         }
         return EMPTY_PART;
@@ -41,7 +44,7 @@ public class UpdateQueryBuilder{
         Iterator<String> keysIterator =  params.keySet().iterator();
         while(keysIterator.hasNext()){
             String key = keysIterator.next();
-            dynamicPart.append(key+EQUALS_MARK+COLON+key);
+            dynamicPart.append(key).append(EQUALS_MARK).append(COLON).append(key);
             if(keysIterator.hasNext()){
                 dynamicPart.append(COMMA);
             }

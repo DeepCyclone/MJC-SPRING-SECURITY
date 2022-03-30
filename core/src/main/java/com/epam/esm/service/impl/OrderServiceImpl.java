@@ -1,12 +1,5 @@
 package com.epam.esm.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
 import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.GiftCertificate;
@@ -16,10 +9,16 @@ import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.repository.template.OrderRepository;
 import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.template.OrderService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {

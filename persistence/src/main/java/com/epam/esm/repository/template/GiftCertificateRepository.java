@@ -2,7 +2,6 @@ package com.epam.esm.repository.template;
 
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-
 import org.springframework.util.MultiValueMap;
 
 import java.util.List;

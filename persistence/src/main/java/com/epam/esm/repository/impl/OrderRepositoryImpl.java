@@ -1,20 +1,18 @@
 package com.epam.esm.repository.impl;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.repository.model.Order;
+import com.epam.esm.repository.template.OrderRepository;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-
-import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.model.Order;
-import com.epam.esm.repository.template.OrderRepository;
-
-import org.springframework.stereotype.Repository;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class OrderRepositoryImpl implements OrderRepository{

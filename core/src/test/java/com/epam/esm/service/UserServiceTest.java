@@ -1,17 +1,10 @@
 package com.epam.esm.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.epam.esm.exception.ServiceException;
-import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.User;
 import com.epam.esm.repository.template.OrderRepository;
 import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.impl.UserServiceImpl;
-
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {

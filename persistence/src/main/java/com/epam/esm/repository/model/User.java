@@ -1,7 +1,13 @@
 package com.epam.esm.repository.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.epam.esm.repository.audit.AuditListener;
+import com.epam.esm.repository.metadata.UserMetadata;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,16 +19,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.epam.esm.repository.audit.AuditListener;
-import com.epam.esm.repository.metadata.UserMetadata;
-
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -39,6 +37,7 @@ public class User {
     @Column(name = UserMetadata.NAME)
     private String name;
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY,mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
 }

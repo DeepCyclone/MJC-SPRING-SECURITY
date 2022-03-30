@@ -1,13 +1,12 @@
 package com.epam.esm.converter;
 
-import java.util.List;
-
 import com.epam.esm.dto.response.UserResponseDto;
 import com.epam.esm.hateoas.model.UserModel;
 import com.epam.esm.repository.model.User;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+
+import java.util.List;
 
 
 @Mapper(componentModel = "spring",uses = OrderConverter.class)

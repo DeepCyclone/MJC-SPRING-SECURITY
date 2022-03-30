@@ -1,15 +1,14 @@
 package com.epam.esm.service.validation;
 
+import com.epam.esm.exception.ServiceErrorCode;
+import com.epam.esm.exception.ServiceException;
+import org.springframework.util.MultiValueMap;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.epam.esm.exception.ServiceErrorCode;
-import com.epam.esm.exception.ServiceException;
-
-import org.springframework.util.MultiValueMap;
 
 public class RequestParamsValidator {
 
@@ -53,7 +52,7 @@ public class RequestParamsValidator {
         entry.getValue().size() > 1 && !entry.getKey().equals("tagName")).collect(Collectors.toList());
         if(!unallowedDuplicates.isEmpty()){
             StringBuilder duplicatesInfo = new StringBuilder();
-            unallowedDuplicates.stream().forEach(entry -> duplicatesInfo.append(entry.getKey() + " can't have several values|"));
+            unallowedDuplicates.stream().forEach(entry -> duplicatesInfo.append(entry.getKey()).append(" can't have several values|"));
             throw new ServiceException(ServiceErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS,duplicatesInfo.toString());
         }
     }

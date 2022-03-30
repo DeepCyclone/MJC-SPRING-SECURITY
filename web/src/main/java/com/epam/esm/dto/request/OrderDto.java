@@ -1,22 +1,18 @@
 package com.epam.esm.dto.request;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Null;
-import javax.validation.constraints.PositiveOrZero;
-
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
-
-import org.springframework.validation.annotation.Validated;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.Null;
+import javax.validation.constraints.PositiveOrZero;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor

@@ -1,25 +1,30 @@
 package com.epam.esm.repository.query.processor;
 
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.AND;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.OR;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_NAME_SEARCH;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.JOIN_PARAMS;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.ORDER_BY;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.TAG_NAME_FILTER;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.WHERE;
-import static com.epam.esm.repository.query.holder.SQLParts.*;
-import static com.epam.esm.repository.query.holder.CertificateQueryHolder.GROUP_BY_CERT_WITH_CERTAIN_AMOUNT_OF_TAGS;
-import static com.epam.esm.repository.query.holder.ComplexParamsHolder.*;
+import com.epam.esm.repository.metadata.GiftCertificateMetadata;
+import org.springframework.util.MultiValueMap;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import com.epam.esm.repository.metadata.GiftCertificateMetadata;
-
-import org.springframework.util.MultiValueMap;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.AND;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.CERTIFICATE_NAME_SEARCH;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.GROUP_BY_CERT_WITH_CERTAIN_AMOUNT_OF_TAGS;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.JOIN_PARAMS;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.OR;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.ORDER_BY;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.READ_ALL;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.TAG_NAME_FILTER;
+import static com.epam.esm.repository.query.holder.CertificateQueryHolder.WHERE;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.DATE_SORT_ORDER;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.DESCRIPTION_PART;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.NAME_PART;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.NAME_SORT_ORDER;
+import static com.epam.esm.repository.query.holder.ComplexParamsHolder.TAG_NAME;
+import static com.epam.esm.repository.query.holder.SQLParts.COLON;
+import static com.epam.esm.repository.query.holder.SQLParts.COMMA;
+import static com.epam.esm.repository.query.holder.SQLParts.EMPTY_PART;
 
 public class ComplexParamMapProcessor {
  
@@ -56,14 +61,14 @@ public class ComplexParamMapProcessor {
                     }
                     int tagNum = 1;
                     while(iterator.hasNext()){
-                    searchingQuery.append(TAG_NAME_FILTER).append(COLON).append(TAG_NAME+tagNum);
+                    searchingQuery.append(TAG_NAME_FILTER).append(COLON).append(TAG_NAME).append(tagNum);
                     iterator.next();
                     if(iterator.hasNext()){
                         ++tagNum;
                         searchingQuery.append(OR);
                     }
                 }
-                searchingQuery.append(GROUP_BY_CERT_WITH_CERTAIN_AMOUNT_OF_TAGS+list.size());
+                searchingQuery.append(GROUP_BY_CERT_WITH_CERTAIN_AMOUNT_OF_TAGS).append(list.size());
             });
             return searchingQuery.toString();
         }

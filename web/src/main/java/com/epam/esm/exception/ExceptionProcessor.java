@@ -1,10 +1,6 @@
 package com.epam.esm.exception;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 import com.epam.esm.repository.exception.RepositoryException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class ExceptionProcessor  {
@@ -23,7 +21,7 @@ public class ExceptionProcessor  {
     @ResponseBody
     public ResponseEntity<ErrorDescriptor> serviceProcessor(ServiceException e){
         HttpStatus status = HttpStatus.resolve(Integer.parseInt(e.getErrorCode().substring(ERROR_CODE_START,ERROR_CODE_END)));
-        return new ResponseEntity<>(new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg()),status);
+        return new  ResponseEntity<>(new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg()),status);
     }
 
     @ExceptionHandler(RepositoryException.class)

@@ -6,7 +6,6 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.service.template.TagService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,15 +45,6 @@ public class TagServiceImpl implements TagService {
         if(!flushingResult){
             throw new ServiceException(ServiceErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with id = "+id);
         }
-    }
-
-    @Override
-    public void updateByID(long id) throws UnsupportedOperationException {}
-
-    @Override
-    public Tag getByName(String name) {
-        return tagRepository.findByName(name).
-        orElseThrow(() -> new ServiceException(ServiceErrorCode.TAG_NOT_FOUND,"Tag with name " + name + " not found"));
     }
 
 }

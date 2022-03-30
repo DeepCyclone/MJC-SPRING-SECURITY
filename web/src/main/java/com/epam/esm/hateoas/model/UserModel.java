@@ -1,13 +1,12 @@
 package com.epam.esm.hateoas.model;
 
-import java.io.Serializable;
-
-import org.springframework.hateoas.RepresentationModel;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
+
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
