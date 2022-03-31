@@ -35,6 +35,7 @@ public class OrderServiceTest {
    private static OrderServiceImpl service = new OrderServiceImpl(orderRepository,giftCertificateRepository,userRepository);
 
    private static final Optional<Order> ORDER = Optional.of(Order.builder().id(1).build());
+   private static final Optional<Order> NEW_ORDER = Optional.of(Order.builder().id(1).price(new BigDecimal("999")).build());
    private static final Optional<Order> NON_EXISTING_ORDER = Optional.empty();
    private static final Optional<User> user = Optional.of(User.builder().id(1L).orders(new ArrayList<>(Collections.singletonList(ORDER.get()))).build());
    private static final Optional<GiftCertificate> cert = Optional.of(GiftCertificate.builder().id(1L).price(new BigDecimal("9999")).build());
@@ -90,9 +91,10 @@ public class OrderServiceTest {
 
    @Test
    void updateEntity(){
+       Mockito.when(orderRepository.checkExistence(1L)).thenReturn(true);
        Mockito.when(orderRepository.update(ORDER.get(),1L)).thenReturn(true);
-       Mockito.when(orderRepository.findByID(Mockito.eq(1L))).thenReturn(ORDER);
-       Assertions.assertEquals(ORDER.get(),service.update(ORDER.get(),1L));
+       Mockito.when(orderRepository.findByID(Mockito.eq(1L))).thenReturn(NEW_ORDER);
+       Assertions.assertEquals(NEW_ORDER.get(),service.update(ORDER.get(),1L));
    }
 
    @Test
