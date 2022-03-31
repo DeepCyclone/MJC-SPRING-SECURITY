@@ -70,7 +70,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public boolean deleteByID(long id) {
         findByID(id).ifPresent(cert -> {
-            if (cert.getAssociatedTags() != null && !cert.getAssociatedTags().isEmpty()) {
+            if(cert.getAssociatedOrders()!= null && !cert.getAssociatedOrders().isEmpty()){
                 throw new RepositoryException(RepositoryErrorCode.CERTIFICATE_DELETION_ERROR, "Unable to delete certificate due to it's belonging to order(s)");
             }
         });

@@ -8,12 +8,15 @@ import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.service.template.GiftCertificateService;
 import com.epam.esm.service.template.TagService;
 import com.epam.esm.service.validation.RequestParamsValidator;
+import com.epam.esm.service.validation.UniqueValuesValidator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,9 +48,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<Tag> gainedTags = certificateDto.getAssociatedTags();
         certificateDto.setAssociatedTags(Collections.emptyList());
         GiftCertificate baseCert = certificateRepository.create(certificateDto);
-        List<Tag> savedTags = saveAssociatedTags(gainedTags);
-        baseCert.setAssociatedTags(Collections.emptyList());
-        baseCert.getAssociatedTags().addAll(savedTags);
+        if(gainedTags!=null && !gainedTags.isEmpty()){
+            List<Tag> uniqueTags = gainedTags.stream().
+            filter(UniqueValuesValidator.distinctByKey(tag->tag.getName())).
+            collect(Collectors.toList());
+            List<Tag> savedTags = saveAssociatedTags(uniqueTags);
+            baseCert.setAssociatedTags(new LinkedList<>());
+            baseCert.getAssociatedTags().addAll(savedTags);
+        }
         return getByID(baseCert.getId());
     }
 

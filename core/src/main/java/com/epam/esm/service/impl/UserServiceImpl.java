@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
         List<User> users = userRepository.readAll(page,limit);
         for(User user:users){
             List<Order> orders = userRepository.fetchAssociatedOrders(user.getId());
-            orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
+            orders.forEach(order->order.setAssociatedCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
             user.setOrders(orders);
         }
         return users;
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService{
         User user =  userRepository.findByID(id).
         orElseThrow(()->new ServiceException(ServiceErrorCode.USER_NOT_FOUND, "Cannot fetch user with ID = "+id));
         List<Order> orders = userRepository.fetchAssociatedOrders(id);
-        orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
+        orders.forEach(order->order.setAssociatedCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
         user.setOrders(orders);
         return user;
     }
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService{
         User user =  userRepository.findByName(userName).
         orElseThrow(()->new ServiceException(ServiceErrorCode.USER_NOT_FOUND, "Cannot fetch user with name = "+userName));
         List<Order> orders = userRepository.fetchAssociatedOrders(user.getId());
-        orders.forEach(order->order.setCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
+        orders.forEach(order->order.setAssociatedCertificates(orderRepository.fetchAssociatedCertificates(order.getId())));
         user.setOrders(orders);
         return user;
     }

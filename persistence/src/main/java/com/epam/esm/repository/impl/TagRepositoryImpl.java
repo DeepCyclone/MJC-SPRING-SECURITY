@@ -2,7 +2,6 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.repository.exception.RepositoryErrorCode;
 import com.epam.esm.repository.exception.RepositoryException;
-import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.template.TagRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,11 +70,6 @@ public class TagRepositoryImpl implements TagRepository {
         catch(NoResultException exception){
             return Optional.empty();
         }
-    }
-
-    @Override
-    public List<GiftCertificate> fetchAssociatedCertificates(long tagID) {
-        return findByID(tagID).map(Tag::getCerts).orElse(Collections.emptyList());
     }
 
     @Override

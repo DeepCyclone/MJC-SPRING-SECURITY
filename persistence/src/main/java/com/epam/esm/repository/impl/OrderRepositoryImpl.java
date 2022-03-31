@@ -4,10 +4,13 @@ import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.template.OrderRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +69,7 @@ public class OrderRepositoryImpl implements OrderRepository{
 
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long orderId) {
-        return findByID(orderId).map(Order::getCertificates).orElse(Collections.emptyList());
+        return findByID(orderId).map(Order::getAssociatedCertificates).orElse(Collections.emptyList());
     }
 
 

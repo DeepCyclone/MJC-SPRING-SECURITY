@@ -53,8 +53,8 @@ public class CertificateAssembler extends RepresentationModelAssemblerSupport<Gi
 
     private void generateLinks(GiftCertificate source,CertificateModel destination){
         Optional.ofNullable(source.getAssociatedTags()).ifPresent(tags->
-        tags.forEach(tag->destination.add(linkTo(methodOn(TagController.class).getByID(tag.getId())).withRel("tags"))));
-        //TODO how to add notes with available operations;only text without refs due to same links; affordance? or another HAL features
+        tags.forEach(tag->
+        destination.add(linkTo(methodOn(TagController.class).getByID(tag.getId())).withRel("tags"))));
     }
 
     

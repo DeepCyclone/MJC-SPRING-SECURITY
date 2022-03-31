@@ -64,4 +64,8 @@ public class GiftCertificate implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "tmgc_t_id")
     )
     private List<Tag> associatedTags = new ArrayList<>();
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY,mappedBy = "associatedCertificates")
+    private List<Order> associatedOrders = new ArrayList<>();
 }

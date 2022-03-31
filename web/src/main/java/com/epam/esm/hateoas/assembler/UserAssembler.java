@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -45,8 +46,9 @@ public class UserAssembler extends RepresentationModelAssemblerSupport<User,User
     }
 
     private void generateLinks(User source,UserModel destination){
-        source.getOrders().forEach(order->destination.add(linkTo(methodOn(OrderController.class).getById(order.getId())).withRel("orders")));
-        //TODO how to add notes with available operations;only text without refs due to same links; affordance? or another HAL features
+        Optional.ofNullable(source.getOrders()).ifPresent(orders->
+        orders.forEach(order->
+        destination.add(linkTo(methodOn(OrderController.class).getById(order.getId())).withRel("orders"))));
     }
     
 }

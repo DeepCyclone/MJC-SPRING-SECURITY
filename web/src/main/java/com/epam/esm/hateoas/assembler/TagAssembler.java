@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -46,7 +47,8 @@ public class TagAssembler extends RepresentationModelAssemblerSupport<Tag,TagMod
     }
 
     private void generateLinks(Tag source,TagModel destination){
-        source.getCerts().forEach(cert->destination.add(linkTo(methodOn(CertificateController.class).getByID(cert.getId())).withRel("associated certificates")));
-        //TODO how to add notes with available operations;only text without refs due to same links; affordance? or another HAL features
+        Optional.ofNullable(source.getCerts()).ifPresent(certs->
+        certs.forEach(cert->
+        destination.add(linkTo(methodOn(CertificateController.class).getByID(cert.getId())).withRel("associated certificates"))));
     }
 }

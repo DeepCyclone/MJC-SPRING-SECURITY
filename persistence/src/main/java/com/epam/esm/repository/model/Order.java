@@ -46,13 +46,13 @@ public class Order {
     @CreationTimestamp
     private Timestamp purchaseDate;
     @ToString.Exclude
-    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
     @JoinTable(
         name = JoinedTablesMetadata.ORDER_M2M_CERTIFICATE,
         joinColumns = @JoinColumn(name = "omc_o_id"),
         inverseJoinColumns = @JoinColumn(name = "omc_gc_id")
     )
-    private List<GiftCertificate> certificates;
+    private List<GiftCertificate> associatedCertificates;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne
