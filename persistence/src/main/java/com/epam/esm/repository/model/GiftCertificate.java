@@ -66,6 +66,6 @@ public class GiftCertificate implements Serializable {
     private List<Tag> associatedTags = new ArrayList<>();
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY,mappedBy = "associatedCertificates")
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "associatedCertificates")
     private List<Order> associatedOrders = new ArrayList<>();
 }

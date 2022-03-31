@@ -75,9 +75,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             }
         });
         return entityManager.
-                createQuery("delete from GiftCertificate certificate where certificate.id = :id").
-                setParameter("id", id).
-                executeUpdate() >= MIN_AFFECTED_ROWS;
+               createNativeQuery("delete from gift_certificate where gc_id = ?").
+               setParameter(1, id).
+               executeUpdate() >= MIN_AFFECTED_ROWS;
     }
 
     

@@ -6,7 +6,7 @@ public final class OrderMetadata {
 
     }
 
-    public static final String TABLE_NAME = "`order`";
+    public static final String TABLE_NAME = "user_order";
     public static final String DB_PREFIX = "o_";
     public static final String ID = DB_PREFIX + "id";
     public static final String PRICE = DB_PREFIX + "price";

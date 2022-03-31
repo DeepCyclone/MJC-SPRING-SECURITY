@@ -1,5 +1,6 @@
 package com.epam.esm.repository;
 
+import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.template.GiftCertificateRepository;
 import org.junit.jupiter.api.Assertions;
@@ -40,9 +41,9 @@ class GiftCertificateRepositoryTest {
 
    @BeforeAll
    static void populateTestCertificates(){
-       certificates = Arrays.asList(new GiftCertificate(1L,"Cert1","Cert1A",new BigDecimal("100.50000"),30,Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,10,0)),Timestamp.valueOf(LocalDateTime.of(2022, 1,10,10,10,12,0)),null),
-               new GiftCertificate(2L,"Cert2","Cert2A",new BigDecimal("100.50000"),30,Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,12,0)),Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,14,0)),null),
-               new GiftCertificate(3L,"Cert3","Cert3A",new BigDecimal("100.50000"),30,Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,14,0)),Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,16,0)),null));
+       certificates = Arrays.asList(new GiftCertificate(1L,"Cert1","Cert1A",new BigDecimal("100.50000"),30,Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,10,0)),Timestamp.valueOf(LocalDateTime.of(2022, 1,10,10,10,12,0)),null,null),
+               new GiftCertificate(2L,"Cert2","Cert2A",new BigDecimal("100.50000"),30,Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,12,0)),Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,14,0)),null,null),
+               new GiftCertificate(3L,"Cert3","Cert3A",new BigDecimal("100.50000"),30,Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,14,0)),Timestamp.valueOf(LocalDateTime.of(2022,1,10,10,10,16,0)),null,null));
 
    }
 
@@ -116,7 +117,7 @@ class GiftCertificateRepositoryTest {
    @Test
    @Order(8)
    void deleteExistingEntry(){
-       Assertions.assertTrue(repository.deleteByID(1L));
+       Assertions.assertThrows(RepositoryException.class,()->repository.deleteByID(1L));
    }
 
    @Test
