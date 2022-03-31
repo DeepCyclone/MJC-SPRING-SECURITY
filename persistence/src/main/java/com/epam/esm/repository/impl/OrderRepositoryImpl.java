@@ -4,8 +4,6 @@ import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.template.OrderRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
