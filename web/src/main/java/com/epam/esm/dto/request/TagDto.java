@@ -2,6 +2,8 @@ package com.epam.esm.dto.request;
 
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +19,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(name = "Tag request DTO")
 public class TagDto implements Serializable {
     @PositiveOrZero(message = "ID should be positive number",groups = {CreateDTO.class, PatchDTO.class})
     private long id;

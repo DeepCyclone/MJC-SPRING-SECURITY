@@ -21,6 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.validation.constraints.Min;
 import java.util.List;
 
@@ -39,25 +46,67 @@ public class OrderController {
         this.orderAssembler = orderAssembler;
     }
 
+    @Operation(summary =  "Take all available orders by pages")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200" , description = "Orders fetched with specified params",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema =  @Schema(implementation = OrderModel.class))}),
+        @ApiResponse(responseCode = "400" , description = "Invalid pagination params",
+        content = @Content) 
+    })
     @GetMapping
-    public CollectionModel<OrderModel> getAll(@RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
-                                              @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){//
+    public CollectionModel<OrderModel> getAll(@Parameter(description = "page of result") @RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
+                                              @Parameter(description = "records per page") @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){
        List<Order> orders = orderService.getAll(page,limit);
        return orderAssembler.toCollectionModel(orders);
     }   
 
+    @Operation(summary =  "Get order by ID with links to associated certificates if there are present")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200" , description = "Order found",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema =  @Schema(implementation = OrderModel.class))}),
+        @ApiResponse(responseCode = "400" , description = "Invalid ID. Provide positive ID to link",
+            content =  @Content),
+        @ApiResponse(responseCode = "404" , description = "Order not found",
+            content =  @Content),
+    })
     @GetMapping(value = "/{id:\\d+}")
-    public OrderModel getById(@PathVariable long id){//
+    public OrderModel getById(@Parameter(description = "id of order to be searched") @PathVariable long id){//
         Order order = orderService.getById(id);
         return orderAssembler.toModel(order);
     }
 
+    @Operation(summary =  "delete order by ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204" , description = "Order deleted successfully",
+            content = @Content),
+        @ApiResponse(responseCode = "400" , description = "Invalid ID. Provide positive ID to link",
+            content =  @Content),
+        @ApiResponse(responseCode = "404" , description = "Order not found",
+            content =  @Content),
+        @ApiResponse(responseCode = "409" , description = "Order creation error",
+        content =  @Content)
+    })
     @DeleteMapping(value="/{id:\\d+}")
-    public ResponseEntity<Void> deleteById(@PathVariable long id){//
+    public ResponseEntity<Void> deleteById(@Parameter(description = "id of order to be searched") @PathVariable long id){//
         orderService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(summary =  "update order's data")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201" , description = "Order update successfully",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema =  @Schema(implementation = OrderModel.class))}),
+        @ApiResponse(responseCode = "409" , description = "Conflict when updating.Check params",
+            content =  @Content),
+        @ApiResponse(responseCode = "404" , description = "Order not found",
+            content =  @Content),
+        @ApiResponse(responseCode = "400" , description = "Bad patch params. Check schema of OrderDto",
+            content =  @Content)
+            
+    })
     @PatchMapping(value="/{id:\\d+}")
     public ResponseEntity<OrderModel> updateById(@PathVariable long id,
                                                  @RequestBody @Validated(PatchDTO.class) OrderDto orderDto){//

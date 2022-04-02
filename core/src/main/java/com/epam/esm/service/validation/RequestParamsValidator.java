@@ -49,7 +49,7 @@ public class RequestParamsValidator {
     
     private static void checkDuplicatedQueryParams(MultiValueMap<String,String> params){
         List<Map.Entry<String,List<String>>> unallowedDuplicates = params.entrySet().stream().filter(entry -> 
-        entry.getValue().size() > 1 && !entry.getKey().equals("tagName")).collect(Collectors.toList());
+        entry.getValue().size() > 1 && !entry.getKey().equals(TAG_NAME)).collect(Collectors.toList());
         if(!unallowedDuplicates.isEmpty()){
             StringBuilder duplicatesInfo = new StringBuilder();
             unallowedDuplicates.stream().forEach(entry -> duplicatesInfo.append(entry.getKey()).append(" can't have several values|"));

@@ -14,8 +14,8 @@ public class CertificateProcessor implements RepresentationModelProcessor<Certif
 
     @Override
     public CertificateModel process(CertificateModel model) {
-        return model.add(linkTo(methodOn(CertificateController.class).getByID(model.getId() + 1)).withRel("next")).
-        add(linkTo(methodOn(CertificateController.class).getByID(model.getId() - 1)).withRel("prev"));
+        return model.
+        add(linkTo(methodOn(CertificateController.class).getByID(model.getId() + 1)).withRel("next"));
     }
     
 }

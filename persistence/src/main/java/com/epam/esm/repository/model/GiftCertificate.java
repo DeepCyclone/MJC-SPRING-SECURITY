@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -53,7 +54,7 @@ public class GiftCertificate implements Serializable {
     @CreationTimestamp
     private Timestamp createDate;
     @Column(name = GiftCertificateMetadata.LAST_UPDATE_DATE)
-    @CreationTimestamp
+    @LastModifiedDate
     private Timestamp lastUpdateDate;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
