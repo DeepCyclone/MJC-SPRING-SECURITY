@@ -54,7 +54,7 @@ public class GiftCertificate implements Serializable {
     @CreationTimestamp
     private Timestamp createDate;
     @Column(name = GiftCertificateMetadata.LAST_UPDATE_DATE)
-    @LastModifiedDate
+    @CreationTimestamp
     private Timestamp lastUpdateDate;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
