@@ -12,7 +12,8 @@ repositories {
 dependencies {
     implementation 'org.hibernate:hibernate-core:5.6.5.Final'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.5'
-
+    compileOnly "org.flywaydb:flyway-core:8.5.5"
+    runtimeOnly 'org.flywaydb:flyway-gradle-plugin:8.5.5'
 }
 
 test {
