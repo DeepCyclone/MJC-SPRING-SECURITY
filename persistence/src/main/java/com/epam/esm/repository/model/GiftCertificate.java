@@ -10,7 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -58,7 +57,7 @@ public class GiftCertificate implements Serializable {
     private Timestamp lastUpdateDate;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinTable(
         name = JoinedTablesMetadata.TAG_M2M_CERTIFICATE,
         joinColumns = @JoinColumn(name = "tmgc_gc_id"),

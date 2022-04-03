@@ -136,4 +136,10 @@ public class CertificateController {
         return new ResponseEntity<>(certificateAssembler.toModel(updatedEntity),HttpStatus.CREATED);
     }
 
+    @DeleteMapping(value = "/cache")
+    public ResponseEntity<Void> clearCache(){
+        certificateService.clearCache();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    
 }

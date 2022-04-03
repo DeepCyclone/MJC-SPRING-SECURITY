@@ -10,3 +10,6 @@ spring:
     baselineOnMigrate : true
     locations : classpath:sql/migrations
     baselineVersion : 0
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
