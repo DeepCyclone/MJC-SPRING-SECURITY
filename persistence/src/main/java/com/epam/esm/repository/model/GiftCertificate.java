@@ -57,7 +57,7 @@ public class GiftCertificate implements Serializable {
     private Timestamp lastUpdateDate;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
     @JoinTable(
         name = JoinedTablesMetadata.TAG_M2M_CERTIFICATE,
         joinColumns = @JoinColumn(name = "tmgc_gc_id"),

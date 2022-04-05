@@ -4,5 +4,12 @@ spring:
     url : jdbc:mysql://localhost:3306/certificatessystem
     username : root
     password : root
-    datasource:
-      type: com.zaxxer.hikari.HikariDataSource
+    type : com.zaxxer.hikari.HikariDataSource
+  flyway:
+    schemas : certificatessystem
+    baselineOnMigrate : true
+    locations : classpath:sql/migrations
+    baselineVersion : 0
+  cache:
+    jcache:
+      config: classpath:ehcache.xml

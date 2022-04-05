@@ -23,6 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.validation.constraints.Min;
 import java.util.List;
 
@@ -51,30 +58,75 @@ public class UserController {
         this.tagAssembler = tagAssembler;
     }
 
+    @Operation(summary =  "Take all available users by pages")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200" , description = "Users fetched successfully",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema =  @Schema(implementation = UserModel.class))}),
+        @ApiResponse(responseCode = "400" , description = "Invalid pagination params",
+        content = @Content) 
+    })
     @GetMapping
-    public CollectionModel<UserModel> getUsersInfo(@RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
-                                                   @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){//
+    public CollectionModel<UserModel> getUsersInfo(@Parameter(description = "page of result") @RequestParam(defaultValue = "1") @Min(value = 1,message = "page >=1 ") Integer page,
+                                                   @Parameter(description = "records per page") @RequestParam(defaultValue = "10") @Min(value = 1,message = "limit >=1 ") Integer limit){
         List<User> users = userService.getAll(page,limit);
         return userAssembler.toCollectionModel(users);
     }
 
+    @Operation(summary =  "Get certificate by ID with links to associated tags if there are present")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200" , description = "User found",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema =  @Schema(implementation = UserModel.class))}),
+        @ApiResponse(responseCode = "400" , description = "Invalid ID. Provide positive ID to link",
+            content =  @Content),
+        @ApiResponse(responseCode = "404" , description = "User not found",
+            content =  @Content),
+    })
     @GetMapping(value="/{userId:\\d+}")
     public UserModel getUserInfo(@PathVariable long userId){//
         User entity = userService.getById(userId);
         return userAssembler.toModel(entity);
     }
 
+    @Operation(summary =  "Take all available orders of selected user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200" , description = "Orders of selected user fetched successfully",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema =  @Schema(implementation = OrderModel.class))}),
+        @ApiResponse(responseCode = "404" , description = "User not found with specified ID",
+        content = @Content) 
+    })
     @GetMapping(value="/{userId:\\d+}/orders")
-    public CollectionModel<OrderModel> getAllOrders(@PathVariable long userId){//
+    public CollectionModel<OrderModel> getAllOrders(@PathVariable long userId){
         List<Order> orderResponseDtos = userService.getById(userId).getOrders();
         return orderAssembler.toCollectionModel(orderResponseDtos);
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200" , description = "Tag found",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema =  @Schema(implementation = TagModel.class))}),
+        @ApiResponse(responseCode = "404" , description = "Tag not found",
+            content =  @Content),
+    })
     @GetMapping(value="/most-used-tag-with-richest-orders")
-    public TagModel getMostWidelyUsedTagWithRichestOrder(){//
+    public TagModel getMostWidelyUsedTagWithRichestOrder(){
         return tagAssembler.toModel(userService.fetchMostUsedTagWithRichestOrders());
     }
 
+    @Operation(summary =  "create Tag")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201" , description = "Order performed successfully",
+            content = @Content),
+        @ApiResponse(responseCode = "409" , description = "Conflict when creating.Check params",
+            content =  @Content),
+        @ApiResponse(responseCode = "404" , description = "User or one certificate from all not found with received ID(s)",
+            content =  @Content),
+        @ApiResponse(responseCode = "400" , description = "User not found with received ID",
+        content =  @Content)
+            
+    })
     @PostMapping(value="/{userId:\\d+}")
     public ResponseEntity<OrderModel> makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
         Order order = orderService.makeOrder(certificates,userId);

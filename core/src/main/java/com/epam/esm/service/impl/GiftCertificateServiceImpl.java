@@ -11,15 +11,20 @@ import com.epam.esm.service.validation.RequestParamsValidator;
 import com.epam.esm.service.validation.UniqueValuesValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
+
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+
 
 
 @Service
@@ -91,6 +96,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return tags.stream().map(tagService::addEntity).collect(Collectors.toList());
     }
 
+    @Cacheable(cacheNames = "certificatesCache",key = "new org.springframework.cache.interceptor.SimpleKey(#page, #limit)")
     @Override
     public List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params,int page,int limit){
         RequestParamsValidator.validateParams(params);
@@ -103,6 +109,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if(!certificateRepository.checkExistence(id)){
             throw new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID " + id);
         }
+    }
+
+    @CacheEvict(cacheNames = "certificatesCache", allEntries = true)
+    @Override
+    public void clearCache() {
     }
 
 }
