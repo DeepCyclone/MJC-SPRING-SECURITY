@@ -13,4 +13,5 @@ public interface GiftCertificateService {
     GiftCertificate update(GiftCertificate certificatePatch,long id);
     List<Tag> saveAssociatedTags(List<Tag> tags);
     List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params,int limit,int offset);
+    void clearCache();
 }

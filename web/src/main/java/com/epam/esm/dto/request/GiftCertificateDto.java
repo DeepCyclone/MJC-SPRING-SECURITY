@@ -2,6 +2,8 @@ package com.epam.esm.dto.request;
 
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(name = "Gift certificate request DTO")
 public class GiftCertificateDto implements Serializable {
     @Null(groups = {CreateDTO.class},message = "ID will be created automatically.Remove it")
     @Null(message = "Please specify id of object to be patched in URL",groups = {PatchDTO.class})
