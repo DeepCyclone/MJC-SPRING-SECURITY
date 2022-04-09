@@ -28,6 +28,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-hateoas:2.6.4'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
     implementation 'org.springframework.boot:spring-boot-starter-security:2.6.4'
+    implementation 'org.springframework.security:spring-security-test'
 }
 
 test {
