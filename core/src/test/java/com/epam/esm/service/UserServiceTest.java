@@ -1,9 +1,9 @@
 package com.epam.esm.service;
 
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.OrderRepository;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.repository.model.User;
-import com.epam.esm.repository.template.OrderRepository;
-import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

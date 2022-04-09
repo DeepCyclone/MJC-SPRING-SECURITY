@@ -6,7 +6,8 @@ import com.epam.esm.dto.request.OrderDto;
 import com.epam.esm.hateoas.assembler.OrderAssembler;
 import com.epam.esm.hateoas.model.OrderModel;
 import com.epam.esm.repository.model.Order;
-import com.epam.esm.service.template.OrderService;
+import com.epam.esm.service.OrderService;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

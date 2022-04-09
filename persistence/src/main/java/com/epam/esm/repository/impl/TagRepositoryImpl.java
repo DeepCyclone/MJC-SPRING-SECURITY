@@ -1,9 +1,10 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.exception.RepositoryErrorCode;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.repository.template.TagRepository;
+
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

@@ -1,12 +1,12 @@
 package com.epam.esm.service;
 
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.repository.OrderRepository;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.User;
-import com.epam.esm.repository.template.GiftCertificateRepository;
-import com.epam.esm.repository.template.OrderRepository;
-import com.epam.esm.repository.template.UserRepository;
 import com.epam.esm.service.impl.OrderServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

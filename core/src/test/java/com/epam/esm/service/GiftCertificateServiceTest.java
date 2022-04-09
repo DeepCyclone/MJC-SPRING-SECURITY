@@ -1,10 +1,10 @@
 package com.epam.esm.service;
 
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.template.GiftCertificateRepository;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
-import com.epam.esm.service.template.TagService;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.epam.esm.repository.template;
+package com.epam.esm.repository;
 
 import java.util.List;
 

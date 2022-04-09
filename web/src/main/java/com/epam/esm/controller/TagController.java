@@ -6,7 +6,8 @@ import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.hateoas.assembler.TagAssembler;
 import com.epam.esm.hateoas.model.TagModel;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.service.template.TagService;
+import com.epam.esm.service.TagService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;

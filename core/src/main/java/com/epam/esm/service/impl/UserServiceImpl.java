@@ -2,12 +2,13 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.OrderRepository;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
-import com.epam.esm.repository.template.OrderRepository;
-import com.epam.esm.repository.template.UserRepository;
-import com.epam.esm.service.template.UserService;
+import com.epam.esm.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

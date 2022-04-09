@@ -5,7 +5,7 @@ public final class CertificateQueryHolder {
 
     }
     public static final String READ_ALL = "SELECT * FROM gift_certificate";
-    public static final String JOIN_PARAMS = "SELECT gc_id,gc_name,gc_description,gc_price,gc_duration,gc_create_date,gc_last_update_date FROM gift_certificate " +
+    public static final String JOIN_PARAMS = "SELECT DISTINCT gc_id,gc_name,gc_description,gc_price,gc_duration,gc_create_date,gc_last_update_date FROM gift_certificate " +
             " LEFT JOIN (SELECT t_name,tmgc_gc_id,t_id FROM tag JOIN" +
             " `tag_m2m_gift_certificate` ON t_id = tmgc_t_id ) AS ix ON gc_id = ix.tmgc_gc_id";
     public static final String TAG_NAME_FILTER = "  t_name = ";

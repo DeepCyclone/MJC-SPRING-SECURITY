@@ -1,8 +1,9 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
-import com.epam.esm.repository.template.OrderRepository;
+
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

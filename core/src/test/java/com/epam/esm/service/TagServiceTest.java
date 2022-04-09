@@ -1,8 +1,8 @@
 package com.epam.esm.service;
 
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.repository.template.TagRepository;
 import com.epam.esm.service.impl.TagServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

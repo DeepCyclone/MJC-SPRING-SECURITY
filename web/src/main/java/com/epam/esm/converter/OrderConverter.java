@@ -10,8 +10,9 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring",uses = CertificateConverter.class)
 public interface OrderConverter {
 
-    OrderConverter INSTANCE = Mappers.getMapper(OrderConverter.class);
+    OrderConverter INSTANCE = Mappers.getMapper(OrderConverter.class);//TODO поправить,если без этого работает
 
     @Mapping(target = "purchaseDate",ignore = true)
+    @Mapping(source = "certificates" , target = "associatedCertificates")
     Order convertFromRequestDto(OrderDto dto);
 }

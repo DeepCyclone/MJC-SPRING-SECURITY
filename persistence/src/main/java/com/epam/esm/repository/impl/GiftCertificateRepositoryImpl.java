@@ -1,12 +1,13 @@
 package com.epam.esm.repository.impl;
 
+import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.exception.RepositoryErrorCode;
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
-import com.epam.esm.repository.template.GiftCertificateRepository;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.util.MultiValueMap;
 

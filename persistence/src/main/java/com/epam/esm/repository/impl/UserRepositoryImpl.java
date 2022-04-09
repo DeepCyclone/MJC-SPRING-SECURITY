@@ -1,10 +1,11 @@
 package com.epam.esm.repository.impl;
 
 
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
-import com.epam.esm.repository.template.UserRepository;
+
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

@@ -7,7 +7,8 @@ import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.hateoas.assembler.CertificateAssembler;
 import com.epam.esm.hateoas.model.CertificateModel;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.service.template.GiftCertificateService;
+import com.epam.esm.service.GiftCertificateService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,7 @@ public class CertificateController {
             content = @Content)    
     })
     @GetMapping
-    public CollectionModel<CertificateModel> getAllByRequestParams(@Parameter(description = "params to concretize searching:tag names,tag name part and it's sorting order,cert description part,cert creation date sort order") @RequestParam MultiValueMap<String,String> params,
+    public CollectionModel<CertificateModel> getAllByRequestParams(@Parameter(description = "params to concretize searching:tag names,tag name part and it's sorting order,cert description part,cert creation date sort order") @RequestParam MultiValueMap<String,String> params,//TODO refactor without MAP
                                                                    @Parameter(description = "page of result") @RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
                                                                    @Parameter(description = "records per page") @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit) {
         List<GiftCertificate> certs = certificateService.handleParametrizedGetRequest(params,page,limit);

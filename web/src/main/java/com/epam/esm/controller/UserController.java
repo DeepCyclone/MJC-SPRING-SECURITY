@@ -8,8 +8,9 @@ import com.epam.esm.hateoas.model.TagModel;
 import com.epam.esm.hateoas.model.UserModel;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.User;
-import com.epam.esm.service.template.OrderService;
-import com.epam.esm.service.template.UserService;
+import com.epam.esm.service.OrderService;
+import com.epam.esm.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -84,7 +85,7 @@ public class UserController {
             content =  @Content),
     })
     @GetMapping(value="/{userId:\\d+}")
-    public UserModel getUserInfo(@PathVariable long userId){//
+    public UserModel getUserInfo(@PathVariable long userId){
         User entity = userService.getById(userId);
         return userAssembler.toModel(entity);
     }
@@ -103,6 +104,7 @@ public class UserController {
         return orderAssembler.toCollectionModel(orderResponseDtos);
     }
 
+    @Operation(summary =  "Fetch mostly user tag of user with richest bucket")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200" , description = "Tag found",
             content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -115,7 +117,7 @@ public class UserController {
         return tagAssembler.toModel(userService.fetchMostUsedTagWithRichestOrders());
     }
 
-    @Operation(summary =  "create Tag")
+    @Operation(summary =  "Make an order")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201" , description = "Order performed successfully",
             content = @Content),

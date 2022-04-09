@@ -2,7 +2,7 @@ package com.epam.esm.repository;
 
 import com.epam.esm.repository.exception.RepositoryException;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.template.GiftCertificateRepository;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;

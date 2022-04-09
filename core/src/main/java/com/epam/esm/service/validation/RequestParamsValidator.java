@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+//static to component
 public class RequestParamsValidator {
 
     private static final String ASCENDING_SORT = "ASC";

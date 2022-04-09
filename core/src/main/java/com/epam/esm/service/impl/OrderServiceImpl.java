@@ -2,13 +2,14 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.repository.OrderRepository;
+import com.epam.esm.repository.UserRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.repository.model.User;
-import com.epam.esm.repository.template.GiftCertificateRepository;
-import com.epam.esm.repository.template.OrderRepository;
-import com.epam.esm.repository.template.UserRepository;
-import com.epam.esm.service.template.OrderService;
+import com.epam.esm.service.OrderService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
         if(!result){
             throw new ServiceException(ServiceErrorCode.ORDER_UPDATE_ERROR,"An error occured while updating order");
         }
-        return orderRepository.findByID(orderId).get();
+        return getById(orderId);//TODO reordering и эта операция может баговать
     }
 
     @Override

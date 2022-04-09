@@ -2,11 +2,11 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.exception.ServiceErrorCode;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.repository.template.GiftCertificateRepository;
-import com.epam.esm.service.template.GiftCertificateService;
-import com.epam.esm.service.template.TagService;
+import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.TagService;
 import com.epam.esm.service.validation.RequestParamsValidator;
 import com.epam.esm.service.validation.UniqueValuesValidator;
 
@@ -40,9 +40,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    //TODO transactional
     public GiftCertificate getByID(long id) {
         GiftCertificate certificate = certificateRepository.findByID(id).orElseThrow(
-                ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));
+                ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));//TODO resource bundle
         certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(id));
         return certificate;
     }
@@ -61,7 +62,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             baseCert.setAssociatedTags(new LinkedList<>());
             baseCert.getAssociatedTags().addAll(savedTags);
         }
-        return getByID(baseCert.getId());
+        return getByID(baseCert.getId());//TODO get могут отрабатывать неправильно => разобраться с выполнением
     }
 
     @Override
@@ -69,7 +70,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void deleteByID(long id){
         boolean result = certificateRepository.deleteByID(id);
         if(!result){
-            throw new ServiceException(ServiceErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = "+id);
+            throw new ServiceException(ServiceErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = " + id);
         }
     }
 
@@ -80,13 +81,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         certificateRepository.update(patch,id);
         Optional.ofNullable(patch.getAssociatedTags()).ifPresent(tags -> {
             GiftCertificate cert = getByID(id);
-            List<Tag> savedTags = saveAssociatedTags(tags);
+            List<Tag> uniqueTags = tags.stream().
+            filter(UniqueValuesValidator.distinctByKey(tag->tag.getName())).
+            collect(Collectors.toList());
+            List<Tag> savedTags = saveAssociatedTags(uniqueTags);
             cert.getAssociatedTags().clear();
             cert.getAssociatedTags().addAll(savedTags);
         });
         return getByID(id);
     }
 
+    //TODO перенести это в tagService
     @Override
     @Transactional
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
@@ -96,7 +101,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return tags.stream().map(tagService::addEntity).collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "certificatesCache",key = "new org.springframework.cache.interceptor.SimpleKey(#page, #limit)")
+    @Cacheable(cacheNames = "certificatesCache",key = "new org.springframework.cache.interceptor.SimpleKey(#params.hashCode(), #page, #limit)")
     @Override
     public List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params,int page,int limit){
         RequestParamsValidator.validateParams(params);

@@ -41,7 +41,7 @@ subprojects {
 
 }
 
-dependencies {
+dependencies {//TODO всё-таки не находит AppRunner (ещё у меня их два)
     implementation project(':web')
 }
 
