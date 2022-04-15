@@ -1,44 +1,54 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.6.4'
+    id 'org.springframework.boot' version '2.6.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 } 
 
 ext{
     junitVersion = '5.8.2'
     lombokVersion = '1.18.22'
-    springBootVersion = '2.6.4'
-}
-
-
-group 'com.epam.esm'
-version '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
 }
 
 allprojects {
-    apply plugin: 'war'
-    dependencies {
-}
-}
+    group 'com.epam.esm'
+    version '1.0.0-PREVIEW'
+
+    apply plugin : 'war'
+    apply plugin : 'java'
+
+    repositories {
+        mavenCentral()
+    }
+} 
+
 subprojects {
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    
     dependencies {
-        implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
-        implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-        implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
-        testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+        implementation "org.springframework.boot:spring-boot-starter"
+        implementation "org.springframework.boot:spring-boot-starter-web"
+        implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+        testImplementation "org.springframework.boot:spring-boot-starter-test"
         compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
-        implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
         compileOnly "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-        implementation 'mysql:mysql-connector-java:8.0.28'
 
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
+    springBoot {
+        mainClass = 'com.epam.esm.AppRunner'
+    }
 }
 
 dependencies {//TODO всё-таки не находит AppRunner (ещё у меня их два)
@@ -51,7 +61,3 @@ bootJar {
     }
 }
 
-    test {
-        useJUnitPlatform()
-
-    }

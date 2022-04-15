@@ -1,21 +1,6 @@
-plugins {
-    id 'java'
-}
-
-group 'com.epam.esm'
-version '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation project(":persistence")
-    implementation 'org.springframework.boot:spring-boot-starter-cache:2.6.5'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'javax.cache:cache-api:1.1.1'
     implementation 'org.ehcache:ehcache:3.10.0'
-}
-
-test {
-    useJUnitPlatform()
 }
