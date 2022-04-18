@@ -56,19 +56,19 @@ public class GiftCertificateServiceTest {
 
    }
 
-   @Test
-   void getAllWithoutParams(){
-       Mockito.when(giftCertificateRepository.handleParametrizedRequest(new LinkedMultiValueMap<>(),0,0)).thenReturn(certificates);
-       Assertions.assertEquals(certificates,service.handleParametrizedGetRequest(new LinkedMultiValueMap<>(),0,0));
-   }
+//    @Test
+//    void getAllWithoutParams(){
+//        Mockito.when(giftCertificateRepository.handleParametrizedRequest(new LinkedMultiValueMap<>(),0,0)).thenReturn(certificates);
+//        Assertions.assertEquals(certificates,service.handleParametrizedGetRequest(new LinkedMultiValueMap<>(),0,0));
+//    }
 
-   @Test
-   void getWithNamePart(){
-       MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
-       params.add("namePart","A");
-       Mockito.when(giftCertificateRepository.handleParametrizedRequest(params,0,0)).thenReturn(parametrizedCertificates);
-       Assertions.assertEquals(parametrizedCertificates,service.handleParametrizedGetRequest(params,0,0));
-   }
+//    @Test
+//    void getWithNamePart(){
+//        MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+//        params.add("namePart","A");
+//        Mockito.when(giftCertificateRepository.handleParametrizedRequest(params,0,0)).thenReturn(parametrizedCertificates);
+//        Assertions.assertEquals(parametrizedCertificates,service.handleParametrizedGetRequest(params,0,0));
+//    }
 
    @Test
    void deleteNonExistingEntry(){

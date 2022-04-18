@@ -12,8 +12,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -47,12 +45,12 @@ class GiftCertificateRepositoryTest {
 
    }
 
-   @Test
-   @Order(1)
-   void getAll(){
-       List<GiftCertificate> certificatesDB = repository.handleParametrizedRequest(new LinkedMultiValueMap<>(),1,10);
-       Assertions.assertEquals(certificates,certificatesDB);
-   }
+//    @Test
+//    @Order(1)
+//    void getAll(){
+//        List<GiftCertificate> certificatesDB = repository.handleParametrizedRequest(new LinkedMultiValueMap<>(),1,10);
+//        Assertions.assertEquals(certificates,certificatesDB);
+//    }
 
    @Test
    @Order(2)
@@ -105,14 +103,14 @@ class GiftCertificateRepositoryTest {
        Assertions.assertFalse(certificateToUpdate.isPresent());
    }
 
-   @Test
-   @Order(7)
-   void getInfoWithDateOrder(){
-       MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
-       params.set("dateSortOrder","ASC");
-       List<GiftCertificate> certs = repository.handleParametrizedRequest(params,1,10);
-       Assertions.assertEquals(certs.get(0),certificates.get(0));
-   }
+//    @Test
+//    @Order(7)
+//    void getInfoWithDateOrder(){
+//        MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+//        params.set("dateSortOrder","ASC");
+//        List<GiftCertificate> certs = repository.handleParametrizedRequest(params,1,10);
+//        Assertions.assertEquals(certs.get(0),certificates.get(0));
+//    }
 
    @Test
    @Order(8)

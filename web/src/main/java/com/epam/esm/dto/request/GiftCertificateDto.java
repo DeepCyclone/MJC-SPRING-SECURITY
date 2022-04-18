@@ -17,7 +17,7 @@ import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -40,5 +40,5 @@ public class GiftCertificateDto implements Serializable {
     @NotNull(message = "duration couldn't be empty",groups = {CreateDTO.class})
     @PositiveOrZero(message = "Duration values must be in [0;+inf)",groups = {CreateDTO.class,PatchDTO.class})
     private Integer duration;
-    private List<@Valid TagDto> associatedTags;
+    private Set<@Valid TagDto> associatedTags;
 }

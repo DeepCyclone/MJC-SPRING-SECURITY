@@ -26,8 +26,8 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -63,9 +63,9 @@ public class GiftCertificate implements Serializable {
         joinColumns = @JoinColumn(name = "tmgc_gc_id"),
         inverseJoinColumns = @JoinColumn(name = "tmgc_t_id")
     )
-    private List<Tag> associatedTags = new ArrayList<>();
+    private Set<Tag> associatedTags = new HashSet<>();
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "associatedCertificates")
-    private List<Order> associatedOrders = new ArrayList<>();
+    private Set<Order> associatedOrders = new HashSet<>();
 }

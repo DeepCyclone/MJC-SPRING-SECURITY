@@ -1,4 +1,4 @@
-package com.epam.esm.service.validation;
+package com.epam.esm.service.validator;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
