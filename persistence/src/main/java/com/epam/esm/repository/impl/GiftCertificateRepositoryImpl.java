@@ -8,6 +8,7 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -33,6 +34,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @PersistenceContext
     private EntityManager entityManager;
+    private final UpdateQueryBuilder updateQueryBuilder;
+    private final ComplexParamMapProcessor complexParamMapProcessor;
+
+    @Autowired
+    public GiftCertificateRepositoryImpl(UpdateQueryBuilder updateQueryBuilder,ComplexParamMapProcessor complexParamMapProcessor) {
+        this.complexParamMapProcessor = complexParamMapProcessor;
+        this.updateQueryBuilder = updateQueryBuilder;
+    }
 
     @Override
     public GiftCertificate create(GiftCertificate object){
@@ -51,7 +60,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public boolean update(GiftCertificate object,long id) {
-        String query = UpdateQueryBuilder.buildUpdateQuery(object, id);
+        String query = updateQueryBuilder.buildUpdateQuery(object, id);
         if(query.isEmpty()){
             return false;
         }
@@ -116,7 +125,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public List<GiftCertificate> handleParametrizedRequest(String certificateNamePart, String descriptionPart,
             Set<String> tagsNames, String certificateNameSortOrder, String certificateCreationDateSortOrder, int page,
             int limit) {
-        String generatedQuery = ComplexParamMapProcessor.buildQuery(certificateNamePart,
+        String generatedQuery = complexParamMapProcessor.buildQuery(certificateNamePart,
                                                                     descriptionPart,
                                                                     tagsNames,
                                                                     certificateNameSortOrder,
@@ -124,10 +133,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                                                                     );
         Query query = entityManager.
         createNativeQuery(generatedQuery,GiftCertificate.class).
+        setParameter(NAME_PART, PERCENT+certificateNamePart+PERCENT).
+        setParameter(DESCRIPTION_PART, PERCENT+descriptionPart+PERCENT).
         setFirstResult((page-1)*limit).
         setMaxResults(limit);
-        query.setParameter(NAME_PART, PERCENT+certificateNamePart+PERCENT);
-        query.setParameter(DESCRIPTION_PART, PERCENT+descriptionPart+PERCENT);
         setTagsNames(query,tagsNames);
         return query.getResultList();
     }

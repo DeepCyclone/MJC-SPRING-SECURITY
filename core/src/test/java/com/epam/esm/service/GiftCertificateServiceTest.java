@@ -4,6 +4,7 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
+import com.epam.esm.service.validator.RequestParamsValidator;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+
 
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +26,10 @@ public class GiftCertificateServiceTest {
    private static GiftCertificateRepository giftCertificateRepository;
    @Mock
    private static TagService tagService;
+   @Mock
+   private static RequestParamsValidator requestParamsValidator;
 
-   private static GiftCertificateServiceImpl service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService);
+   private static GiftCertificateServiceImpl service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService,requestParamsValidator);
 
    private static final Optional<GiftCertificate> CERTIFICATE = Optional.of(GiftCertificate.builder().id(1).build());
    private static final Optional<GiftCertificate> NEW_CERT = Optional.of(GiftCertificate.builder().build());
@@ -39,7 +41,7 @@ public class GiftCertificateServiceTest {
 
    @BeforeEach
    void init(){
-       service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService);
+       service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService,requestParamsValidator);
    }
 
    @Test
@@ -56,19 +58,19 @@ public class GiftCertificateServiceTest {
 
    }
 
-//    @Test
-//    void getAllWithoutParams(){
-//        Mockito.when(giftCertificateRepository.handleParametrizedRequest(new LinkedMultiValueMap<>(),0,0)).thenReturn(certificates);
-//        Assertions.assertEquals(certificates,service.handleParametrizedGetRequest(new LinkedMultiValueMap<>(),0,0));
-//    }
+   @Test
+   void getAllWithoutParams(){
+       Mockito.when(giftCertificateRepository.handleParametrizedRequest("A","A",Collections.emptySet(),"ASC","DESC",10,10)).thenReturn(certificates);
+       Assertions.assertEquals(certificates,service.handleParametrizedGetRequest("A","A",Collections.emptySet(),"ASC","DESC",10,10));
+   }
 
-//    @Test
-//    void getWithNamePart(){
-//        MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
-//        params.add("namePart","A");
-//        Mockito.when(giftCertificateRepository.handleParametrizedRequest(params,0,0)).thenReturn(parametrizedCertificates);
-//        Assertions.assertEquals(parametrizedCertificates,service.handleParametrizedGetRequest(params,0,0));
-//    }
+   @Test
+   void getAllWithIllegalSortingOrder(){
+       final String certificateNameSortOrder = "Asca";
+       final String certificateCreationDateSortOrder = "skype";
+       Mockito.when(requestParamsValidator.validateSortingOrders(certificateNameSortOrder,certificateCreationDateSortOrder)).thenThrow(ServiceException.class);
+       Assertions.assertThrows(ServiceException.class,()->service.handleParametrizedGetRequest("A","A",Collections.emptySet(),"Asca","skype",1,10));
+   }
 
    @Test
    void deleteNonExistingEntry(){

@@ -31,11 +31,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository certificateRepository;
     private final TagService tagService;
+    private final RequestParamsValidator requestParamsValidator;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagService tagService) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagService tagService,RequestParamsValidator requestParamsValidator) {
         this.certificateRepository = certificateRepository;
         this.tagService = tagService;
+        this.requestParamsValidator = requestParamsValidator;
     }
 
     @Override
@@ -103,7 +105,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                                                               String certificateCreationDateSortOrder,
                                                               int page,
                                                               int limit){
-        RequestParamsValidator.validateSortingOrders(certificateNameSortOrder,certificateCreationDateSortOrder);
+        requestParamsValidator.validateSortingOrders(certificateNameSortOrder,certificateCreationDateSortOrder);
         List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(certificateNamePart,
                                                                                              descriptionPart,
                                                                                              tagsNames,

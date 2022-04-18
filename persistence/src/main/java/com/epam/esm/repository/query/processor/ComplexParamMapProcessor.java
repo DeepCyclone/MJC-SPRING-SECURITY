@@ -2,6 +2,8 @@ package com.epam.esm.repository.query.processor;
 
 import com.epam.esm.repository.metadata.GiftCertificateMetadata;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Iterator;
 import java.util.Set;
 
@@ -22,9 +24,10 @@ import static com.epam.esm.repository.query.holder.SQLParts.COMMA;
 import static com.epam.esm.repository.query.holder.SQLParts.EMPTY_PART;
 import static com.epam.esm.repository.query.holder.SQLParts.SPACE;
 
+@Component
 public class ComplexParamMapProcessor {
 
-    public static String buildQuery(String certificateNamePart, String descriptionPart,
+    public String buildQuery(String certificateNamePart, String descriptionPart,
                                     Set<String> tagsNames, String certificateNameSortOrder,
                                     String certificateCreationDateSortOrder){
         StringBuilder query = new StringBuilder(JOIN_PARAMS);
@@ -33,7 +36,7 @@ public class ComplexParamMapProcessor {
         return query.toString();
     }
 
-    private static String appendQueryWithSearching(String certificateNamePart,
+    private String appendQueryWithSearching(String certificateNamePart,
                                                    String descriptionPart,
                                                    Set<String> tagsNames){
             StringBuilder searchingQuery = new StringBuilder(WHERE);
@@ -59,9 +62,9 @@ public class ComplexParamMapProcessor {
             return searchingQuery.toString();
     }
 
-    private static String appendQueryWithSorting(String certificateNameSortOrder,String certificateCreationDateSortOrder){
+    private String appendQueryWithSorting(String certificateNameSortOrder,String certificateCreationDateSortOrder){
 
-        if(!certificateNameSortOrder.isEmpty() || certificateCreationDateSortOrder.isEmpty()) {
+        if(!certificateNameSortOrder.isEmpty() || !certificateCreationDateSortOrder.isEmpty()) {
             StringBuilder orderQuery = new StringBuilder(ORDER_BY);
             boolean complexSort = !certificateNameSortOrder.isEmpty() && !certificateCreationDateSortOrder.isEmpty();
             if(!certificateNameSortOrder.isEmpty()){
