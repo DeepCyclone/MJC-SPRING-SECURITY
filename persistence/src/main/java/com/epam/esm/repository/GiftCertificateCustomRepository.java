@@ -1,21 +1,17 @@
-package com.epam.esm.service;
-
-import com.epam.esm.repository.model.GiftCertificate;
+package com.epam.esm.repository;
 
 import java.util.List;
 import java.util.Set;
 
-public interface GiftCertificateService {
-    GiftCertificate getByID(long id);
-    GiftCertificate addEntity(GiftCertificate certificateDto);
-    void deleteByID(long id);
-    GiftCertificate update(GiftCertificate certificatePatch,long id);
-    List<GiftCertificate> handleParametrizedGetRequest(String certificateNamePart,
+import com.epam.esm.repository.model.GiftCertificate;
+
+public interface GiftCertificateCustomRepository extends GenericRepository<GiftCertificate>{
+    List<GiftCertificate> handleParametrizedRequest(String certificateNamePart,
                                                        String descriptionPart,
                                                        Set<String> tagsNames,
                                                        String certificateNameSortOrder,
                                                        String certificateCreationDateSortOrder,
                                                        int page,
                                                        int limit);
-    void clearCache();
+    boolean deleteById(long id);
 }

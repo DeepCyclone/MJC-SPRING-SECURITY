@@ -1,108 +1,108 @@
-package com.epam.esm.service;
+// package com.epam.esm.service;
 
-import com.epam.esm.exception.ServiceException;
-import com.epam.esm.repository.GiftCertificateRepository;
-import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.service.impl.GiftCertificateServiceImpl;
-import com.epam.esm.service.validator.RequestParamsValidator;
+// import com.epam.esm.exception.ServiceException;
+// import com.epam.esm.repository.GiftCertificateRepository;
+// import com.epam.esm.repository.model.GiftCertificate;
+// import com.epam.esm.service.impl.GiftCertificateServiceImpl;
+// import com.epam.esm.service.validator.RequestParamsValidator;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-@ExtendWith(MockitoExtension.class)
-public class GiftCertificateServiceTest {
-
-   @Mock
-   private static GiftCertificateRepository giftCertificateRepository;
-   @Mock
-   private static TagService tagService;
-   @Mock
-   private static RequestParamsValidator requestParamsValidator;
-
-   private static GiftCertificateServiceImpl service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService,requestParamsValidator);
-
-   private static final Optional<GiftCertificate> CERTIFICATE = Optional.of(GiftCertificate.builder().id(1).build());
-   private static final Optional<GiftCertificate> NEW_CERT = Optional.of(GiftCertificate.builder().build());
-   private static final Optional<GiftCertificate> NON_EXISTING_CERTIFICATE = Optional.empty();
-
-   private static final List<GiftCertificate> certificates = Collections.singletonList(new GiftCertificate());
-   private static final List<GiftCertificate> parametrizedCertificates = Collections.singletonList(GiftCertificate.builder().name("Aaaa").build());
+// import org.junit.jupiter.api.Assertions;
+// import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.extension.ExtendWith;
+// import org.mockito.Mock;
+// import org.mockito.Mockito;
+// import org.mockito.junit.jupiter.MockitoExtension;
 
 
-   @BeforeEach
-   void init(){
-       service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService,requestParamsValidator);
-   }
+// import java.util.Collections;
+// import java.util.List;
+// import java.util.Optional;
 
-   @Test
-   void getByIDExistingEntry(){
-       Mockito.when(giftCertificateRepository.findByID(1L)).thenReturn(CERTIFICATE);
-       Assertions.assertEquals(service.getByID(1L),CERTIFICATE.get());
+// @ExtendWith(MockitoExtension.class)
+// public class GiftCertificateServiceTest {
 
-   }
+//    @Mock
+//    private static GiftCertificateRepository giftCertificateRepository;
+//    @Mock
+//    private static TagService tagService;
+//    @Mock
+//    private static RequestParamsValidator requestParamsValidator;
 
-   @Test
-   void getByIDNonExistingEntry(){
-       Mockito.when(giftCertificateRepository.findByID(9999L)).thenReturn(NON_EXISTING_CERTIFICATE);
-       Assertions.assertThrows(ServiceException.class, ()->service.getByID(9999L));
+//    private static GiftCertificateServiceImpl service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService,requestParamsValidator);
 
-   }
+//    private static final Optional<GiftCertificate> CERTIFICATE = Optional.of(GiftCertificate.builder().id(1).build());
+//    private static final Optional<GiftCertificate> NEW_CERT = Optional.of(GiftCertificate.builder().build());
+//    private static final Optional<GiftCertificate> NON_EXISTING_CERTIFICATE = Optional.empty();
 
-   @Test
-   void getAllWithoutParams(){
-       Mockito.when(giftCertificateRepository.handleParametrizedRequest("A","A",Collections.emptySet(),"ASC","DESC",10,10)).thenReturn(certificates);
-       Assertions.assertEquals(certificates,service.handleParametrizedGetRequest("A","A",Collections.emptySet(),"ASC","DESC",10,10));
-   }
+//    private static final List<GiftCertificate> certificates = Collections.singletonList(new GiftCertificate());
+//    private static final List<GiftCertificate> parametrizedCertificates = Collections.singletonList(GiftCertificate.builder().name("Aaaa").build());
 
-   @Test
-   void getAllWithIllegalSortingOrder(){
-       final String certificateNameSortOrder = "Asca";
-       final String certificateCreationDateSortOrder = "skype";
-       Mockito.when(requestParamsValidator.validateSortingOrders(certificateNameSortOrder,certificateCreationDateSortOrder)).thenThrow(ServiceException.class);
-       Assertions.assertThrows(ServiceException.class,()->service.handleParametrizedGetRequest("A","A",Collections.emptySet(),"Asca","skype",1,10));
-   }
 
-   @Test
-   void deleteNonExistingEntry(){
-       Mockito.when(giftCertificateRepository.deleteByID(25L)).thenReturn(false);
-       Assertions.assertThrows(ServiceException.class,()->service.deleteByID(25L));
-   }
+//    @BeforeEach
+//    void init(){
+//        service = new GiftCertificateServiceImpl(giftCertificateRepository,tagService,requestParamsValidator);
+//    }
 
-   @Test
-   void deleteEntry(){
-       Mockito.when(giftCertificateRepository.deleteByID(1L)).thenReturn(true);
-       Assertions.assertDoesNotThrow(()->service.deleteByID(1L));
-   }
+//    @Test
+//    void getByIDExistingEntry(){
+//        Mockito.when(giftCertificateRepository.findByID(1L)).thenReturn(CERTIFICATE);
+//        Assertions.assertEquals(service.getByID(1L),CERTIFICATE.get());
 
-   @Test
-   void addEntity(){
-       Mockito.when(giftCertificateRepository.create(NEW_CERT.get())).thenReturn(CERTIFICATE.get());
-       Mockito.when(giftCertificateRepository.findByID(Mockito.eq(1L))).thenReturn(CERTIFICATE);
-       GiftCertificate entity = service.addEntity(NEW_CERT.get());
-       Assertions.assertEquals(CERTIFICATE.get(),entity);
-   }
+//    }
 
-   @Test
-   void updateEntity(){
-       Mockito.when(giftCertificateRepository.update(CERTIFICATE.get(),1L)).thenReturn(true);
-       Mockito.when(giftCertificateRepository.findByID(Mockito.eq(1L))).thenReturn(CERTIFICATE);
-       Mockito.when(giftCertificateRepository.checkExistence(Mockito.eq(1L))).thenReturn(true);
-       Assertions.assertEquals(CERTIFICATE.get(),service.update(CERTIFICATE.get(),1L));
-   }
+//    @Test
+//    void getByIDNonExistingEntry(){
+//        Mockito.when(giftCertificateRepository.findByID(9999L)).thenReturn(NON_EXISTING_CERTIFICATE);
+//        Assertions.assertThrows(ServiceException.class, ()->service.getByID(9999L));
 
-   @Test
-   void updateNonExistingEntity(){
-       Mockito.when(giftCertificateRepository.checkExistence(Mockito.eq(1L))).thenReturn(false);
-       Assertions.assertThrows(ServiceException.class,() -> service.update(CERTIFICATE.get(),1L));
-   }
-}
+//    }
+
+//    @Test
+//    void getAllWithoutParams(){
+//        Mockito.when(giftCertificateRepository.handleParametrizedRequest("A","A",Collections.emptySet(),"ASC","DESC",10,10)).thenReturn(certificates);
+//        Assertions.assertEquals(certificates,service.handleParametrizedGetRequest("A","A",Collections.emptySet(),"ASC","DESC",10,10));
+//    }
+
+//    @Test
+//    void getAllWithIllegalSortingOrder(){
+//        final String certificateNameSortOrder = "Asca";
+//        final String certificateCreationDateSortOrder = "skype";
+//        Mockito.when(requestParamsValidator.validateSortingOrders(certificateNameSortOrder,certificateCreationDateSortOrder)).thenThrow(ServiceException.class);
+//        Assertions.assertThrows(ServiceException.class,()->service.handleParametrizedGetRequest("A","A",Collections.emptySet(),"Asca","skype",1,10));
+//    }
+
+//    @Test
+//    void deleteNonExistingEntry(){
+//        Mockito.when(giftCertificateRepository.deleteByID(25L)).thenReturn(false);
+//        Assertions.assertThrows(ServiceException.class,()->service.deleteByID(25L));
+//    }
+
+//    @Test
+//    void deleteEntry(){
+//        Mockito.when(giftCertificateRepository.deleteByID(1L)).thenReturn(true);
+//        Assertions.assertDoesNotThrow(()->service.deleteByID(1L));
+//    }
+
+//    @Test
+//    void addEntity(){
+//        Mockito.when(giftCertificateRepository.create(NEW_CERT.get())).thenReturn(CERTIFICATE.get());
+//        Mockito.when(giftCertificateRepository.findByID(Mockito.eq(1L))).thenReturn(CERTIFICATE);
+//        GiftCertificate entity = service.addEntity(NEW_CERT.get());
+//        Assertions.assertEquals(CERTIFICATE.get(),entity);
+//    }
+
+//    @Test
+//    void updateEntity(){
+//        Mockito.when(giftCertificateRepository.update(CERTIFICATE.get(),1L)).thenReturn(true);
+//        Mockito.when(giftCertificateRepository.findByID(Mockito.eq(1L))).thenReturn(CERTIFICATE);
+//        Mockito.when(giftCertificateRepository.checkExistence(Mockito.eq(1L))).thenReturn(true);
+//        Assertions.assertEquals(CERTIFICATE.get(),service.update(CERTIFICATE.get(),1L));
+//    }
+
+//    @Test
+//    void updateNonExistingEntity(){
+//        Mockito.when(giftCertificateRepository.checkExistence(Mockito.eq(1L))).thenReturn(false);
+//        Assertions.assertThrows(ServiceException.class,() -> service.update(CERTIFICATE.get(),1L));
+//    }
+// }

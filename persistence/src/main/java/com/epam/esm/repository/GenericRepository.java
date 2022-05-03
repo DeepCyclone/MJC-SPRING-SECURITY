@@ -1,6 +1,5 @@
 package com.epam.esm.repository;
 
-import java.util.List;
 
 
 /*
@@ -9,7 +8,5 @@ import java.util.List;
 * @author Flexus
 * */
 public interface GenericRepository <X>{
-    X create(X object);
-    List<X> readAll(int page,int limit);
     boolean update(X object,long ID);
 }

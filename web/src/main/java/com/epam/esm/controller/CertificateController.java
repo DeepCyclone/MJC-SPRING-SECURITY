@@ -5,7 +5,11 @@ import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.hateoas.assembler.CertificateAssembler;
+import com.epam.esm.hateoas.assembler.OrderAssembler;
+import com.epam.esm.hateoas.assembler.TagAssembler;
 import com.epam.esm.hateoas.model.CertificateModel;
+import com.epam.esm.hateoas.model.OrderModel;
+import com.epam.esm.hateoas.model.TagModel;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 
@@ -44,12 +48,16 @@ public class CertificateController {
     private final GiftCertificateService certificateService;
     private final CertificateConverter certificateConverter;
     private final CertificateAssembler certificateAssembler;
+    private final TagAssembler tagAssembler;
+    private final OrderAssembler orderAssembler;
 
     @Autowired
-    public CertificateController(GiftCertificateService certificateService, CertificateAssembler certificateAssembler,CertificateConverter certificateConverter) {
+    public CertificateController(GiftCertificateService certificateService, CertificateConverter certificateConverter, CertificateAssembler certificateAssembler, TagAssembler tagAssembler, OrderAssembler orderAssembler) {
         this.certificateService = certificateService;
         this.certificateConverter = certificateConverter;
         this.certificateAssembler = certificateAssembler;
+        this.tagAssembler = tagAssembler;
+        this.orderAssembler = orderAssembler;
     }
 
     @Operation(summary =  "Take all available certificates by pages")
@@ -91,6 +99,16 @@ public class CertificateController {
     @GetMapping(value = "/{id:\\d+}")
     public CertificateModel getByID(@Parameter(description = "id of certificate to be searched") @PathVariable long id) {
         return certificateAssembler.toModel(certificateService.getByID(id));
+    }
+
+    @GetMapping(value = "/{id:\\d+}/tags")
+    public CollectionModel<TagModel> getAssociatedTags(@PathVariable long id){
+        return tagAssembler.toCollectionModel(certificateService.getByID(id).getAssociatedTags());
+    }
+
+    @GetMapping(value = "/{id:\\d+}/orders")
+    public CollectionModel<OrderModel> getAssociatedOrders(@PathVariable long id){
+        return orderAssembler.toCollectionModel(certificateService.getByID(id).getAssociatedOrders());
     }
 
     
@@ -152,5 +170,6 @@ public class CertificateController {
         certificateService.clearCache();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     
 }

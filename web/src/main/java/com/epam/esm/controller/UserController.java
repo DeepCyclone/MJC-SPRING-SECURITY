@@ -12,6 +12,7 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -70,7 +71,7 @@ public class UserController {
     @GetMapping
     public CollectionModel<UserModel> getUsersInfo(@Parameter(description = "page of result") @RequestParam(defaultValue = "1") @Min(value = 1,message = "page >=1 ") Integer page,
                                                    @Parameter(description = "records per page") @RequestParam(defaultValue = "10") @Min(value = 1,message = "limit >=1 ") Integer limit){
-        List<User> users = userService.getAll(page,limit);
+        Page<User> users = userService.getAll(page,limit);
         return userAssembler.toCollectionModel(users);
     }
 

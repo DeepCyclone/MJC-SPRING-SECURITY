@@ -47,8 +47,6 @@ public class TagAssembler extends RepresentationModelAssemblerSupport<Tag,TagMod
     }
 
     private void generateLinks(Tag source,TagModel destination){
-        Optional.ofNullable(source.getCerts()).ifPresent(certs->
-        certs.forEach(cert->
-        destination.add(linkTo(methodOn(CertificateController.class).getByID(cert.getId())).withRel("associated certificates"))));
+        destination.add(linkTo(methodOn(TagController.class).getAssociatedCertificates(source.getId())).withRel("associated certificates"));
     }
 }
