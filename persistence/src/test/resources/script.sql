@@ -71,7 +71,7 @@ create table user_m2m_order
         foreign key (umo_o_id) references user_order (o_id)
             on update cascade on delete cascade,
     constraint fk_user_m2m_order_user
-        foreign key (umo_u_id) references `user` (u_id)
+        foreign key (umo_u_id) references users (u_id)
             on update cascade on delete cascade
 );
 

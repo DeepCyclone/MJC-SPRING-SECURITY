@@ -8,6 +8,8 @@ import com.epam.esm.repository.query.processor.ComplexParamMapProcessor;
 import com.epam.esm.repository.query.processor.UpdateQueryBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -65,9 +67,9 @@ public class GiftCertificateCustomRepositoryImpl implements GiftCertificateCusto
     }
 
     @Override
-    public List<GiftCertificate> handleParametrizedRequest(String certificateNamePart, String descriptionPart,
-            Set<String> tagsNames, String certificateNameSortOrder, String certificateCreationDateSortOrder, int page,
-            int limit) {
+    public Page<GiftCertificate> handleParametrizedRequest(String certificateNamePart, String descriptionPart,
+                                                           Set<String> tagsNames, String certificateNameSortOrder, String certificateCreationDateSortOrder, int page,
+                                                           int limit) {
         String generatedQuery = complexParamMapProcessor.buildQuery(certificateNamePart,
                                                                     descriptionPart,
                                                                     tagsNames,
@@ -81,7 +83,10 @@ public class GiftCertificateCustomRepositoryImpl implements GiftCertificateCusto
         setFirstResult((page-1)*limit).
         setMaxResults(limit);
         setTagsNames(query,tagsNames);
-        return query.getResultList();
+        List<GiftCertificate> result = query.getResultList();
+//        return new PageImpl<>(result, PageRequest.of(page, limit), result.size());
+        return new PageImpl<>(result);
+
     }
 
     private void setTagsNames(Query query,Set<String> tagsNames){

@@ -12,6 +12,7 @@ import com.epam.esm.service.validator.RequestParamsValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,7 +88,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Cacheable(cacheNames = "certificatesCache",key = "new org.springframework.cache.interceptor.SimpleKey(#certificateNamePart,#descriptionPart,#tagsNames,#certificateNameSortOrder,#certificateCreationDateSortOrder, #page, #limit)")
     @Override
-    public List<GiftCertificate> handleParametrizedGetRequest(String certificateNamePart,
+    public Page<GiftCertificate> handleParametrizedGetRequest(String certificateNamePart,
                                                               String descriptionPart,
                                                               Set<String> tagsNames,
                                                               String certificateNameSortOrder,
@@ -95,7 +96,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                                                               int page,
                                                               int limit){
         requestParamsValidator.validateSortingOrders(certificateNameSortOrder,certificateCreationDateSortOrder);
-        List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(certificateNamePart,
+        Page<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(certificateNamePart,
                                                                                              descriptionPart,
                                                                                              tagsNames,
                                                                                              certificateNameSortOrder,
