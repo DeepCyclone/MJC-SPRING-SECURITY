@@ -19,14 +19,15 @@ import java.util.Optional;
 import static com.epam.esm.repository.query.holder.UserQueryHolder.FETCH_MOST_USED_TAG_WITH_RICHEST_ORDERS;
 
 @Repository
-public class UserCustomRepositoryImpl implements UserCustomRepository {
+public class UserCustomRepositoryImpl implements UserCustomRepository<User> {
     
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public User save(User object) {
-        throw new UnsupportedOperationException();
+        object.setId(0L);
+        return entityManager.merge(object);
     }
 
     @Override

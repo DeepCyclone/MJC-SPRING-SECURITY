@@ -9,6 +9,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * A specification how to interact with datasource which contains users
  * @author Flexus
  * */
-public interface UserRepository extends PagingAndSortingRepository<User,Long>,Nameable<User>,UserCustomRepository{
+public interface UserRepository extends PagingAndSortingRepository<User,Long>,Nameable<User>,UserCustomRepository<User>{
 
 }

@@ -5,8 +5,8 @@ import java.util.Optional;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.repository.model.User;
 
-public interface UserCustomRepository extends GenericRepository<User> {
+public interface UserCustomRepository<T> extends GenericRepository<User> {
     Optional<Tag> fetchMostUsedTagWithRichestOrders();
     boolean deleteById(long id);
-    User save(User object);
+    T save(T object);
 }

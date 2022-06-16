@@ -1,5 +1,7 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.converter.UserConverter;
+import com.epam.esm.dto.request.UserDto;
 import com.epam.esm.hateoas.assembler.OrderAssembler;
 import com.epam.esm.hateoas.assembler.TagAssembler;
 import com.epam.esm.hateoas.assembler.UserAssembler;
@@ -21,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,18 +49,21 @@ public class UserController {
     private final UserAssembler userAssembler;
     private final OrderAssembler orderAssembler;
     private final TagAssembler tagAssembler;
+    private final UserConverter userConverter;
 
     @Autowired
     public UserController(UserService userService,
                           UserAssembler userAssembler,
                           OrderAssembler orderAssembler,
                           OrderService orderService,
-                          TagAssembler tagAssembler) {
+                          TagAssembler tagAssembler,
+                          UserConverter userConverter) {
         this.userService = userService;
         this.userAssembler = userAssembler;
         this.orderAssembler = orderAssembler;
         this.orderService = orderService;
         this.tagAssembler = tagAssembler;
+        this.userConverter = userConverter;
     }
 
     @Operation(summary =  "Take all available users by pages")
@@ -134,6 +140,13 @@ public class UserController {
     public ResponseEntity<OrderModel> makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
         Order order = orderService.makeOrder(certificates,userId);
         OrderModel model = orderAssembler.toModel(order);
+        return new ResponseEntity<>(model,HttpStatus.CREATED);
+    }
+
+    @PostMapping
+    public ResponseEntity<UserModel> signUp(@RequestBody UserDto userDto){
+        User user = userConverter.convertFromRequestDto(userDto);
+        UserModel model = userAssembler.toModel(userService.save(user));
         return new ResponseEntity<>(model,HttpStatus.CREATED);
     }
 

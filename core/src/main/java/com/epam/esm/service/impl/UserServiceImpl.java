@@ -10,6 +10,7 @@ import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -40,6 +41,13 @@ public class UserServiceImpl implements UserService{
     public User getByName(String userName) {
         return userRepository.findByName(userName).
         orElseThrow(()->new ServiceException(ServiceErrorCode.USER_NOT_FOUND, "Cannot fetch user with name = "+userName));
+    }
+
+    @Override
+    public User save(User user) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
     @Override
