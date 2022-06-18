@@ -2,7 +2,6 @@ package com.epam.esm.config;
 
 import com.epam.esm.security.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,7 +18,7 @@ import static org.springframework.http.HttpMethod.POST;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig
-    extends WebSecurityConfigurerAdapter implements ApplicationContextAware {
+    extends WebSecurityConfigurerAdapter{
 
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
@@ -37,10 +36,13 @@ public class SecurityConfig
                 .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers(GET, "/api/v1/**").permitAll()
-                .antMatchers(POST, "/api/v1/users").permitAll()
-                .antMatchers(POST, "/orders").fullyAuthenticated()
-                .antMatchers(GET, "/tags/**", "/users/**").fullyAuthenticated()
+                //Guest permissions
+                .mvcMatchers(GET, "/api/v1/certificates").permitAll()
+                .mvcMatchers(POST, "/api/v1/users").permitAll()
+                //User permissions
+                .mvcMatchers(POST, "/api/v1/orders").fullyAuthenticated()
+                .mvcMatchers(GET, "/api/v1/users").fullyAuthenticated()
+                //Admin permissions
                 .anyRequest().hasRole(Role.ADMIN);
     }
 
