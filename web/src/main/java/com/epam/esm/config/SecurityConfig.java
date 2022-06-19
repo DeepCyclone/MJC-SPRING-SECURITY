@@ -41,7 +41,7 @@ public class SecurityConfig
                 .mvcMatchers(POST, "/api/v1/users").permitAll()
                 //User permissions
                 .mvcMatchers(POST, "/api/v1/orders").fullyAuthenticated()
-                .mvcMatchers(GET, "/api/v1/users").fullyAuthenticated()
+                .mvcMatchers(GET, "/api/v1/**").fullyAuthenticated()
                 //Admin permissions
                 .anyRequest().hasRole(Role.ADMIN);
     }

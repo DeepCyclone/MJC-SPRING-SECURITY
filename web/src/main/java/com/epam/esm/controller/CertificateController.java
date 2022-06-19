@@ -102,15 +102,16 @@ public class CertificateController {
         @ApiResponse(responseCode = "404" , description = "Certificate not found",
             content =  @Content),
     })
-//    @GetMapping(value = "/{id:\\d+}")
-//    public CertificateModel getByID(@Parameter(description = "id of certificate to be searched") @PathVariable long id) {
-//        return certificateAssembler.toModel(certificateService.getByID(id));
-//    }
 
     @GetMapping(value = "/{id:\\d+}")
-    public String getByID(@Parameter(description = "id of certificate to be searched") @PathVariable long id) {
-        return JWTCodec.createJWT(Long.toString(id),"cert","get by id",1000000);
+    public CertificateModel getByID(@Parameter(description = "id of certificate to be searched") @PathVariable long id) {
+        return certificateAssembler.toModel(certificateService.getByID(id));
     }
+
+//    @GetMapping(value = "/{id:\\d+}")
+//    public String getByID(@Parameter(description = "id of certificate to be searched") @PathVariable long id) {
+//        return JWTCodec.createJWT(Long.toString(id),"cert","get by id",1000000);
+//    }
 
     @GetMapping(value = "/{id:\\d+}/tags")
     public CollectionModel<TagModel> getAssociatedTags(@PathVariable long id){
