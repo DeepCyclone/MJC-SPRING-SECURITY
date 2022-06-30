@@ -13,6 +13,6 @@ import javax.sql.DataSource;
 public class IntegrationConfig {
     @Bean
     public DataSource embeddedDataSource(){
-        return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("script.sql").build();
+        return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).addScript("script.sql").build();
     }
 }

@@ -3,7 +3,9 @@ package com.epam.esm.controller;
 import com.epam.esm.converter.TagConverter;
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.request.TagDto;
+import com.epam.esm.hateoas.assembler.CertificateAssembler;
 import com.epam.esm.hateoas.assembler.TagAssembler;
+import com.epam.esm.hateoas.model.CertificateModel;
 import com.epam.esm.hateoas.model.TagModel;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.TagService;
@@ -41,12 +43,14 @@ public class TagController {
     private final TagService tagService;
     private final TagConverter tagConverter;
     private final TagAssembler tagAssembler;
+    private final CertificateAssembler certificateAssembler;
 
     @Autowired
-    public TagController(TagService tagService,TagConverter tagConverter,TagAssembler tagAssembler) {
+    public TagController(TagService tagService, TagConverter tagConverter, TagAssembler tagAssembler, CertificateAssembler certificateAssembler) {
         this.tagService = tagService;
         this.tagConverter = tagConverter;
         this.tagAssembler = tagAssembler;
+        this.certificateAssembler = certificateAssembler;
     }
 
     @Operation(summary =  "Get certificate by ID with links to associated tags if there are present")
@@ -64,13 +68,18 @@ public class TagController {
         return tagAssembler.toModel(tagService.getByID(id));
     }
 
+    @GetMapping(value = "/{id:\\d+}/certificates")
+    public CollectionModel<CertificateModel> getAssociatedCertificates(@PathVariable long id){
+        return certificateAssembler.toCollectionModel(tagService.getByID(id).getCerts());
+    }
+
     @Operation(summary =  "Take all available tags by pages")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200" , description = "Print all existing tags with params",
             content = { @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema =  @Schema(implementation = TagModel.class))}),
         @ApiResponse(responseCode = "400" , description = "Invalid pagination params",
-            content = @Content) 
+            content = @Content)
     })
     @GetMapping
     public CollectionModel<TagModel> getTags(@Parameter(description = "page of result") @RequestParam(defaultValue = "1") @Min(value = 1,message = "page >=1 ") Integer page,
@@ -104,7 +113,7 @@ public class TagController {
             content =  @Content),
         @ApiResponse(responseCode = "400" , description = "Bad request body params. Check schema of TagDto",
             content =  @Content)
-            
+
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -112,5 +121,6 @@ public class TagController {
         Tag tag = tagConverter.convertFromRequestDto(tagDto);
         return tagAssembler.toModel(tagService.addEntity(tag));
     }
+
 
 }

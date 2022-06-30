@@ -1,17 +1,22 @@
 package com.epam.esm.service;
 
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.model.Tag;
-import org.springframework.util.MultiValueMap;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Set;
 
 public interface GiftCertificateService {
     GiftCertificate getByID(long id);
     GiftCertificate addEntity(GiftCertificate certificateDto);
     void deleteByID(long id);
     GiftCertificate update(GiftCertificate certificatePatch,long id);
-    List<Tag> saveAssociatedTags(List<Tag> tags);
-    List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params,int limit,int offset);
+    Page<GiftCertificate> handleParametrizedGetRequest(String certificateNamePart,
+                                                       String descriptionPart,
+                                                       Set<String> tagsNames,
+                                                       String certificateNameSortOrder,
+                                                       String certificateCreationDateSortOrder,
+                                                       int page,
+                                                       int limit);
     void clearCache();
 }

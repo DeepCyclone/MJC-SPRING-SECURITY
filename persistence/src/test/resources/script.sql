@@ -1,6 +1,6 @@
 create table gift_certificate
 (
-    gc_id               bigint unsigned auto_increment
+    gc_id               bigint  auto_increment
         primary key,
     gc_name             varchar(50)                         not null,
     gc_description      varchar(200)                        not null,
@@ -12,14 +12,14 @@ create table gift_certificate
 
 create table tag
 (
-    t_id   bigint unsigned auto_increment
+    t_id   bigint  auto_increment
         primary key,
     t_name varchar(50) not null
 );
 
-create table user
+create table `user`
 (
-    u_id   bigint unsigned auto_increment
+    u_id   bigint  auto_increment
         primary key,
     u_name varchar(30) null,
     constraint u_name
@@ -28,7 +28,7 @@ create table user
 
 create table user_order
 (
-    o_id bigint unsigned auto_increment
+    o_id bigint  auto_increment
         primary key,
     o_price decimal(15, 5) null,
     o_purchase_date timestamp(3) default CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3) not null
@@ -36,8 +36,8 @@ create table user_order
 
 create table tag_m2m_gift_certificate
 (
-    tmgc_t_id  bigint unsigned not null,
-    tmgc_gc_id bigint unsigned not null,
+    tmgc_t_id  bigint  not null,
+    tmgc_gc_id bigint  not null,
     primary key (tmgc_t_id, tmgc_gc_id),
     constraint fk_tag_m2m_gift_certificate_gift_cert
         foreign key (tmgc_gc_id) references gift_certificate (gc_id)
@@ -49,8 +49,8 @@ create table tag_m2m_gift_certificate
 
 create table order_m2m_certificate
 (
-    omc_o_id  bigint unsigned not null,
-    omc_gc_id bigint unsigned not null,
+    omc_o_id  bigint  not null,
+    omc_gc_id bigint  not null,
     primary key (omc_o_id, omc_gc_id),
     constraint fk_order_m2m_certificate_cert
         foreign key (omc_gc_id) references gift_certificate (gc_id)
@@ -62,8 +62,8 @@ create table order_m2m_certificate
 
 create table user_m2m_order
 (
-    umo_u_id bigint unsigned not null,
-    umo_o_id bigint unsigned not null,
+    umo_u_id bigint  not null,
+    umo_o_id bigint  not null,
     primary key (umo_u_id, umo_o_id),
     constraint umo_o_id_UNIQUE
         unique (umo_o_id),

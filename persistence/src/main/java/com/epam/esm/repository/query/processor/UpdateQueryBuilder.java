@@ -2,6 +2,8 @@ package com.epam.esm.repository.query.processor;
 
 import com.epam.esm.repository.model.GiftCertificate;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,12 +14,13 @@ import static com.epam.esm.repository.query.holder.SQLParts.COMMA;
 import static com.epam.esm.repository.query.holder.SQLParts.EMPTY_PART;
 import static com.epam.esm.repository.query.holder.SQLParts.EQUALS_MARK;
 
+@Component
 public class UpdateQueryBuilder{
-    private static final String UPDATE_QUERY_BASE = "UPDATE GiftCertificate certificate SET ";
-    private static final String UPDATE_QUERY_WHERE_CONDITION = " WHERE certificate.id  = ";
+    private final String UPDATE_QUERY_BASE = "UPDATE GiftCertificate certificate SET ";
+    private final String UPDATE_QUERY_WHERE_CONDITION = " WHERE certificate.id  = ";
 
 
-    public static String buildUpdateQuery(GiftCertificate cert,long id){
+    public String buildUpdateQuery(GiftCertificate cert,long id){
         String dynamicPart = buildDynamicUpdatePart(cert);
         if(!dynamicPart.isEmpty()){
         StringBuilder resultQuery = new StringBuilder(UPDATE_QUERY_BASE);

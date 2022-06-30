@@ -11,6 +11,8 @@ import com.epam.esm.repository.model.User;
 import com.epam.esm.service.OrderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,13 +40,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getAll(int page,int limit) {
-        return orderRepository.readAll(page,limit);
+    public Page<Order> getAll(int page,int limit) {
+        return orderRepository.findAll(PageRequest.of(page,limit));
     }
 
     @Override
     public Order getById(long orderId) {
-        Order order = orderRepository.findByID(orderId).orElseThrow(
+        Order order = orderRepository.findById(orderId).orElseThrow(
             () -> new ServiceException(ServiceErrorCode.ORDER_NOT_FOUND,"Cannot fetch order with id = " + orderId));
         order.setAssociatedCertificates(fetchAssociatedCertificates(orderId));
         return order;
@@ -53,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order update(Order orderPatch, long orderId) {
-        if(!orderRepository.checkExistence(orderId)){
+        if(!orderRepository.existsById(orderId)){
             throw new ServiceException(ServiceErrorCode.ORDER_NOT_FOUND, "Order not found with ID = " + orderId);
         }
         if(orderPatch.getAssociatedCertificates() != null && orderPatch.getAssociatedCertificates().isEmpty()){
@@ -63,9 +65,9 @@ public class OrderServiceImpl implements OrderService {
         Optional.ofNullable(orderPatch.getAssociatedCertificates()).ifPresent(certs -> {
             orderPatch.setPrice(certs.stream()
             .peek(this::checkExistence)
-            .map(cert->giftCertificateRepository.findByID(cert.getId()).get().getPrice())
+            .map(cert->giftCertificateRepository.findById(cert.getId()).get().getPrice())
             .reduce(BigDecimal.ZERO, BigDecimal::add));
-            orderRepository.findByID(orderId).ifPresent(order->order.setAssociatedCertificates(certs));
+            orderRepository.findById(orderId).ifPresent(order->order.setAssociatedCertificates(certs));
         });
         price.ifPresent(orderPatch::setPrice);
         boolean result = orderRepository.update(orderPatch, orderId);
@@ -78,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void delete(long orderId) {
-        if(!orderRepository.deleteByID(orderId)){
+        if(!orderRepository.deleteById(orderId)){
             throw new ServiceException(ServiceErrorCode.ORDER_DELETION_ERROR," cannot delete order with id = "+orderId);
         }
     }
@@ -87,10 +89,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order makeOrder(List<Long> certificatesIds,long userId) {
         List<Long> filteredCertificates = certificatesIds.stream().distinct().collect(Collectors.toList());
-        User user = userRepository.findByID(userId).orElseThrow(() -> new ServiceException(ServiceErrorCode.USER_NOT_FOUND,"User not found with ID = "+userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(ServiceErrorCode.USER_NOT_FOUND,"User not found with ID = "+userId));
         List<GiftCertificate> certificatesEntities = new LinkedList<>();
 
-        filteredCertificates.forEach(certId->certificatesEntities.add(giftCertificateRepository.findByID(certId).orElseThrow(
+        filteredCertificates.forEach(certId->certificatesEntities.add(giftCertificateRepository.findById(certId).orElseThrow(
                 ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"cert not found with ID = "+certId))));
 
         BigDecimal sum = countOrderSum(certificatesEntities);
@@ -105,13 +107,13 @@ public class OrderServiceImpl implements OrderService {
 
     private List<GiftCertificate> fetchAssociatedCertificates(long orderId){
         return orderRepository.
-        findByID(orderId).
+        findById(orderId).
         map(Order::getAssociatedCertificates).
         orElse(Collections.emptyList());
     }
 
     private void checkExistence(GiftCertificate cert){
-        if(!giftCertificateRepository.checkExistence(cert.getId())){
+        if(!giftCertificateRepository.existsById(cert.getId())){
             throw new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID = " + cert.getId());
         }
     }

@@ -52,9 +52,8 @@ public class CertificateAssembler extends RepresentationModelAssemblerSupport<Gi
     }
 
     private void generateLinks(GiftCertificate source,CertificateModel destination){
-        Optional.ofNullable(source.getAssociatedTags()).ifPresent(tags->
-        tags.forEach(tag->
-        destination.add(linkTo(methodOn(TagController.class).getByID(tag.getId())).withRel("tags"))));
+        destination.add(linkTo(methodOn(CertificateController.class).getAssociatedTags(source.getId())).withRel("tags"));
+        destination.add(linkTo(methodOn(CertificateController.class).getAssociatedOrders(source.getId())).withRel("orders"));
     }
 
     

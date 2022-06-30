@@ -7,22 +7,21 @@ import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.validation.RequestParamsValidator;
-import com.epam.esm.service.validation.UniqueValuesValidator;
+import com.epam.esm.service.validator.RequestParamsValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MultiValueMap;
 
 
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 
 
@@ -32,34 +31,33 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository certificateRepository;
     private final TagService tagService;
+    private final RequestParamsValidator requestParamsValidator;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagService tagService) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagService tagService,RequestParamsValidator requestParamsValidator) {
         this.certificateRepository = certificateRepository;
         this.tagService = tagService;
+        this.requestParamsValidator = requestParamsValidator;
     }
 
     @Override
     //TODO transactional
     public GiftCertificate getByID(long id) {
-        GiftCertificate certificate = certificateRepository.findByID(id).orElseThrow(
-                ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));//TODO resource bundle
-        certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(id));
+        GiftCertificate certificate = certificateRepository.findById(id).orElseThrow(
+                ()->new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));
+        // certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(id));
         return certificate;
     }
 
     @Override
     @Transactional
     public GiftCertificate addEntity(GiftCertificate certificateDto) {
-        List<Tag> gainedTags = certificateDto.getAssociatedTags();
-        certificateDto.setAssociatedTags(Collections.emptyList());
-        GiftCertificate baseCert = certificateRepository.create(certificateDto);
+        Set<Tag> gainedTags = certificateDto.getAssociatedTags();
+        certificateDto.setAssociatedTags(Collections.emptySet());
+        GiftCertificate baseCert = certificateRepository.save(certificateDto);
         if(gainedTags!=null && !gainedTags.isEmpty()){
-            List<Tag> uniqueTags = gainedTags.stream().
-            filter(UniqueValuesValidator.distinctByKey(tag->tag.getName())).
-            collect(Collectors.toList());
-            List<Tag> savedTags = saveAssociatedTags(uniqueTags);
-            baseCert.setAssociatedTags(new LinkedList<>());
+            Set<Tag> savedTags = tagService.saveTags(gainedTags);
+            baseCert.setAssociatedTags(new HashSet<>());
             baseCert.getAssociatedTags().addAll(savedTags);
         }
         return getByID(baseCert.getId());//TODO get могут отрабатывать неправильно => разобраться с выполнением
@@ -68,7 +66,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public void deleteByID(long id){
-        boolean result = certificateRepository.deleteByID(id);
+        boolean result = certificateRepository.deleteById(id);
         if(!result){
             throw new ServiceException(ServiceErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = " + id);
         }
@@ -81,37 +79,35 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         certificateRepository.update(patch,id);
         Optional.ofNullable(patch.getAssociatedTags()).ifPresent(tags -> {
             GiftCertificate cert = getByID(id);
-            List<Tag> uniqueTags = tags.stream().
-            filter(UniqueValuesValidator.distinctByKey(tag->tag.getName())).
-            collect(Collectors.toList());
-            List<Tag> savedTags = saveAssociatedTags(uniqueTags);
+            Set<Tag> savedTags = tagService.saveTags(tags);
             cert.getAssociatedTags().clear();
             cert.getAssociatedTags().addAll(savedTags);
         });
         return getByID(id);
     }
 
-    //TODO перенести это в tagService
+    @Cacheable(cacheNames = "certificatesCache",key = "new org.springframework.cache.interceptor.SimpleKey(#certificateNamePart,#descriptionPart,#tagsNames,#certificateNameSortOrder,#certificateCreationDateSortOrder, #page, #limit)")
     @Override
-    @Transactional
-    public List<Tag> saveAssociatedTags(List<Tag> tags) {
-        if(tags == null || tags.isEmpty()){
-            return Collections.emptyList();
-        }
-        return tags.stream().map(tagService::addEntity).collect(Collectors.toList());
-    }
-
-    @Cacheable(cacheNames = "certificatesCache",key = "new org.springframework.cache.interceptor.SimpleKey(#params.hashCode(), #page, #limit)")
-    @Override
-    public List<GiftCertificate> handleParametrizedGetRequest(MultiValueMap<String,String> params,int page,int limit){
-        RequestParamsValidator.validateParams(params);
-        List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params,page,limit);
-        certificates.forEach(certificate -> certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
+    public Page<GiftCertificate> handleParametrizedGetRequest(String certificateNamePart,
+                                                              String descriptionPart,
+                                                              Set<String> tagsNames,
+                                                              String certificateNameSortOrder,
+                                                              String certificateCreationDateSortOrder,
+                                                              int page,
+                                                              int limit){
+        requestParamsValidator.validateSortingOrders(certificateNameSortOrder,certificateCreationDateSortOrder);
+        Page<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(certificateNamePart,
+                                                                                             descriptionPart,
+                                                                                             tagsNames,
+                                                                                             certificateNameSortOrder,
+                                                                                             certificateCreationDateSortOrder,
+                                                                                             page,
+                                                                                             limit);
         return certificates;
     }
 
     private void checkExistence(long id){
-        if(!certificateRepository.checkExistence(id)){
+        if(!certificateRepository.existsById(id)){
             throw new ServiceException(ServiceErrorCode.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate with ID " + id);
         }
     }

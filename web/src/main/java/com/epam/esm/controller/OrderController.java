@@ -5,9 +5,11 @@ import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.OrderDto;
 import com.epam.esm.hateoas.assembler.OrderAssembler;
 import com.epam.esm.hateoas.model.OrderModel;
+import com.epam.esm.hateoas.processor.OrderProcessor;
 import com.epam.esm.repository.model.Order;
 import com.epam.esm.service.OrderService;
 
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,21 +32,24 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.Min;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/orders",produces = {MediaType.APPLICATION_JSON_VALUE})
 @Validated
+
+
 public class OrderController {
 
     private final OrderConverter orderConverter;
     private final OrderService orderService;
     private final OrderAssembler orderAssembler;
+    private final OrderProcessor orderProcessor;
 
-    public OrderController(OrderService orderService,OrderAssembler orderAssembler,OrderConverter orderConverter) {
+    public OrderController(OrderService orderService,OrderAssembler orderAssembler,OrderConverter orderConverter,OrderProcessor orderProcessor) {
         this.orderConverter = orderConverter;
         this.orderService = orderService;
         this.orderAssembler = orderAssembler;
+        this.orderProcessor = orderProcessor;
     }
 
     @Operation(summary =  "Take all available orders by pages")
@@ -58,8 +63,10 @@ public class OrderController {
     @GetMapping
     public CollectionModel<OrderModel> getAll(@Parameter(description = "page of result") @RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
                                               @Parameter(description = "records per page") @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit){
-       List<Order> orders = orderService.getAll(page,limit);
-       return orderAssembler.toCollectionModel(orders);
+       Page<Order> orders = orderService.getAll(page,limit);
+       CollectionModel<OrderModel> models = orderAssembler.toCollectionModel(orders.getContent());
+       orderProcessor.process(models, orders, page,limit);
+       return models;
     }   
 
     @Operation(summary =  "Get order by ID with links to associated certificates if there are present")

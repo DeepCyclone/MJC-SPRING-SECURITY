@@ -7,7 +7,7 @@
 
     <cache alias="certificatesCache">
         <key-type>org.springframework.cache.interceptor.SimpleKey</key-type>
-        <value-type>java.util.ArrayList</value-type>
+        <value-type>org.springframework.data.domain.PageImpl</value-type>
         <expiry>
             <ttl unit="seconds">30</ttl>
         </expiry>

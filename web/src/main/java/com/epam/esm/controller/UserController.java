@@ -1,5 +1,7 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.converter.UserConverter;
+import com.epam.esm.dto.request.UserDto;
 import com.epam.esm.hateoas.assembler.OrderAssembler;
 import com.epam.esm.hateoas.assembler.TagAssembler;
 import com.epam.esm.hateoas.assembler.UserAssembler;
@@ -12,6 +14,7 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,18 +49,21 @@ public class UserController {
     private final UserAssembler userAssembler;
     private final OrderAssembler orderAssembler;
     private final TagAssembler tagAssembler;
+    private final UserConverter userConverter;
 
     @Autowired
     public UserController(UserService userService,
                           UserAssembler userAssembler,
                           OrderAssembler orderAssembler,
                           OrderService orderService,
-                          TagAssembler tagAssembler) {
+                          TagAssembler tagAssembler,
+                          UserConverter userConverter) {
         this.userService = userService;
         this.userAssembler = userAssembler;
         this.orderAssembler = orderAssembler;
         this.orderService = orderService;
         this.tagAssembler = tagAssembler;
+        this.userConverter = userConverter;
     }
 
     @Operation(summary =  "Take all available users by pages")
@@ -70,7 +77,7 @@ public class UserController {
     @GetMapping
     public CollectionModel<UserModel> getUsersInfo(@Parameter(description = "page of result") @RequestParam(defaultValue = "1") @Min(value = 1,message = "page >=1 ") Integer page,
                                                    @Parameter(description = "records per page") @RequestParam(defaultValue = "10") @Min(value = 1,message = "limit >=1 ") Integer limit){
-        List<User> users = userService.getAll(page,limit);
+        Page<User> users = userService.getAll(page,limit);
         return userAssembler.toCollectionModel(users);
     }
 
@@ -133,6 +140,13 @@ public class UserController {
     public ResponseEntity<OrderModel> makeOrderOnCertificates(@PathVariable long userId,@RequestParam(name="certificateId") List<Long> certificates){
         Order order = orderService.makeOrder(certificates,userId);
         OrderModel model = orderAssembler.toModel(order);
+        return new ResponseEntity<>(model,HttpStatus.CREATED);
+    }
+
+    @PostMapping
+    public ResponseEntity<UserModel> signUp(@RequestBody UserDto userDto){
+        User user = userConverter.convertFromRequestDto(userDto);
+        UserModel model = userAssembler.toModel(userService.save(user));
         return new ResponseEntity<>(model,HttpStatus.CREATED);
     }
 

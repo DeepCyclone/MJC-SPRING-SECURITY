@@ -5,16 +5,22 @@ import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.hateoas.assembler.CertificateAssembler;
+import com.epam.esm.hateoas.assembler.OrderAssembler;
+import com.epam.esm.hateoas.assembler.TagAssembler;
 import com.epam.esm.hateoas.model.CertificateModel;
+import com.epam.esm.hateoas.model.OrderModel;
+import com.epam.esm.hateoas.model.TagModel;
+import com.epam.esm.hateoas.processor.CertificateProcessor;
 import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.security.JWTCodec;
 import com.epam.esm.service.GiftCertificateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +40,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import javax.validation.constraints.Min;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -44,12 +50,18 @@ public class CertificateController {
     private final GiftCertificateService certificateService;
     private final CertificateConverter certificateConverter;
     private final CertificateAssembler certificateAssembler;
+    private final CertificateProcessor certificateProcessor;
+    private final TagAssembler tagAssembler;
+    private final OrderAssembler orderAssembler;
 
     @Autowired
-    public CertificateController(GiftCertificateService certificateService, CertificateAssembler certificateAssembler,CertificateConverter certificateConverter) {
+    public CertificateController(GiftCertificateService certificateService, CertificateConverter certificateConverter, CertificateAssembler certificateAssembler, CertificateProcessor certificateProcessor, TagAssembler tagAssembler, OrderAssembler orderAssembler) {
         this.certificateService = certificateService;
         this.certificateConverter = certificateConverter;
         this.certificateAssembler = certificateAssembler;
+        this.certificateProcessor = certificateProcessor;
+        this.tagAssembler = tagAssembler;
+        this.orderAssembler = orderAssembler;
     }
 
     @Operation(summary =  "Take all available certificates by pages")
@@ -61,11 +73,23 @@ public class CertificateController {
             content = @Content)    
     })
     @GetMapping
-    public CollectionModel<CertificateModel> getAllByRequestParams(@Parameter(description = "params to concretize searching:tag names,tag name part and it's sorting order,cert description part,cert creation date sort order") @RequestParam MultiValueMap<String,String> params,//TODO refactor without MAP
+    public CollectionModel<CertificateModel> getAllByRequestParams(@Parameter(description = "part of certificate name") @RequestParam(name = "namePart",defaultValue = "",required = false) String certificateNamePart,
+                                                                   @Parameter(description = "part of certificate description") @RequestParam(name = "descriptionPart",defaultValue = "",required = false) String descriptionPart,
+                                                                   @Parameter(description = "names of tags associated with certificates") @RequestParam(name = "tagName",required = false) Set<String> tagsNames,
+                                                                   @Parameter(description = "sort order by certificate name") @RequestParam(required = false,name = "nameSortOrder",defaultValue = "") String certificateNameSortOrder,
+                                                                   @Parameter(description = "sort order by certificate creation date") @RequestParam(required = false,name = "dateSortOrder",defaultValue = "") String certificateCreationDateSortOrder,
                                                                    @Parameter(description = "page of result") @RequestParam(defaultValue = "1",name = "page") @Min(value = 1,message = "page >=1 ") Integer page,
                                                                    @Parameter(description = "records per page") @RequestParam(defaultValue = "10" ,name = "limit") @Min(value = 1,message = "limit >=1 ") Integer limit) {
-        List<GiftCertificate> certs = certificateService.handleParametrizedGetRequest(params,page,limit);
-        return certificateAssembler.toCollectionModel(certs);
+        Page<GiftCertificate> certs = certificateService.handleParametrizedGetRequest(certificateNamePart,
+                                                                                      descriptionPart,
+                                                                                      tagsNames,
+                                                                                      certificateNameSortOrder,
+                                                                                      certificateCreationDateSortOrder,
+                                                                                      page,
+                                                                                      limit);
+        CollectionModel<CertificateModel> certificateModels = certificateAssembler.toCollectionModel(certs);
+        certificateProcessor.process(certificateModels,certs,page,limit,certificateNamePart,descriptionPart,tagsNames,certificateNameSortOrder,certificateCreationDateSortOrder);
+        return certificateModels;
     }
 
     @Operation(summary =  "Get certificate by ID with links to associated tags if there are present")
@@ -78,9 +102,25 @@ public class CertificateController {
         @ApiResponse(responseCode = "404" , description = "Certificate not found",
             content =  @Content),
     })
+
     @GetMapping(value = "/{id:\\d+}")
     public CertificateModel getByID(@Parameter(description = "id of certificate to be searched") @PathVariable long id) {
         return certificateAssembler.toModel(certificateService.getByID(id));
+    }
+
+//    @GetMapping(value = "/{id:\\d+}")
+//    public String getByID(@Parameter(description = "id of certificate to be searched") @PathVariable long id) {
+//        return JWTCodec.createJWT(Long.toString(id),"cert","get by id",1000000);
+//    }
+
+    @GetMapping(value = "/{id:\\d+}/tags")
+    public CollectionModel<TagModel> getAssociatedTags(@PathVariable long id){
+        return tagAssembler.toCollectionModel(certificateService.getByID(id).getAssociatedTags());
+    }
+
+    @GetMapping(value = "/{id:\\d+}/orders")
+    public CollectionModel<OrderModel> getAssociatedOrders(@PathVariable long id){
+        return orderAssembler.toCollectionModel(certificateService.getByID(id).getAssociatedOrders());
     }
 
     
@@ -132,7 +172,7 @@ public class CertificateController {
             
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CertificateModel> createCertificate(@RequestBody @Validated(CreateDTO.class) GiftCertificateDto certificateDto) {//
+    public ResponseEntity<CertificateModel> createCertificate(@RequestBody @Validated(CreateDTO.class) GiftCertificateDto certificateDto) {
         GiftCertificate updatedEntity = certificateService.addEntity(certificateConverter.convertFromRequestDto(certificateDto));
         return new ResponseEntity<>(certificateAssembler.toModel(updatedEntity),HttpStatus.CREATED);
     }
@@ -142,5 +182,6 @@ public class CertificateController {
         certificateService.clearCache();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     
 }

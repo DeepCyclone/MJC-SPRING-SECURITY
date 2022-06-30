@@ -36,6 +36,8 @@ public class User {
     private long id;
     @Column(name = UserMetadata.NAME)
     private String name;
+    @Column(name = UserMetadata.PASSWORD)
+    private String password;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.LAZY,mappedBy = "user")
