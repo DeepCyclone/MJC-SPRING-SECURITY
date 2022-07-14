@@ -55,15 +55,19 @@ public class GiftCertificateCustomRepositoryImpl implements GiftCertificateCusto
 
     @Override
     public boolean deleteById(long id) {
-        Optional.ofNullable(entityManager.find(GiftCertificate.class,id)).ifPresent(cert -> {
+        final Optional<GiftCertificate> giftCertificate = Optional.ofNullable(entityManager.find(GiftCertificate.class, id));
+        giftCertificate.ifPresent(cert->{
             if(cert.getAssociatedOrders()!= null && !cert.getAssociatedOrders().isEmpty()){
                 throw new RepositoryException(RepositoryErrorCode.CERTIFICATE_DELETION_ERROR, "Unable to delete certificate due to it's belonging to order(s)");
             }
+            entityManager.remove(cert);
         });
-        return entityManager.
-               createNativeQuery("delete from gift_certificate where gc_id = ?").
-               setParameter(1, id).
-               executeUpdate() >= MIN_AFFECTED_ROWS;
+//
+//        return entityManager.
+//               createNativeQuery("delete from gift_certificate where gc_id = ?").
+//               setParameter(1, id).
+//               executeUpdate() >= MIN_AFFECTED_ROWS;
+        return true;//TODO how to check if the object was deleted with remove method
     }
 
     @Override

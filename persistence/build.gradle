@@ -6,6 +6,7 @@ dependencies {
     testImplementation 'org.hsqldb:hsqldb:2.6.1'
     implementation 'org.hibernate:hibernate-ehcache:5.6.5.Final'//TODO is this deprecated?
     implementation 'mysql:mysql-connector-java:8.0.28'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 

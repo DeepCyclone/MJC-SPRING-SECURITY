@@ -1,11 +1,9 @@
-package com.epam.esm.security;
+package com.epam.esm.service.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -13,7 +11,6 @@ import java.security.Key;
 import java.util.Date;
 
 public class JWTCodec {
-
 
     private static final String SECRET_KEY = "s3cr3tk3y";
 

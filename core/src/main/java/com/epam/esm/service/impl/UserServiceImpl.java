@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService{
     @Override
     public Page<User> getAll(int page,int limit) {
         return userRepository.findAll(PageRequest.of(page,limit));
-
     }
 
     @Override

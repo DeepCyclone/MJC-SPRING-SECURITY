@@ -13,6 +13,7 @@ import com.epam.esm.repository.model.User;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 
+import com.epam.esm.service.security.JWTCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;

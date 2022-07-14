@@ -12,7 +12,6 @@ import com.epam.esm.hateoas.model.OrderModel;
 import com.epam.esm.hateoas.model.TagModel;
 import com.epam.esm.hateoas.processor.CertificateProcessor;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.security.JWTCodec;
 import com.epam.esm.service.GiftCertificateService;
 
 import org.springframework.beans.factory.annotation.Autowired;
